@@ -1,0 +1,152 @@
+{{define "machines/transferHTML"}} {{template "headHTML" .}}
+<div class="page-wrapper">
+    <div class="row page-titles">
+        <div class="col-md-12 align-self-center">
+            <h2 class="text-primary">Machine List</h2>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-title">
+                        Step 1: Select machines to transfer
+                    </div>
+                    <div class="nestable">
+                        <div class="dd" id="nestable">
+                            <ol class="dd-list">
+                                <li class="dd-item" data-id="2">
+                                    <div class="dd-handle">
+                                        <label>
+                                            <input type="checkbox" />Peter</label>
+                                    </div>
+                                    <ol class="dd-list">
+                                        <li class="dd-item" data-id="3">
+                                            <div class="dd-handle">
+                                                <label>
+                                                    <input type="checkbox" />Machine:09af5b22c0177eef(Giant03)</label>
+                                            </div>
+                                        </li>
+                                        <li class="dd-item" data-id="4">
+                                            <div class="dd-handle">
+                                                <label>
+                                                    <input type="checkbox" />Machine:88f52ed0baa1ee4d(Water04)</label>
+                                            </div>
+                                        </li>
+                                        <li class="dd-item" data-id="5">
+                                            <div class="dd-handle">
+                                                <label>
+                                                    <input type="checkbox" checked/>Cider</label>
+                                            </div>
+                                            <ol class="dd-list">
+                                                <li class="dd-item" data-id="6">
+                                                    <div class="dd-handle">
+                                                        <label>
+                                                            <input type="checkbox" checked/>Machine:9a84d55c2d2e00b4(Violet777)</label>
+                                                    </div>
+                                                </li>
+                                            </ol>
+                                        </li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-primary btn-sm">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-title">
+                        Step 2: Select an account that machines will be transfer to
+                    </div>
+                    <div class="nestable">
+                        <div class="dd" id="nestable">
+                            <ol class="dd-list">
+                                <li class="dd-item" data-id="1">
+                                    <div class="dd-handle">
+                                        <label>
+                                            <input type="radio" />Jenny</label>
+                                    </div>
+                                </li>
+                                <li class="dd-item" data-id="2">
+                                    <div class="dd-handle">
+                                        <label>
+                                            <input type="radio" checked/>Peter</label>
+                                    </div>
+                                    <ol class="dd-list">
+                                        <li class="dd-item" data-id="5">
+                                            <div class="dd-handle">
+                                                <label>
+                                                    <input type="radio" />Cider</label>
+                                            </div>
+                                        </li>
+                                        <li class="dd-item" data-id="9">
+                                            <div class="dd-handle">
+                                                <label>
+                                                    <input type="radio" />Johnson</label>
+                                            </div>
+                                        </li>
+                                    </ol>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-secondary btn-sm">Previous</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-title">
+                        Step 3: Confirm transfer information
+                    </div>
+                    <div>
+                        <div class="alert alert-info" role="alert">
+                            Machines will be transfer:
+                            <br/>
+                            <b>9a84d55c2d2e00b4(Violet777) owner Cider </b>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            Transfer to account:
+                            <br/>
+                            <b> Peter </b>
+                        </div>
+                        <div class="pull-right">
+                            <button type="submit" class="btn btn-secondary btn-sm">Previous</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Transfer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{template "footerHTML" .}}
+<script>
+    var updateOutput = function (e) {
+        var list = e.length ? e : $(e.target),
+            output = list.data('output');
+        if (window.JSON) {
+            output.val(window.JSON.stringify(list.nestable('serialize')));//, null, 2));
+        } else {
+            output.val('JSON browser support required for this demo.');
+        }
+    };
+
+    // activate Nestable for list 1
+    $('#nestable').nestable({
+        group: 1
+    })
+        .on('change', updateOutput);
+</script> {{end}}

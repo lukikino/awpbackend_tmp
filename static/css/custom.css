@@ -1,0 +1,93 @@
+/*over write font-size*/
+html{
+    font-size: 90%;
+}
+/*over write layout*/
+.container-fluid {
+    padding: 0 15px 15px;
+}
+.page-titles {
+    margin: 0 0 0px;
+}
+
+/*over write table*/
+.table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th{
+    line-height: 26px;
+}
+.table > tbody > tr > td{
+    white-space: nowrap;
+}
+.table td, .table th {
+    padding: 0.1rem 0.6rem;
+}
+/*over write sidebar*/
+/*side-bar style*/
+/*brand, header*/
+.header .top-navbar .navbar-header{
+    background: #2A3F54;
+}
+.navbar-light .navbar-brand{
+    color: #FC4513;
+}
+.navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:hover{
+    color: rgba(252,69,19,.7);
+}
+/*sidebar-nav*/
+.sidebar-nav{
+    background: #2A3F54;
+    color: #aaa;
+}
+.left-sidebar{
+    background: #2A3F54;
+}
+.collapse.in{
+    background-color: #334c65;
+}
+.sidebar-nav ul li a:hover{
+    color: #FC4513;
+}
+.sidebar-nav ul li a:hover i{
+    color: #FC4513;
+}
+.sidebar-nav > ul > li > a.active{
+    background-color: #334c65;
+}
+.sidebar-nav ul li a{
+    color: #aaa;
+}
+.sidebar-nav > ul > li.active > a{
+    color: #fff;
+    border-left: 0;
+}
+.sidebar-nav ul li a.active {
+    color: #fff;
+}
+.sidebar-nav > ul > li.active > a i {
+    color: #fff;
+}
+/*mini-sidebar*/
+.mini-sidebar .sidebar-nav #sidebarnav > li:hover > a{
+    background-color: #334c65;
+}
+.mini-sidebar .sidebar-nav #sidebarnav > li > ul{
+    background-color: #334c65;
+}
+
+/*sidebar layout*/
+@media (min-width: 768px){
+    .navbar-header{
+        width: 180px;
+    }
+}
+.sidebar-nav ul li a{
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.left-sidebar{
+    width: 180px;
+}
+@media (min-width: 1024px){
+    .page-wrapper {
+        margin-left: 180px;
+    }
+}
