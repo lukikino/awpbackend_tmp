@@ -37,9 +37,6 @@ func (t *Settings) JPServer() {
 //NewTodo returns a new  todo list controller
 func NewSettings() controller.Controller {
 	return &Settings{
-		Routes: []string{
-			"get;/settings/version;Version",
-			"get;/settings/jpserver;JPServer",
-		},
+		Routes: []string{},
 	}
 }

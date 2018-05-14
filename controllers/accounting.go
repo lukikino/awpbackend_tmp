@@ -48,10 +48,6 @@ func (t *Accounting) Machines() {
 //comments
 func NewAccounting() controller.Controller {
 	return &Accounting{
-		Routes: []string{
-			"get;/accounting/machines;Machines",
-			"get;/accounting/accounts;Accounts",
-			"get;/accounting/stores;Stores",
-		},
+		Routes: []string{},
 	}
 }

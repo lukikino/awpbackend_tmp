@@ -1340,7 +1340,7 @@ ul.list-style-none li a:hover {
   color: #67757c;
 }
 .custom-select {
-  background: url("../../assets/images/custom-select.png") right 0.75rem center no-repeat;
+  background: url("../images/custom-select.png") right 0.75rem center no-repeat;
 }
 textarea {
   resize: none;
@@ -2355,9 +2355,9 @@ textarea {
   width: 70%;
 }
 .modal-header .close {
-  font-size: 14px;
+  /* font-size: 14px;
   margin-right: 15px;
-  margin-top: 5px;
+  margin-top: 5px; */
 }
 .modal-content {
   border-radius: 3px;

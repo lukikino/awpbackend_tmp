@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	c "./controllers"
-	"./models"
 	"github.com/gernest/utron"
 )
 
@@ -19,19 +18,19 @@ func main() {
 	}
 
 	// Register Models
-	app.Model.Register(&models.Todo{})
+	//app.Model.Register(&models.Todo{})
 
 	// CReate Models tables if they dont exist yet
-	app.Model.AutoMigrateAll()
+	//app.Model.AutoMigrateAll()
 
 	// Register Controller
-	app.AddController(c.NewTodo)
+	app.AddController(c.NewLayout)
 	app.AddController(c.NewOperations)
 	app.AddController(c.NewTransactions)
 	app.AddController(c.NewAccounting)
 	app.AddController(c.NewReports)
 	app.AddController(c.NewSettings)
-	app.AddController(c.NewUsers)
+	app.AddController(c.NewCoreUsers)
 	app.AddController(c.NewMachines)
 
 	// Start the server

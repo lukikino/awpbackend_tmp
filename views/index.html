@@ -1,271 +1,256 @@
-{{define "indexHTML"}} {{template "headHTML" .}}
-
-<div class="page-wrapper">
-    <div class="row page-titles">
-        <div class="col-md-12 align-self-center">
-            <h2 class="text-primary">Dashboard</h2>
-        </div>
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-body">
-                        <form>
-                            <div class="form-group">
-                                <div class="dropdown btn-group">
-                                    <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">All Accounts
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" x-placement="bottom-start">
-                                        <li>
-                                            <div class="form-check">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    Check All
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="dropdown btn-group">
-                                    <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">All Stores
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" x-placement="bottom-start">
-                                        <li>
-                                            <div class="form-check">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    Check All
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="dropdownCheck">
-                                                <a class="form-check-label" for="dropdownCheck">
-                                                    BriceCheng5992
-                                                </a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="btn-group">
-                                    <button class="btn btn-primary btn-sm" type="submit">
-                                        <i class="ti-search"> Search</i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="table-responsive">
-                            <div id="myTable_wrapper" class="dataTables_wrapper no-footer">
-                                <table id="myTable" class="table no-footer table-hover" role="grid" aria-describedby="myTable_info">
-                                    <thead>
-                                        <tr role="row">
-                                            <th>METRICS</th>
-                                            <th>TODAY</th>
-                                            <th>YESTERDAY</th>
-                                            <th>WTD</th>
-                                            <th>MTD</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr role="row">
-                                            <td>Total In</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Total Out</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Out Rate</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Total Bet</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Total Win</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                            <td>$395,152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Win Rate</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                            <td>56.23%</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Total Play Times</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Total Win Times</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                            <td>395152</td>
-                                        </tr>
-                                        <tr role="row">
-                                            <td>Hit Rate</td>
-                                            <td>28.66</td>
-                                            <td>28.66</td>
-                                            <td>28.66</td>
-                                            <td>28.66</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-title">
-                        <h4>Charts</h4>
-                    </div>
-                    <div class="card-body">
-                    </div>
-                </div>
+{{define "indexHTML"}} 
+{{template "headHTML" .}}
+    <div class="page-wrapper">
+        <div class="row page-titles">
+            <div class="col-md-12 align-self-center">
+                <h2 class="text-primary">Dashboard</h2>
             </div>
-            <div class="col-lg-4">
-                <div class="">
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
                     <div class="card">
-                        <div class="card-title">
-                            <h4>Top 5 Out Rate Machine</h4>
-                        </div>
                         <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <div class="dropdown btn-group">
+                                        <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">All Accounts
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" x-placement="bottom-start">
+                                            <li>
+                                                <div class="form-check">
+                                                    <label class="form-check-label" for="dropdownCheck">
+                                                        Check All
+                                                    </label>
+                                                </div>
+                                            </li>
+                                            <li v-for="item in items">
+                                                <div class="form-check">
+                                                    <label class="form-check-label" :for="item.id">
+                                                        <input type="checkbox" class="form-check-input" :id="item.id">
+                                                        {/ item /}
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="dropdown btn-group">
+                                        <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">All Stores
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" x-placement="bottom-start">
+                                            <li>
+                                                <div class="form-check">
+                                                    <a class="form-check-label" for="dropdownCheck">
+                                                        Check All
+                                                    </a>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="dropdownCheck">
+                                                    <a class="form-check-label" for="dropdownCheck">
+                                                        BriceCheng5992
+                                                    </a>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="dropdownCheck">
+                                                    <a class="form-check-label" for="dropdownCheck">
+                                                        BriceCheng5992
+                                                    </a>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check">
+                                                    <input type="checkbox" class="form-check-input" id="dropdownCheck">
+                                                    <a class="form-check-label" for="dropdownCheck">
+                                                        BriceCheng5992
+                                                    </a>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary btn-sm" type="submit">
+                                            <i class="ti-search"> Search</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                             <div class="table-responsive">
-                                <table class="table table-hover ">
-                                    <thead>
-                                        <tr>
-                                            <th>Store Name</th>
-                                            <th>Machine</th>
-                                            <th>Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Graint888</td>
-                                            <td>
-                                                <a title="ee02f10b2a1e2f00">Jungle3</a>
-                                            </td>
-                                            <td>57.3%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div id="myTable_wrapper" class="dataTables_wrapper no-footer">
+                                    <table id="myTable" class="table no-footer table-hover" role="grid" aria-describedby="myTable_info">
+                                        <thead>
+                                            <tr role="row">
+                                                <th>METRICS</th>
+                                                <th>TODAY</th>
+                                                <th>YESTERDAY</th>
+                                                <th>WTD</th>
+                                                <th>MTD</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr role="row">
+                                                <td>Total In</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Total Out</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Out Rate</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Total Bet</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Total Win</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                                <td>$395,152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Win Rate</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                                <td>56.23%</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Total Play Times</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Total Win Times</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                                <td>395152</td>
+                                            </tr>
+                                            <tr role="row">
+                                                <td>Hit Rate</td>
+                                                <td>28.66</td>
+                                                <td>28.66</td>
+                                                <td>28.66</td>
+                                                <td>28.66</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-title">
-                            <h4>Top 5 Win Rate Machine</h4>
+                            <h4>Charts</h4>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover ">
-                                    <thead>
-                                        <tr>
-                                            <th>Store Name</th>
-                                            <th>Machine</th>
-                                            <th>Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Graint888</td>
-                                            <td>
-                                                <a title="ee02f10b2a1e2f00">Jungle3</a>
-                                            </td>
-                                            <td>57.3%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-title">
-                            <h4>Top 5 Hit Rate Machine</h4>
+                </div>
+                <div class="col-lg-4">
+                    <div class="">
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>Top 5 Out Rate Machine</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover ">
+                                        <thead>
+                                            <tr>
+                                                <th>Store Name</th>
+                                                <th>Machine</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Graint888</td>
+                                                <td>
+                                                    <a title="ee02f10b2a1e2f00">Jungle3</a>
+                                                </td>
+                                                <td>57.3%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover ">
-                                    <thead>
-                                        <tr>
-                                            <th>Store Name</th>
-                                            <th>Machine</th>
-                                            <th>Value</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Graint888</td>
-                                            <td>
-                                                <a title="ee02f10b2a1e2f00">Jungle3</a>
-                                            </td>
-                                            <td>57.3%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>Top 5 Win Rate Machine</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover ">
+                                        <thead>
+                                            <tr>
+                                                <th>Store Name</th>
+                                                <th>Machine</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Graint888</td>
+                                                <td>
+                                                    <a title="ee02f10b2a1e2f00">Jungle3</a>
+                                                </td>
+                                                <td>57.3%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <h4>Top 5 Hit Rate Machine</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover ">
+                                        <thead>
+                                            <tr>
+                                                <th>Store Name</th>
+                                                <th>Machine</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Graint888</td>
+                                                <td>
+                                                    <a title="ee02f10b2a1e2f00">Jungle3</a>
+                                                </td>
+                                                <td>57.3%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -273,6 +258,5 @@
             </div>
         </div>
     </div>
-</div>
-
-{{template "footerHTML" .}} {{end}}
+{{template "footerHTML" .}} 
+{{end}}

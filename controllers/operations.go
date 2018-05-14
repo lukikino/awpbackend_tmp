@@ -59,11 +59,6 @@ func (t *Operation) Machines() {
 //comments
 func NewOperations() controller.Controller {
 	return &Operation{
-		Routes: []string{
-			"get;/operations/day;Day",
-			"get;/operations/week;Week",
-			"get;/operations/month;Month",
-			"get;/operations/machines;Machines",
-		},
+		Routes: []string{},
 	}
 }

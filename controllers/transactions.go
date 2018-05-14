@@ -26,8 +26,6 @@ func (t *Transactions) Transactions() {
 //NewTodo returns a new  todo list controller
 func NewTransactions() controller.Controller {
 	return &Transactions{
-		Routes: []string{
-			"get;/transactions;Transactions",
-		},
+		Routes: []string{},
 	}
 }

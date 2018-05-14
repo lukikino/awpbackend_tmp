@@ -2,63 +2,64 @@ package controllers
 
 import (
 	"net/http"
-	"strconv"
 
-	"../models"
+	m "../models"
 
 	"github.com/gernest/utron/controller"
 )
 
 //Todo is a controller for Todo list
-type Todo struct {
+type Layout struct {
 	controller.BaseController
 	Routes []string
 }
 
 //Home renders a todo list
-func (t *Todo) Home() {
-	todos := []*models.Todo{}
-	t.Ctx.DB.Order("created_at desc").Find(&todos)
+func (t *Layout) Home() {
 	t.Ctx.Data = map[string]interface{}{
+		"id":     "index",
 		"title":  "title",
 		"header": "My Header",
 		"footer": "My Footer",
 	}
-	t.Ctx.Template = "indexHTML"
+	t.Ctx.Template = "layoutHTML"
 	t.HTML(http.StatusOK)
 }
 
-//Create creates a todo  item
-func (t *Todo) Create() {
-	todo := &models.Todo{}
-	req := t.Ctx.Request()
-	_ = req.ParseForm()
-
-	t.Ctx.DB.Create(todo)
-	t.Ctx.Redirect("/", http.StatusFound)
+//Home renders a todo list
+func (t *Layout) GetDashboard() {
+	t.RenderJSON(m.GetDashboard(), http.StatusOK)
 }
 
-//Delete deletes a todo item
-func (t *Todo) Delete() {
-	todoID := t.Ctx.Params["id"]
-	ID, err := strconv.Atoi(todoID)
-	if err != nil {
-		t.Ctx.Data["Message"] = err.Error()
-		t.Ctx.Template = "error"
-		t.HTML(http.StatusInternalServerError)
-		return
-	}
-	t.Ctx.DB.Delete(&models.Todo{ID: ID})
-	t.Ctx.Redirect("/", http.StatusFound)
+func (t *Layout) GetTopOutRate() {
+	t.RenderJSON(m.GetTopOutRate(), http.StatusOK)
+}
+
+func (t *Layout) GetTopWinRate() {
+	t.RenderJSON(m.GetTopWinRate(), http.StatusOK)
+}
+
+func (t *Layout) GetTopHitRate() {
+	t.RenderJSON(m.GetTopHitRate(), http.StatusOK)
 }
 
 //NewTodo returns a new  todo list controller
-func NewTodo() controller.Controller {
-	return &Todo{
+func NewLayout() controller.Controller {
+	return &Layout{
 		Routes: []string{
+			"get;/api/index/dashboard;GetDashboard",
+			"get;/api/index/topoutrate;GetTopOutRate",
+			"get;/api/index/topwinrate;GetTopWinRate",
+			"get;/api/index/tophitrate;GetTopHitRate",
+
 			"get;/;Home",
-			"post;/create;Create",
-			"get;/delete/{id};Delete",
+			"get;/accounting/{name};Home",
+			"get;/machines/{name};Home",
+			"get;/operations/{name};Home",
+			"get;/reports/{name};Home",
+			"get;/settings/{name};Home",
+			"get;/transactions;Home",
+			"get;/users/{name};Home",
 		},
 	}
 }

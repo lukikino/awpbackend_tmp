@@ -59,11 +59,6 @@ func (t *Reports) Behavior() {
 //comments
 func NewReports() controller.Controller {
 	return &Reports{
-		Routes: []string{
-			"get;/reports/jackpot;Jackpot",
-			"get;/reports/machines;Machines",
-			"get;/reports/revenue;Revenue",
-			"get;/reports/behavior;Behavior",
-		},
+		Routes: []string{},
 	}
 }

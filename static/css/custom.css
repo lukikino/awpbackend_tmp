@@ -10,7 +10,23 @@ html{
     margin: 0 0 0px;
 }
 
-/*over write table*/
+/*loading*/
+.loading-opacity{
+    opacity: .2;
+}
+
+/*overwrite input style*/
+.dropdown.btn-group label {
+    cursor: pointer;
+    color: inherit !important;
+}
+/*dropdown style*/
+.dropdown.btn-group ul {
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+/*overwrite table*/
 .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th{
     line-height: 26px;
 }
@@ -20,6 +36,7 @@ html{
 .table td, .table th {
     padding: 0.1rem 0.6rem;
 }
+
 /*over write sidebar*/
 /*side-bar style*/
 /*brand, header*/
