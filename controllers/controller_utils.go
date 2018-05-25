@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	common "awpbackend/common"
-	m "awpbackend/models"
+	common "github.com/awpbackend/common"
+	m "github.com/awpbackend/models"
 
 	"github.com/gernest/utron/controller"
 )

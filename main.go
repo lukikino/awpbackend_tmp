@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	c "awpbackend/controllers"
+	c "github.com/awpbackend/controllers"
 
 	"github.com/gernest/utron"
 	"google.golang.org/appengine"

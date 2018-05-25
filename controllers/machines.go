@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	m "awpbackend/models"
+	m "github.com/awpbackend/models"
 	"github.com/gernest/utron/controller"
 	"github.com/gorilla/schema"
 )
