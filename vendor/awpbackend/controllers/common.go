@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	commons "awpbackend/commons"
+	common "awpbackend/common"
 	m "awpbackend/models"
 
 	"github.com/gernest/utron/controller"
@@ -17,7 +17,7 @@ type Common struct {
 
 //Home renders a todo list
 func (t *Common) GetPermissionList() {
-	p := commons.Permissions()
+	p := common.Permissions()
 	t.RenderJSON(m.BoxingToResult(p, nil), http.StatusOK)
 }
 
