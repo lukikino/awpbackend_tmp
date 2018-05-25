@@ -4,28 +4,28 @@ import (
 	"encoding/json"
 	"net/http"
 
-	m "../models"
+	m "models"
 	"github.com/gernest/utron/controller"
 )
 
 //Todo is a controller for Todo list
-type Agency struct {
+type CoreUsers struct {
 	controller.BaseController
 	Routes []string
 }
 
 //Home renders a todo list
-func (t *Agency) GetUsers() {
-	t.RenderJSON(m.GetUsers(false), http.StatusOK)
+func (t *CoreUsers) GetUsers() {
+	t.RenderJSON(m.GetUsers(true), http.StatusOK)
 }
 
 //Home renders a todo list
-func (t *Agency) GetUserPermissions() {
-	t.RenderJSON(m.GetUserPermissions(t.Ctx.Params["id"], false), http.StatusOK)
+func (t *CoreUsers) GetUserPermissions() {
+	t.RenderJSON(m.GetUserPermissions(t.Ctx.Params["id"], true), http.StatusOK)
 }
 
 //Home renders a todo list
-func (t *Agency) EditUserPermissions() {
+func (t *CoreUsers) EditUserPermissions() {
 	req := t.Ctx.Request()
 	decoder := json.NewDecoder(req.Body)
 	var data m.User
@@ -41,7 +41,7 @@ func (t *Agency) EditUserPermissions() {
 }
 
 //Home renders a todo list
-func (t *Agency) AddUser() {
+func (t *CoreUsers) AddUser() {
 	data := m.User{}
 	req := t.Ctx.Request()
 	req.ParseForm()
@@ -50,16 +50,16 @@ func (t *Agency) AddUser() {
 		t.RenderJSON(m.ErrorResult(err.Error(), "400"), http.StatusBadRequest)
 		return
 	} else {
-		t.RenderJSON(m.AddUser(data, false), http.StatusOK)
+		t.RenderJSON(m.AddUser(data, true), http.StatusOK)
 	}
 }
 
-func (t *Agency) ToggleActive() {
+func (t *CoreUsers) ToggleActive() {
 	t.RenderJSON(m.ToggleUserActive(t.Ctx.Params["id"]), http.StatusOK)
 }
 
 //Home renders a todo list
-func (t *Agency) EditPassword() {
+func (t *CoreUsers) EditPassword() {
 	data := m.User{}
 	req := t.Ctx.Request()
 	req.ParseForm()
@@ -73,15 +73,15 @@ func (t *Agency) EditPassword() {
 }
 
 //NewTodo returns a new  todo list controller
-func NewAgency() controller.Controller {
-	return &Agency{
+func NewCoreUsers() controller.Controller {
+	return &CoreUsers{
 		Routes: []string{
-			"get;/api/agency;GetUsers",
-			"post;/api/agency;AddUser",
-			"get;/api/agency/permissions/{id};GetUserPermissions",
-			"post;/api/agency/permissions;EditUserPermissions",
-			"post;/api/agency/active/{id};ToggleActive",
-			"post;/api/agency/password/{id};EditPassword",
+			"get;/api/coreusers;GetUsers",
+			"post;/api/coreusers;AddUser",
+			"get;/api/coreusers/permissions/{id};GetUserPermissions",
+			"post;/api/coreusers/permissions;EditUserPermissions",
+			"post;/api/coreusers/active/{id};ToggleActive",
+			"post;/api/coreusers/password/{id};EditPassword",
 		},
 	}
 }

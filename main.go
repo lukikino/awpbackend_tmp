@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	c "./controllers"
+	c "controllers"
+
 	"github.com/gernest/utron"
 )
 

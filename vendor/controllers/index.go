@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	m "../models"
+	m "models"
 
 	"github.com/gernest/utron/controller"
 )

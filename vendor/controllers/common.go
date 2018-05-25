@@ -3,8 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	enums "../enums"
-	m "../models"
+	enums "enums"
+	m "models"
 	"github.com/gernest/utron/controller"
 )
 

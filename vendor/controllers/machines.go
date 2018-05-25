@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	m "../models"
+	m "models"
 	"github.com/gernest/utron/controller"
 	"github.com/gorilla/schema"
 )
