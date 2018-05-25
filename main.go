@@ -8,6 +8,7 @@ import (
 	c "controllers"
 
 	"github.com/gernest/utron"
+	"google.golang.org/appengine"
 )
 
 func main() {
@@ -40,4 +41,5 @@ func main() {
 	port := fmt.Sprintf(":%d", app.Config.Port)
 	app.Log.Info("staring server on port", port)
 	log.Fatal(http.ListenAndServe(port, app))
+	appengine.Main()
 }
