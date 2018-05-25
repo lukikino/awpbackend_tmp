@@ -3,8 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	enums "enums"
+	commons "commons"
 	m "models"
+
 	"github.com/gernest/utron/controller"
 )
 
@@ -16,7 +17,7 @@ type Common struct {
 
 //Home renders a todo list
 func (t *Common) GetPermissionList() {
-	p := enums.Permissions()
+	p := commons.Permissions()
 	t.RenderJSON(m.BoxingToResult(p, nil), http.StatusOK)
 }
 
