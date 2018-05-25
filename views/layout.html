@@ -312,31 +312,70 @@
     </div>
     <!-- End Wrapper -->
     <script type="text/x-template" id="dropdown">
-      <div class="dropdown btn-group">
-        <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">{/buttonText/}
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" x-placement="bottom-start">
-            <li>
-                <div class="form-check">
-                    <label class="form-check-label" for="dropdownCheck" @click="checkAll" v-if="!allChecked">
-                        Check All
-                    </label>
-                    <label class="form-check-label" for="dropdownCheck" @click="uncheckAll" v-if="allChecked">
-                        Uncheck All
-                    </label>
+        <div class="dropdown btn-group">
+            <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">{/buttonText/}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" x-placement="bottom-start">
+                <li>
+                    <div class="form-check">
+                        <label class="form-check-label" for="dropdownCheck" @click="checkAll" v-if="!allChecked">
+                            Check All
+                        </label>
+                        <label class="form-check-label" for="dropdownCheck" @click="uncheckAll" v-if="allChecked">
+                            Uncheck All
+                        </label>
+                    </div>
+                </li>
+                <li v-for="item in items.items">
+                    <div class="form-check">
+                        <label class="form-check-label" :for="domId(item.id)">
+                            <input type="checkbox" class="form-check-input" :id="domId(item.id)" v-model="item.check"> 
+                            {/ item.text /}
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </script>
+    
+    <script type="text/x-template" id="treemenu">
+        <div class="tree-menu">
+            <div class="label-wrapper" v-if="machine">
+                <div class="label-item" :style="indent">
+                    <b-form-checkbox :value="machine" v-model="checkList.machines[machine.machineID]" @change="toggleMachineSelect"><i class="fa fa-microchip"></i> {/ machine.pcbID /}({/ machine.storeName /}-{/ machine.machineName /})</b-form-checkbox>
                 </div>
-            </li>
-            <li v-for="item in items.items">
-                <div class="form-check">
-                    <label class="form-check-label" :for="domId(item.id)">
-                        <input type="checkbox" class="form-check-input" :id="domId(item.id)" v-model="item.check"> 
-                        {/ item.text /}
-                    </label>
+            </div>
+            <div class="label-wrapper" @click="toggleChildren" v-if="!machine">
+                <div class="label-item" :style="indent" :class="labelClasses">
+                    <i v-if="nodes.children || (nodes.machines && !onlyAccount)" class="fa" :class="iconClasses"></i>
+                    <b-form-checkbox v-if="!onlyAccount" v-model="nodes.checked" @change="toggleSelectChildren">{/ nodes.account /}</b-form-checkbox>
+                    <b-form-radio v-if="onlyAccount" name="account" :value="nodes" v-model="checkList.account" @change="toggleAccountSelect">{/ nodes.account /}</b-form-radio>
                 </div>
-            </li>
-        </ul>
-    </div>
+            </div>
+
+            <treemenu 
+            v-if="!onlyAccount"
+            v-show="showChildren"
+            v-for="machine in nodes.machines" 
+            v-bind:key="machine.machineID"
+            :checkList="checkList"
+            :onlyAccount="onlyAccount"
+            :machine="machine"
+            :depth="depth + 1">
+            </treemenu>
+
+            <treemenu 
+            v-show="showChildren"
+            v-for="node in nodes.children" 
+            v-bind:key="node.userID"
+            :checkList="checkList"
+            :onlyAccount="onlyAccount"
+            :extendLevel="extendLevel"
+            :nodes="node" 
+            :depth="depth + 1">
+            </treemenu>
+        </div>
     </script>
     <!-- All Jquery -->
     <script src="/static/js/lib/jquery/jquery.min.js"></script>

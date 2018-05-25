@@ -23,20 +23,26 @@ type User struct {
 
 type Permission struct {
 	ID          int    `db:"id" json:"ID"`
-	Active      int    `json:"active"`
+	Active      bool   `db:"active" json:"active"`
 	Name        string `db:"name" json:"name"`
-	Description int    `db:"description" json:"description"`
+	Description string `db:"description" json:"description"`
 	CreatedTime string `db:"created_time" json:"createdTime"`
 	UpdateTime  string `db:"update_time" json:"updateTime"`
 	Total       int    `db:"total" json:"total"`
 }
 
-func encryptedPassword(pwd, id string) string {
-	maskedPwd := make([]byte, 128)
+type usersTree struct {
+	UserID   int    `db:"user_id" json:"userID"`
+	Account  string `db:"account" json:"account"`
+	ParentID int    `db:"parent_id" json:"parentID"`
+}
 
+//common use
+func encryptedPassword(pwd, pwdMask string) string {
+	maskedPwd := make([]byte, 128)
 	//use id to genrator mask
 	maskSha512 := sha512.New()
-	maskSha512.Write([]byte(id))
+	maskSha512.Write([]byte(pwdMask))
 	mask := []byte(fmt.Sprintf("%x", maskSha512.Sum(nil)))
 	pwdb := []byte(pwd)
 	//use mask and pwd do bitwise cal
@@ -58,14 +64,19 @@ func GetUsers(admin bool) ReturnData {
 	return returnData
 }
 
-func GetUserPermissions(id string) ReturnData {
+func GetUsersTree() ReturnData {
 	db := GetConnection()
-	a := User{}
+	at := []usersTree{}
+	err := db.Select(&at, "call sp_getUsersTree(?)", 2)
+	returnData := BoxingToResult(at, err)
+	return returnData
+}
+
+func GetUserPermissions(id string, admin bool) ReturnData {
+	db := GetConnection()
 	m := []Permission{}
-	err := db.Get(&m, "call sp_getUserPermissions(?)", id)
-	a.ID, _ = strconv.Atoi("id")
-	a.Permissions = m
-	returnData := BoxingToResult(a, err)
+	err := db.Select(&m, "call sp_getUserPermissions(?,?,?)", 2, id, admin)
+	returnData := BoxingToResult(m, err)
 	return returnData
 }
 
@@ -76,14 +87,13 @@ func EditUserPermissions(data User) ReturnData {
 	var pstr string
 	if len(data.Permissions) > 0 {
 		for _, el := range data.Permissions {
-			parr = append(parr, fmt.Sprintf("%v=%v", el.ID, el.Active))
+			if el.Active {
+				parr = append(parr, fmt.Sprintf("%v", el.Name))
+			}
 		}
-		pstr = strings.Join(parr, ";")
+		pstr = strings.Join(parr, ",")
 	}
-	res, err := db.Exec("call sp_editUserPermissions(?,?)", data.ID, pstr)
-	if err == nil {
-		count, _ = res.RowsAffected()
-	}
+	err := db.Get(&count, "call sp_editUserPermissions(?,?,?)", 2, data.ID, pstr)
 	returnData := BoxingToResult(count, err)
 	return returnData
 }
@@ -119,10 +129,7 @@ func AddUser(data User, admin bool) ReturnData {
 	var count int64
 	now := time.Now().UTC().Add(time.Hour * time.Duration(TimeZone))
 	pwd := encryptedPassword(data.Password, strconv.FormatInt(now.UnixNano(), 10))
-	res, err := db.Exec("call sp_addUser(?,?,?,?)", data.Account, pwd, admin, now.UTC().Format(DatetimeFormat))
-	if err == nil {
-		count, _ = res.RowsAffected()
-	}
+	err := db.Get(&count, "call sp_addUser(?,?,?,?,?)", 2, data.Account, pwd, admin, now.UTC().Format(DatetimeFormat))
 	returnData := BoxingToResult(count, err)
 	return returnData
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	m "../models"
@@ -16,6 +17,27 @@ type CoreUsers struct {
 //Home renders a todo list
 func (t *CoreUsers) GetUsers() {
 	t.RenderJSON(m.GetUsers(true), http.StatusOK)
+}
+
+//Home renders a todo list
+func (t *CoreUsers) GetUserPermissions() {
+	t.RenderJSON(m.GetUserPermissions(t.Ctx.Params["id"], true), http.StatusOK)
+}
+
+//Home renders a todo list
+func (t *CoreUsers) EditUserPermissions() {
+	req := t.Ctx.Request()
+	decoder := json.NewDecoder(req.Body)
+	var data m.User
+	err := decoder.Decode(&data)
+	if err != nil {
+		t.Ctx.Data["Message"] = err.Error()
+		t.RenderJSON(m.ErrorResult(err.Error(), "400"), http.StatusBadRequest)
+		return
+	} else {
+		t.RenderJSON(m.EditUserPermissions(data), http.StatusOK)
+	}
+	defer req.Body.Close()
 }
 
 //Home renders a todo list
@@ -56,6 +78,8 @@ func NewCoreUsers() controller.Controller {
 		Routes: []string{
 			"get;/api/coreusers;GetUsers",
 			"post;/api/coreusers;AddUser",
+			"get;/api/coreusers/permissions/{id};GetUserPermissions",
+			"post;/api/coreusers/permissions;EditUserPermissions",
 			"post;/api/coreusers/active/{id};ToggleActive",
 			"post;/api/coreusers/password/{id};EditPassword",
 		},

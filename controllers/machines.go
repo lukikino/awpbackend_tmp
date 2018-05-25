@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 
 	m "../models"
@@ -36,6 +37,27 @@ func (t *Machines) GetMachines() {
 func (t *Machines) GetMachine() {
 	// req := t.Ctx.Request()
 	t.RenderJSON(m.GetMachine(t.Ctx.Params["id"]), http.StatusOK)
+}
+
+//Home renders a todo list
+func (t *Machines) GetMachinesWithUsers() {
+	// req := t.Ctx.Request()
+	t.RenderJSON(m.GetMachinesWithUsers(), http.StatusOK)
+}
+
+//Home renders a todo list
+func (t *Machines) TransferMachines() {
+	// req := t.Ctx.Request()
+	req := t.Ctx.Request()
+	decoder := json.NewDecoder(req.Body)
+	var data m.MachineTransfer
+	if err := decoder.Decode(&data); err != nil {
+		t.Ctx.Data["Message"] = err.Error()
+		t.RenderJSON(m.ErrorResult(err.Error(), "400"), http.StatusBadRequest)
+		return
+	} else {
+		t.RenderJSON(m.TransferMachines(data), http.StatusOK)
+	}
 }
 
 //Home renders a todo list
@@ -76,8 +98,11 @@ func (t *Machines) DeleteMachine() {
 func NewMachines() controller.Controller {
 	return &Machines{
 		Routes: []string{
+			"get;/api/machinetransfer;GetMachinesWithUsers",
+			"post;/api/machinetransfer;TransferMachines",
+
 			"get;/api/machines;GetMachines",
-			"post;/api/machines/add;AddMachine",
+			"post;/api/machines;AddMachine",
 			"get;/api/machines/{id};GetMachine",
 			"post;/api/machines/{id};EditMachine",
 			"delete;/api/machines/{id};DeleteMachine",

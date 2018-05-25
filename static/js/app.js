@@ -146,6 +146,100 @@ Vue.component('dropdown', {
     }
 });
 
+
+Vue.component('treemenu', {
+    delimiters: ['{/', '/}'],
+    template: '#treemenu',
+    props: {
+        'label': [String, Number],
+        'nodes': {
+            type: Object,
+            default: Object
+        },
+        'checkList':  {
+            type: Object,
+            default: Object
+        },
+        'depth': Number,
+        'machine': Object,
+        'onlyAccount': Boolean,
+        'extendLevel': Number },
+    data: function() {
+        return { inited: false }
+    },
+    watch: {
+        nodes: function(){
+            if(this.depth < (this.extendLevel || 0) && !this.inited){
+                Vue.set(this.nodes, 'show', true);
+                Vue.set(this.checkList, 'account', 0);
+                Vue.set(this.checkList, 'machines', {});
+                this.inited = true;
+            }
+        }
+    },
+    computed: {
+        labelClasses: function() {
+          return { 'has-children': this.children }
+        },
+        iconClasses: function() {
+            return {
+            'fa-plus-square-o': !this.showChildren,
+            'fa-minus-square-o': this.showChildren
+          }
+        },
+        indent: function() {
+            return { transform: `translate(${this.depth * 50}px)` }
+        },
+        showChildren: function(){
+            Vue.set(this.nodes, 'show', !!this.nodes.show);
+            return this.nodes.show;
+        }
+    },
+    methods: {
+        toggleChildren: function() {
+            this.nodes.show = !this.nodes.show;
+        },
+        toggleMachineSelect: function(value){
+            if(value){
+                console.log(1)
+                var machine = value;
+                Vue.set(machine, 'owner', machine.owner.account);
+                Vue.set(this.checkList.machines, machine.machineID, machine);
+            }
+        },
+        toggleAccountSelect: function(value){
+            if(value){
+                Vue.set(this.checkList, 'account', value);
+            }
+        },
+        toggleSelectChildren: function(value){
+            var check = value;
+            var recurciveCheck = function(node, checkList){
+                Vue.set(node, 'checked', check);
+                Vue.set(node, 'show', check);
+                for(var key in node.machines){
+                    Vue.set(node.machines[key], 'checked', check);
+                    Vue.set(node.machines[key], 'owner', node.account);
+                    var machineID = node.machines[key].machineID;
+                    if(check){
+                        Vue.set(checkList.machines, machineID, node.machines[key]);
+                    }
+                    else if(!check){
+                        Vue.set(checkList.machines, machineID, false);
+                    }
+                }
+                for(var key in node.children){
+                    recurciveCheck(node.children[key], checkList);
+                }
+            };
+            recurciveCheck(this.nodes, this.checkList);
+        }
+    },
+    created: function(){
+        Vue.set(this.checkList, 'machines', this.checkList.machines || {});
+    }
+});
+
 const Home = {
     mixins: [common],
     data: function () {
@@ -681,7 +775,7 @@ const MachineList = {
             let vm = this;
             if (vm.addModel.pcbID && vm.addModel.userID) {
                 vm.submited = false;
-                vm.$http.post('/api/machines/add', vm.addModel, {emulateJSON: true}).then(function (res) {
+                vm.$http.post('/api/machines', vm.addModel, {emulateJSON: true}).then(function (res) {
                     if(res.body.code == 200){
                         vm.getMachines();
                     }
@@ -770,21 +864,108 @@ const MachineList = {
 const MachineTransfer = {
     data: function () {
         return {
-            step: 1
+            step: 1,
+            machinesWithUsersTree: {nodes:{}, roots:{}},
+            usersTree: {nodes:{}, roots:{}},
+            checkList: {}
+        }
+    },
+    computed: {
+        checkedMachines: function(){
+            var vm = this;
+            return Object.keys(vm.checkList.machines).filter(function(key){
+                return vm.checkList.machines[key];
+            });
+        },
+        toTransferMachines: function(){
+            return this.checkList.machines;
         }
     },
     methods: {
         toStep: function (step) {
+            if(this.step === 1 && step ===2 && !this.checkedMachines.length){
+                alert('Must select at least one machine.')
+                return;
+            }
+            else if(this.step === 2 && step ===3 && !this.checkList.account){
+                alert('Must select one account.')
+                return;
+            }
             this.step = step;
         },
         transfer: function () {
+            var vm = this;
+            var result = confirm('Really excuting machines transfer?');
+            var postData = {machines: vm.checkedMachines, account: vm.checkList.account.userID};
+            if(result){
+                vm.$http.post('/api/machinetransfer', postData).then(function (res) {
+                    if(res.body.code == 200){
+                        alert('Transfer completed.');
+                        location.reload();
+                    }
+                    else{
+                        alert("Add Machine Error: " + res.body.message);
+                    }
+                });
+            }
+        },
+        _generatorTree: function(source){
+            var data = source;
+            var machinesWithAccounts = [];
+            var treeNodes = {};
+            var tree = {};
+            var map = {}, node, roots = [], i;
+            for (i = 0; i < data.length; i += 1) {
+                var item = data[i];
+                var current = treeNodes[item.userID];
+                var parent = treeNodes[item.parentID];
+                //build relation
+                if(!current){
+                    current = treeNodes[item.userID] = {
+                        account: item.account,
+                        userID: item.userID,
+                        parentID: item.parentID
+                    }
+                    if(parent){
+                        current.parent = parent;
+                        parent.children = parent.children || {};
+                        parent.children[item.userID] = current;
+                    }
+                }
 
+                //add machine
+                if(item.machineID){
+                    current.machines = treeNodes[item.userID].machines || [];
+                    current.machines.push({machineID: item.machineID, machineName: item.machineName, storeName: item.storeName, pcbID: item.pcbID, owner: current});
+                }
+                if(i === 0){
+                    tree.roots = current;
+                }
+            }
+            tree.nodes = treeNodes;
+            return tree;
         }
     },
     mounted: function () {
-        // activate Nestable for list 1
-        $('.nestable').nestable({
-            group: 1
+        var vm = this;
+        this.$http.get('/api/common/getuserstree').then(function (res) {
+            if(res.body.code == 200){
+                // Vue.set(vm, "userstree", vm._generatorTree(res.body.data));
+                vm.usersTree = vm._generatorTree(res.body.data);
+            }
+            else{
+                alert("Get MachineList Error: " + res.body.message);
+            }
+        });
+
+        this.$http.get('/api/machinetransfer').then(function (res) {
+            if(res.body.code == 200){
+                // Vue.set(vm, "machinesWithUsersTree", vm._generatorTree(res.body.data));
+                vm.machinesWithUsersTree = vm._generatorTree(res.body.data);
+            }
+            else{
+                alert("Get MachineList Error: " + res.body.message);
+            }
         });
     }
 };
@@ -796,11 +977,15 @@ const Core = {
             loading: false,
             filter: '',
             users: {items:[]},
+            permissionList: {items:[]},
             addModel: {
                 account: null, password: null, confirm: null
             },
             pwdModel: {
                 ID: null, account: null, password: null, confirm: null
+            },
+            permissionModel:{
+                ID: null, account: null, items:[], list:{}
             },
             unit: 10,
             currentPage: 1,
@@ -829,17 +1014,53 @@ const Core = {
             return /^[a-zA-Z0-9]{6,16}$/.test(account);
         },
         chkPassword: function(pwd){
-            return /^(?=.*[0-9])(?=.*[a-z])([a-z0-9]{8,20})$/.test(pwd);
+            return /^(?=.*[0-9])(?=.*[a-z])(.{8,20})$/.test(pwd);
         },
         encryptedPassword: function(pwd){
             return CryptoJS.SHA512(pwd).toString(CryptoJS.enc.Hex)
+        },
+        getPermissions: function (id, account) {
+            let vm = this;
+            vm.loading = true;
+            this.$http.get('/api/coreusers/permissions/' + id).then(function (res) {
+                vm.permissionModel.ID = id;
+                vm.permissionModel.account = account;
+                vm.permissionModel.items = res.body.data || [];
+                vm.permissionModel.list = {};
+                for(var i in res.body.data){
+                    var item = res.body.data[i];
+                    var cat = item.name.split('_')[0];
+                    var name = item.name.split('_')[1];
+                    vm.permissionModel.list[cat] = vm.permissionModel.list[cat] || {};
+                    vm.permissionModel.list[cat].cat = cat;
+                    vm.permissionModel.list[cat][name] = item;
+                }
+                vm.loading = false;
+            });
+        },
+        cancelPermissions: function () {
+            this.submited = false;
+            this.permissionModel.ID = this.permissionModel.account = null;
+            this.permissionModel.items = [];
+            this.permissionModel.list = {};
+        },
+        editPermissions: function (ev) {
+            let vm = this;
+            vm.$http.post('/api/coreusers/permissions', {ID: vm.permissionModel.ID, permissions: vm.permissionModel.items}).then(function (res) {
+                if(res.body.code == 200){
+                    alert("Permission change saved.")
+                }
+                else{
+                    alert("Permission change save Error: " + res.body.message);
+                }
+            });
         },
         getUsers: function () {
             let vm = this;
             vm.loading = true;
             this.$http.get('/api/coreusers').then(function (res) {
-                vm.users.items = res.body.data
-                vm.total = res.body.total
+                vm.users.items = res.body.data;
+                vm.total = res.body.total;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
             });
@@ -877,7 +1098,7 @@ const Core = {
                         vm.getUsers();
                     }
                     else{
-                        alert("Add Machine Error: " + res.body.message);
+                        alert("Add User Error: " + res.body.message);
                     }
                 });
             }
@@ -971,6 +1192,7 @@ const Core = {
     },
     created: function(){
         this.getUsers();
+        // this.getPermissionList();
     },
     mounted: function () {
     }
@@ -982,10 +1204,21 @@ const Agency = {
         return {
             loading: false,
             filter: '',
-            accounts: fakeAccounts,
+            users: {items:[]},
+            permissionList: {items:[]},
+            addModel: {
+                account: null, password: null, confirm: null
+            },
+            pwdModel: {
+                ID: null, account: null, password: null, confirm: null
+            },
+            permissionModel:{
+                ID: null, account: null, items:[], list:{}
+            },
             unit: 10,
             currentPage: 1,
-            totalPage: 1
+            totalPage: 1,
+            submited: false
         }
     },
     watch: {
@@ -1002,6 +1235,141 @@ const Agency = {
         chkPageCurrent: function (page) {
             return this.currentPage != page || 'current';
         },
+        chkPolicy: function(model){
+            return this.chkAccount(model.account) && this.chkPassword(model.password) && model.password == model.confirm;
+        },
+        chkAccount: function(account){
+            return /^[a-zA-Z0-9]{6,16}$/.test(account);
+        },
+        chkPassword: function(pwd){
+            return /^(?=.*[0-9])(?=.*[a-z])(.{8,20})$/.test(pwd);
+        },
+        encryptedPassword: function(pwd){
+            return CryptoJS.SHA512(pwd).toString(CryptoJS.enc.Hex)
+        },
+        getPermissions: function (id, account) {
+            let vm = this;
+            vm.loading = true;
+            this.$http.get('/api/agency/permissions/' + id).then(function (res) {
+                vm.permissionModel.ID = id;
+                vm.permissionModel.account = account;
+                vm.permissionModel.items = res.body.data || [];
+                vm.permissionModel.list = {};
+                for(var i in res.body.data){
+                    var item = res.body.data[i];
+                    var cat = item.name.split('_')[0];
+                    var name = item.name.split('_')[1];
+                    vm.permissionModel.list[cat] = vm.permissionModel.list[cat] || {};
+                    vm.permissionModel.list[cat].cat = cat;
+                    vm.permissionModel.list[cat][name] = item;
+                }
+                vm.loading = false;
+            });
+        },
+        cancelPermissions: function () {
+            this.submited = false;
+            this.permissionModel.ID = this.permissionModel.account = null;
+            this.permissionModel.items = [];
+            this.permissionModel.list = {};
+        },
+        editPermissions: function (ev) {
+            let vm = this;
+            vm.$http.post('/api/coreusers/permissions', {ID: vm.permissionModel.ID, permissions: vm.permissionModel.items}).then(function (res) {
+                if(res.body.code == 200){
+                    alert("Permission change saved.")
+                }
+                else{
+                    alert("Permission change save Error: " + res.body.message);
+                }
+            });
+        },
+        getUsers: function () {
+            let vm = this;
+            vm.loading = true;
+            this.$http.get('/api/agency').then(function (res) {
+                vm.users.items = res.body.data;
+                vm.total = res.body.total;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
+            });
+        },
+        toggleActive: function(id){
+            let vm = this;
+            let user = vm.users.items.filter(function(item){
+                return item.ID === id;
+            });
+            if(user && user.length === 1){
+                user = user[0];
+                vm.$http.post('/api/agency/active/' + user.ID).then(function (res) {
+                    if(res.body.code == 200 && res.body.data){
+                        user.state = res.body.data.state;
+                    }
+                    else{
+                        alert("Change active/deactive failed: " + res.body.message);
+                    }
+                });
+            }
+        },
+        cancelAdd: function () {
+            this.submited = false;
+            this.addModel.account = this.addModel.password = this.addModel.confirm = null;
+        },
+        addUser: function (ev) {
+            let vm = this;
+            vm.submited = true;
+            if (vm.chkPolicy(vm.addModel)) {
+                vm.submited = false;
+                delete vm.addModel.confirm;
+                vm.addModel.password = vm.encryptedPassword(vm.addModel.password);
+                vm.$http.post('/api/agency', vm.addModel, {emulateJSON: true}).then(function (res) {
+                    if(res.body.code == 200){
+                        vm.getUsers();
+                    }
+                    else{
+                        alert("Add User Error: " + res.body.message);
+                    }
+                });
+            }
+            else {
+                this.submited = true;
+                ev.preventDefault();
+            }
+        },
+        openChangePassword: function(id){
+            let vm = this;
+            let user = vm.users.items.filter(function(item){
+                return item.ID === id;
+            });
+            if(user && user.length === 1){
+                vm.pwdModel.account = user[0].account;
+                vm.pwdModel.ID = user[0].ID;
+            }
+        },
+        cancelChangePassword: function(){
+            let vm = this;
+            vm.pwdModel.ID = vm.pwdModel.account = vm.pwdModel.password = vm.pwdModel.confirm = null;
+        },
+        changePassword: function(ev){
+            let vm = this;
+            vm.submited = true;
+            if (vm.chkPolicy(vm.pwdModel)) {
+                vm.submited = false;
+                delete vm.pwdModel.confirm;
+                vm.pwdModel.password = vm.encryptedPassword(vm.pwdModel.password);
+                vm.$http.post('/api/agency/password/' + vm.pwdModel.ID, vm.pwdModel, {emulateJSON: true}).then(function (res) {
+                    if(res.body.code == 200){
+                        alert("Password changed.");
+                    }
+                    else{
+                        alert("Change password failed: " + res.body.message);
+                    }
+                });
+            }
+            else {
+                vm.submited = true;
+                ev.preventDefault();
+            }
+        },
         changePage: function (page) {
             let vm = this;
             vm.loading = true;
@@ -1010,30 +1378,36 @@ const Agency = {
                 vm.currentPage = page;
             }, 200);
         },
-        statusText: function (status) {
-            switch (status) {
+        stateText: function (state) {
+            switch (state) {
                 case 1: return "Active";
-                case 2: return "Locked";
-                case 3: return "Deactive";
+                case 2: return "Deactive";
+                case 3: return "Locked";
+            }
+        },
+        stateButtonText: function (state) {
+            switch (state) {
+                case 1: return "Deactive";
+                case 2: return "Active";
             }
         }
     },
     computed: {
         startRow: function () {
             let s = (this.currentPage - 1) * this.unit;
-            if (this.accounts.items.length < s)
-                s = this.accounts.items.length - 1;
+            if (this.users.items.length < s)
+                s = this.users.items.length - 1;
             return s;
         },
         endRow: function () {
             let e = this.currentPage * this.unit;
-            if (this.accounts.items.length < e)
-                e = this.accounts.items.length;
+            if (this.users.items.length < e)
+                e = this.users.items.length;
             return e;
         },
         filteredData: function () {
             let rex = new RegExp(this.filter, "ig");
-            let _filtered = this.accounts.items.filter(function (item) {
+            let _filtered = this.users.items.filter(function (item) {
                 return rex.test(item.account);
             });
             return _filtered;
@@ -1044,8 +1418,10 @@ const Agency = {
             return this.filteredData.slice(start, end);
         }
     },
+    created: function(){
+        this.getUsers();
+    },
     mounted: function () {
-        this.totalPage = Math.ceil(this.accounts.items.length / this.unit);
     }
 };
 

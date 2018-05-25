@@ -51,7 +51,9 @@
                                             <b-btn v-b-modal.changePasswordDialog variant="btn btn-sm btn-primary" @click="openChangePassword(item.ID)">
                                                 Change Password
                                             </b-btn>
-                                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#permissionsDialog">Permissions</button>
+                                            <b-btn v-b-modal.permissionsDialog variant="btn btn-sm btn-info" @click="getPermissions(item.ID, item.account)">
+                                                Permissions
+                                            </b-btn>
                                             <button @click="toggleActive(item.ID)" type="button" class="btn btn-sm btn-secondary">{/stateButtonText(item.state)/}</button>
                                         </td>
                                     </tr>
@@ -73,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <b-modal @hidden="cancelAdd" @ok="addUser" :no-close-on-backdrop="true" :no-close-on-esc="true" id="addUserDialog" title="Add Core User">
+            <b-modal ok-title="Add" @hidden="cancelAdd" @ok="addUser" :no-close-on-backdrop="true" :no-close-on-esc="true" id="addUserDialog" title="Add Core User">
                 <b-form>
                     <b-form-group label="*Account:">
                         <b-form-input v-model="addModel.account" required placeholder="Input Account Name" :class='{"is-invalid": !chkAccount(addModel.account)&&submited}'>
@@ -98,7 +100,8 @@
                     </b-form-group>
                 </b-form>
             </b-modal>
-            <b-modal @hidden="cancelChangePassword" @ok="changePassword" :no-close-on-backdrop="true" :no-close-on-esc="true" id="changePasswordDialog" title="Change Password">
+            <b-modal ok-title="Save" @hidden="cancelChangePassword" @ok="changePassword" :no-close-on-backdrop="true" :no-close-on-esc="true" id="changePasswordDialog"
+                title="Change Password">
                 <b-form>
                     <b-form-group label="Account:">
                         <p class="form-control-static">{/pwdModel.account/}</p>
@@ -119,129 +122,50 @@
                     </b-form-group>
                 </b-form>
             </b-modal>
-            <div class="modal fade" id="permissionsDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Permissions</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form>
-                                <div class="form-group">
-                                    <p class="form-control-static">PeterCheng9988</p>
-                                </div>
-                                <div class="form-group">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Permission Name</th>
-                                                    <th>View</th>
-                                                    <th>Create</th>
-                                                    <th>Edit</th>
-                                                    <th>Delete</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Accounting</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Operations</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Transactions</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Machine List</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Machine Transfer</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td></td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Core User</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Agency</td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-secondary btn-sm">cancel</button>
-                            <button type="submit" class="btn btn-primary btn-sm">Save Permisisons</button>
+            <b-modal ok-title="Save" @hidden="cancelPermissions" @ok="editPermissions" :no-close-on-backdrop="true" :no-close-on-esc="true" id="permissionsDialog"
+                title="Permissions">
+                <form>
+                    <div class="form-group">
+                        <p class="form-control-static">{/permissionModel.account/}</p>
+                    </div>
+                    <div class="form-group">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Permission Name</th>
+                                        <th>View</th>
+                                        <th>Create</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in permissionModel.list">
+                                        <td class="text-capitalize">{/ item.cat /}</td>
+                                        <td calss="text-center">
+                                            <b-form-checkbox v-if="item.view" checked="item.view.active" v-model="item.view.active">
+                                            　　　</b-form-checkbox>
+                                        </td>
+                                        <td calss="text-center">
+                                            <b-form-checkbox v-if="item.create" checked="item.create.active" v-model="item.create.active">
+                                            </b-form-checkbox>
+                                        </td>
+                                        <td calss="text-center">
+                                            <b-form-checkbox v-if="item.edit" checked="item.edit.active" v-model="item.edit.active">
+                                            </b-form-checkbox>
+                                        </td>
+                                        <td calss="text-center">
+                                            <b-form-checkbox v-if="item.delete" checked="item.delete.active" v-model="item.delete.active">
+                                            </b-form-checkbox>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-            </div>
+                </form>
+            </b-modal>
         </div>
     </div>
 </div>

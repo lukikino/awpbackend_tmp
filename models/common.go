@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"reflect"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -26,14 +25,16 @@ func BoxingToResult(data interface{}, err error) ReturnData {
 		returnData.Code = "500"
 	} else {
 		returnData.Code = "200"
-		fmt.Println(reflect.TypeOf(data).Kind())
 		if reflect.TypeOf(data).Kind() == reflect.Array || reflect.TypeOf(data).Kind() == reflect.Slice {
-			// returnData.Total = data[0].("Total")
 			vacct := reflect.ValueOf(data)
 			if vacct.Len() > 0 {
-				// fmt.Println(vacct.Slice(0, 1))
-				// fmt.Println(vacct.Slice(0, 1).Index(0).FieldByName("Total"))
-				returnData.Total = (int)(vacct.Slice(0, 1).Index(0).FieldByName("Total").Int())
+				st := vacct.Slice(0, 1).Index(0).Type()
+				_, totalExist := st.FieldByName("Total")
+				if totalExist {
+					// fmt.Println(vacct.Slice(0, 1))
+					// fmt.Println(vacct.Slice(0, 1).Index(0).FieldByName("Total"))
+					returnData.Total = (int)(vacct.Slice(0, 1).Index(0).FieldByName("Total").Int())
+				}
 			}
 		} else if reflect.TypeOf(data).Kind() == reflect.Int64 {
 			vacct := reflect.ValueOf(data)

@@ -31,7 +31,9 @@ func main() {
 	app.AddController(c.NewReports)
 	app.AddController(c.NewSettings)
 	app.AddController(c.NewCoreUsers)
+	app.AddController(c.NewAgency)
 	app.AddController(c.NewMachines)
+	app.AddController(c.NewCommon)
 
 	// Start the server
 	port := fmt.Sprintf(":%d", app.Config.Port)

@@ -6,51 +6,12 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12" v-if="step===1">
+            <div class="col-lg-12" v-show="step===1">
                 <div class="card">
                     <div class="card-title">
                         Step 1: Select machines to transfer
                     </div>
-                    <div class="nestable">
-                        <div class="dd">
-                            <ol class="dd-list">
-                                <li class="dd-item" data-id="2">
-                                    <div class="dd-handle">
-                                        <label>
-                                            <input type="checkbox" />Peter</label>
-                                    </div>
-                                    <ol class="dd-list">
-                                        <li class="dd-item" data-id="3">
-                                            <div class="dd-handle">
-                                                <label>
-                                                    <input type="checkbox" />Machine:09af5b22c0177eef(Giant03)</label>
-                                            </div>
-                                        </li>
-                                        <li class="dd-item" data-id="4">
-                                            <div class="dd-handle">
-                                                <label>
-                                                    <input type="checkbox" />Machine:88f52ed0baa1ee4d(Water04)</label>
-                                            </div>
-                                        </li>
-                                        <li class="dd-item" data-id="5">
-                                            <div class="dd-handle">
-                                                <label>
-                                                    <input type="checkbox" checked/>Cider</label>
-                                            </div>
-                                            <ol class="dd-list">
-                                                <li class="dd-item" data-id="6">
-                                                    <div class="dd-handle">
-                                                        <label>
-                                                            <input type="checkbox" checked/>Machine:9a84d55c2d2e00b4(Violet777)</label>
-                                                    </div>
-                                                </li>
-                                            </ol>
-                                        </li>
-                                    </ol>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
+                    <treemenu :label="machinesWithUsersTree.roots.account" :nodes="machinesWithUsersTree.roots" :depth="0" :extendLevel="1" :checkList="checkList"></treemenu>
                     <div>
                         <div class="pull-right">
                             <button type="submit" class="btn btn-primary btn-sm" @click="toStep(2)">Next</button>
@@ -58,43 +19,12 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12" v-if="step===2">
+            <div class="col-lg-12" v-show="step===2">
                 <div class="card">
                     <div class="card-title">
                         Step 2: Select an account that machines will be transfer to
                     </div>
-                    <div class="nestable">
-                        <div class="dd">
-                            <ol class="dd-list">
-                                <li class="dd-item" data-id="1">
-                                    <div class="dd-handle">
-                                        <label>
-                                            <input type="radio" />Jenny</label>
-                                    </div>
-                                </li>
-                                <li class="dd-item" data-id="2">
-                                    <div class="dd-handle">
-                                        <label>
-                                            <input type="radio" checked/>Peter</label>
-                                    </div>
-                                    <ol class="dd-list">
-                                        <li class="dd-item" data-id="5">
-                                            <div class="dd-handle">
-                                                <label>
-                                                    <input type="radio" name="to" />Cider</label>
-                                            </div>
-                                        </li>
-                                        <li class="dd-item" data-id="9">
-                                            <div class="dd-handle">
-                                                <label>
-                                                    <input type="radio" name="to" />Johnson</label>
-                                            </div>
-                                        </li>
-                                    </ol>
-                                </li>
-                            </ol>
-                        </div>
-                    </div>
+                    <treemenu :label="usersTree.roots.account" :nodes="usersTree.roots" :depth="0" :extendLevel="2" :onlyAccount="true" :checkList="checkList"></treemenu>
                     <div>
                         <div class="pull-right">
                             <button type="submit" class="btn btn-secondary btn-sm" @click="toStep(1)">Previous</button>
@@ -103,22 +33,29 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12" v-if="step===3">
+            <div class="col-lg-12" v-show="step===3">
                 <div class="card">
                     <div class="card-title">
                         Step 3: Confirm transfer information
                     </div>
                     <div>
-                        <div class="alert alert-info" role="alert">
+                        <div class="alert alert-info" role="alert" v-if="checkList.machines">
                             Machines will be transfer:
-                            <br/>
-                            <b>9a84d55c2d2e00b4(Violet777) owner Cider </b>
+                            <ul>
+                                <li class="text-danger font-weight-bold" v-for="machine in checkList.machines">
+                                    {/ machine.pcbID /}({/ machine.storeName /}-{/ machine.machineName /}) Owner is [{/ machine.owner
+                                        /}]
+                                </li>
+                            </ul>
                         </div>
 
-                        <div class="alert alert-warning" role="alert">
+                        <div class="alert alert-info" role="alert" v-if="checkList.account">
                             Transfer to account:
-                            <br/>
-                            <b> Peter </b>
+                            <ul>
+                                <li class="text-danger font-weight-bold">
+                                    {/ checkList.account.account /}
+                                </li>
+                            </ul>
                         </div>
                         <div class="pull-right">
                             <button type="submit" class="btn btn-secondary btn-sm" @click="toStep(2)">Previous</button>
