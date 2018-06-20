@@ -14,7 +14,7 @@
                     <treemenu :label="machinesWithUsersTree.roots.account" :nodes="machinesWithUsersTree.roots" :depth="0" :extendLevel="1" :checkList="checkList"></treemenu>
                     <div>
                         <div class="pull-right">
-                            <button type="submit" class="btn btn-primary btn-sm" @click="toStep(2)">Next</button>
+                            <button v-if="$root.chkPermission('machineTransfer.edit')" type="submit" class="btn btn-primary btn-sm" @click="toStep(2)">Next</button>
                         </div>
                     </div>
                 </div>
@@ -27,8 +27,8 @@
                     <treemenu :label="usersTree.roots.account" :nodes="usersTree.roots" :depth="0" :extendLevel="2" :onlyAccount="true" :checkList="checkList"></treemenu>
                     <div>
                         <div class="pull-right">
-                            <button type="submit" class="btn btn-secondary btn-sm" @click="toStep(1)">Previous</button>
-                            <button type="submit" class="btn btn-primary btn-sm" @click="toStep(3)">Next</button>
+                            <button v-if="$root.chkPermission('machineTransfer.edit')" type="submit" class="btn btn-secondary btn-sm" @click="toStep(1)">Previous</button>
+                            <button v-if="$root.chkPermission('machineTransfer.edit')" type="submit" class="btn btn-primary btn-sm" @click="toStep(3)">Next</button>
                         </div>
                     </div>
                 </div>
@@ -58,8 +58,8 @@
                             </ul>
                         </div>
                         <div class="pull-right">
-                            <button type="submit" class="btn btn-secondary btn-sm" @click="toStep(2)">Previous</button>
-                            <button type="submit" class="btn btn-primary btn-sm" @click="transfer">Transfer</button>
+                            <button v-if="$root.chkPermission('machineTransfer.edit')" type="submit" class="btn btn-secondary btn-sm" @click="toStep(2)">Previous</button>
+                            <button v-if="$root.chkPermission('machineTransfer.edit')" type="submit" class="btn btn-primary btn-sm" @click="transfer">Transfer</button>
                         </div>
                     </div>
                 </div>

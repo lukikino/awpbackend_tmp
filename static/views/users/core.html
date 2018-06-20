@@ -9,7 +9,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-title">
-                        <b-btn v-b-modal.addUserDialog variant="btn btn-sm btn-primary">
+                        <b-btn v-if="$root.chkPermission('coreUser.create')" v-b-modal.addUserDialog variant="btn btn-sm btn-primary">
                             <i class="ti-plus"></i> Add
                         </b-btn>
                     </div>
@@ -48,13 +48,13 @@
                                         <td>{/ stateText(item.state) /}</td>
                                         <td>{/ item.createdTime /}</td>
                                         <td>
-                                            <b-btn v-b-modal.changePasswordDialog variant="btn btn-sm btn-primary" @click="openChangePassword(item.ID)">
+                                            <b-btn v-if="$root.chkPermission('coreUser.edit')" v-b-modal.changePasswordDialog variant="btn btn-sm btn-primary" @click="openChangePassword(item.ID)">
                                                 Change Password
                                             </b-btn>
-                                            <b-btn v-b-modal.permissionsDialog variant="btn btn-sm btn-info" @click="getPermissions(item.ID, item.account)">
+                                            <b-btn v-if="$root.chkPermission('coreUser.edit')" v-b-modal.permissionsDialog variant="btn btn-sm btn-info" @click="getPermissions(item.ID, item.account)">
                                                 Permissions
                                             </b-btn>
-                                            <button @click="toggleActive(item.ID)" type="button" class="btn btn-sm btn-secondary">{/stateButtonText(item.state)/}</button>
+                                            <button v-if="$root.chkPermission('coreUser.edit')" @click="toggleActive(item.ID)" type="button" class="btn btn-sm btn-secondary">{/stateButtonText(item.state)/}</button>
                                         </td>
                                     </tr>
                                 </tbody>

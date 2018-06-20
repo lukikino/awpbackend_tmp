@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='幣別對應表';
 
--- 正在傾印表格  pcb.currencies 的資料：~0 rows (大約)
+-- 正在傾印表格  pcb.currencies 的資料：~1 rows (大約)
 DELETE FROM `currencies`;
 /*!40000 ALTER TABLE `currencies` DISABLE KEYS */;
 INSERT INTO `currencies` (`id`, `name`) VALUES
@@ -54,244 +54,31 @@ INSERT INTO `currencies` (`id`, `name`) VALUES
 -- 傾印  程序 pcb.HeidiSQL_temproutine_1 結構
 DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_1`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_1`()
-SET @roleID = 0;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_10 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_10`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_10`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
+CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_1`(
+	IN `p_id` INT
+,
+	IN `p_pwd` VARCHAR(128)
 
 
 )
-select id;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_11 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_11`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_11`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
-
-
-)
-select id;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_12 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_12`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_12`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
-
-
-)
-select id;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_13 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_13`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_13`()
-SET @roleID = 0;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_14 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_14`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_14`()
-SET @roleID = 0;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_15 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_15`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_15`()
-SET @roleID = 0;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_16 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_16`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_16`()
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_userid;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_17 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_17`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_17`(
-	IN `p_exeid` INT
-)
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_18 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_18`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_18`(
-	IN `p_exeid` INT
-)
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_19 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_19`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_19`(
-	IN `p_exeid` INT
-)
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
+CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
+		SELECT id, account, created_time FROM users WHERE id = p_id AND encrypted_password = p_pwd
+	);//
 DELIMITER ;
 
 -- 傾印  程序 pcb.HeidiSQL_temproutine_2 結構
 DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_2`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_2`(
-	OUT `page` INT
-)
-    COMMENT 'machines'
-select id, store_name, machine_name, pcb_id, user_id, created_time, update_time from machines where delete_flag <> 1;//
-DELIMITER ;
+	IN `p_id` INT
+,
+	IN `p_pwd` VARCHAR(128)
 
--- 傾印  程序 pcb.HeidiSQL_temproutine_20 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_20`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_20`(
-	IN `p_exeid` INT
-)
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
-DELIMITER ;
 
--- 傾印  程序 pcb.HeidiSQL_temproutine_21 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_21`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_21`(
-	IN `p_exeid` INT
 )
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_22 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_22`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_22`(
-	IN `p_exeid` INT
-)
-    READS SQL DATA
-    COMMENT 'machines'
-SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_3 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_3`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_3`()
-    READS SQL DATA
-    COMMENT 'machines'
 CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-	SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, user_id, created_time, update_time 
-	from machines 
-	where delete_flag <> 1
-);//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_4 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_4`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_4`()
-    READS SQL DATA
-    COMMENT 'machines'
-CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-	SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, user_id, created_time, update_time 
-	from machines 
-	where delete_flag <> 1
-);//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_5 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_5`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_5`()
-    READS SQL DATA
-    COMMENT 'machines'
-CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-	SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, user_id, created_time, update_time 
-	from machines 
-	where delete_flag <> 1
-);//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_6 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_6`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_6`()
-    READS SQL DATA
-    COMMENT 'machines'
-CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-	SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, user_id, created_time, update_time 
-	from machines 
-	where delete_flag <> 1
-);//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_7 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_7`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_7`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
-
-
-)
-select @id;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_8 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_8`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_8`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
-
-
-)
-select @id;//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_9 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_9`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_9`(
-	IN `@id` INT,
-	IN `storeName` VARCHAR(50),
-	IN `userID` INT
-
-
-)
-select id;//
+		SELECT id, account, created_time FROM users WHERE id = p_id AND encrypted_password = p_pwd
+	);//
 DELIMITER ;
 
 -- 傾印  表格 pcb.log_machine_change 結構
@@ -305,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `log_machine_change` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `FK_log_machine_change_machines` (`machine_id`),
-  CONSTRAINT `FK_log_machine_change_machines` FOREIGN KEY (`machine_id`) REFERENCES `machines` (`id`) ON DELETE CASCADE
+  CONSTRAINT `FK_log_machine_change_machines` FOREIGN KEY (`machine_id`) REFERENCES `machines` (`id`) ON DELETE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='機器更改紀錄';
 
 -- 正在傾印表格  pcb.log_machine_change 的資料：~0 rows (大約)
@@ -317,17 +104,17 @@ DELETE FROM `log_machine_change`;
 DROP TABLE IF EXISTS `log_user_change`;
 CREATE TABLE IF NOT EXISTS `log_user_change` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned DEFAULT NULL,
   `action` int(10) unsigned NOT NULL,
   `memo` varchar(200) DEFAULT '',
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `FK_log_user_change_users` (`user_id`),
-  CONSTRAINT `FK_log_user_change_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8 COMMENT='使用者變更記錄';
+  CONSTRAINT `FK_log_user_change_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=457 DEFAULT CHARSET=utf8 COMMENT='使用者變更記錄';
 
--- 正在傾印表格  pcb.log_user_change 的資料：~13 rows (大約)
+-- 正在傾印表格  pcb.log_user_change 的資料：~379 rows (大約)
 DELETE FROM `log_user_change`;
 /*!40000 ALTER TABLE `log_user_change` DISABLE KEYS */;
 INSERT INTO `log_user_change` (`id`, `user_id`, `action`, `memo`, `created_time`, `update_time`) VALUES
@@ -343,7 +130,373 @@ INSERT INTO `log_user_change` (`id`, `user_id`, `action`, `memo`, `created_time`
 	(76, 2, 1, 'Password changed by user 1', '2018-05-14 16:16:06', '2018-05-14 16:16:06'),
 	(85, 2, 1, 'Password changed by user 1', '2018-05-14 17:08:34', '2018-05-14 17:08:34'),
 	(86, 2, 1, 'Password changed by user 1', '2018-05-14 17:09:09', '2018-05-14 17:09:09'),
-	(89, 2, 2, 'Set active by user 1', '2018-05-14 17:11:22', '2018-05-14 17:11:22');
+	(89, 2, 2, 'Set active by user 1', '2018-05-14 17:11:22', '2018-05-14 17:11:22'),
+	(91, NULL, 1, 'Try login not exist account: a.IP: d', '2018-05-31 16:33:20', '2018-05-31 16:33:20'),
+	(92, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:54861', '2018-05-31 16:33:36', '2018-05-31 16:33:36'),
+	(93, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:54204', '2018-05-31 16:33:36', '2018-05-31 16:33:36'),
+	(94, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:54204', '2018-05-31 16:33:55', '2018-05-31 16:33:55'),
+	(95, NULL, 1, 'Try login not exist account: h.IP: d', '2018-05-31 16:34:40', '2018-05-31 16:34:40'),
+	(96, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:54204', '2018-05-31 16:35:01', '2018-05-31 16:35:01'),
+	(97, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:54204', '2018-05-31 16:35:06', '2018-05-31 16:35:06'),
+	(98, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:55038', '2018-05-31 16:35:50', '2018-05-31 16:35:50'),
+	(99, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:55038', '2018-05-31 16:36:29', '2018-05-31 16:36:29'),
+	(100, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:55038', '2018-05-31 16:36:40', '2018-05-31 16:36:40'),
+	(101, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:55147', '2018-05-31 16:36:40', '2018-05-31 16:36:40'),
+	(102, NULL, 1, 'Try login not exist account: h.IP: 127.0.0.1:55251', '2018-05-31 16:37:38', '2018-05-31 16:37:38'),
+	(103, NULL, 1, 'Try login not exist account: fdsf.IP: 127.0.0.1:55255', '2018-05-31 16:39:24', '2018-05-31 16:39:24'),
+	(104, NULL, 1, 'Try login not exist account: fdsf.IP: 127.0.0.1:55255', '2018-05-31 16:39:31', '2018-05-31 16:39:31'),
+	(105, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:41:17', '2018-05-31 16:41:17'),
+	(106, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:41:27', '2018-05-31 16:41:27'),
+	(107, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:41:30', '2018-05-31 16:41:30'),
+	(108, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:41:31', '2018-05-31 16:41:31'),
+	(109, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:41:33', '2018-05-31 16:41:33'),
+	(110, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:42:55', '2018-05-31 16:42:55'),
+	(111, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:42:58', '2018-05-31 16:42:58'),
+	(112, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:42:59', '2018-05-31 16:42:59'),
+	(113, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:43:00', '2018-05-31 16:43:00'),
+	(114, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:43:10', '2018-05-31 16:43:10'),
+	(115, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:43:12', '2018-05-31 16:43:12'),
+	(116, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:55255', '2018-05-31 16:43:16', '2018-05-31 16:43:16'),
+	(117, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:55255', '2018-05-31 16:43:30', '2018-05-31 16:43:30'),
+	(118, 2, 3, 'Password changed by user 1', '2018-05-31 16:45:58', '2018-05-31 16:45:58'),
+	(119, 2, 1, 'Login: testtest1.IP:127.0.0.1:56012', '2018-05-31 16:46:03', '2018-05-31 16:46:03'),
+	(120, 2, 1, 'Login: testtest1.IP:127.0.0.1:56707', '2018-05-31 16:53:08', '2018-05-31 16:53:08'),
+	(121, 2, 1, 'Login: testtest1.IP:127.0.0.1:56849', '2018-05-31 16:54:52', '2018-05-31 16:54:52'),
+	(122, 2, 1, 'Login: testtest1.IP:127.0.0.1:56846', '2018-05-31 16:56:21', '2018-05-31 16:56:21'),
+	(123, 2, 1, 'Login: testtest1.IP:127.0.0.1:56707', '2018-05-31 17:00:07', '2018-05-31 17:00:07'),
+	(124, 2, 1, 'Login: testtest1.IP:127.0.0.1:56849', '2018-05-31 17:02:12', '2018-05-31 17:02:12'),
+	(125, 2, 1, 'Login: testtest1.IP:127.0.0.1:56849', '2018-05-31 17:02:19', '2018-05-31 17:02:19'),
+	(126, 2, 1, 'Login: testtest1.IP:127.0.0.1:56707', '2018-05-31 17:03:16', '2018-05-31 17:03:16'),
+	(127, NULL, 1, 'Try login not exist account: g.IP: 127.0.0.1:58142', '2018-05-31 17:08:07', '2018-05-31 17:08:07'),
+	(128, NULL, 1, 'Try login not exist account: t.IP: 127.0.0.1:58267', '2018-05-31 17:08:57', '2018-05-31 17:08:57'),
+	(129, NULL, 1, 'Try login not exist account: t.IP: 127.0.0.1:58266', '2018-05-31 17:08:57', '2018-05-31 17:08:57'),
+	(130, 2, 1, 'Login: testtest1.IP:127.0.0.1:58264', '2018-05-31 17:09:12', '2018-05-31 17:09:12'),
+	(131, 2, 1, 'Login: testtest1.IP:127.0.0.1:58266', '2018-05-31 17:09:12', '2018-05-31 17:09:12'),
+	(132, NULL, 1, 'Try login not exist account: tt.IP: 127.0.0.1:58554', '2018-05-31 17:12:05', '2018-05-31 17:12:05'),
+	(133, NULL, 1, 'Try login not exist account: tt.IP: 127.0.0.1:58556', '2018-05-31 17:12:05', '2018-05-31 17:12:05'),
+	(134, NULL, 1, 'Try login not exist account: .IP: 127.0.0.1:59118', '2018-05-31 17:18:24', '2018-05-31 17:18:24'),
+	(135, NULL, 1, 'Try login not exist account: .IP: 127.0.0.1:59113', '2018-05-31 17:19:02', '2018-05-31 17:19:02'),
+	(136, NULL, 1, 'Try login not exist account: .IP: 127.0.0.1:59350', '2018-05-31 17:20:56', '2018-05-31 17:20:56'),
+	(137, NULL, 1, 'Try login not exist account: g.IP: 127.0.0.1:59355', '2018-05-31 17:21:00', '2018-05-31 17:21:00'),
+	(138, NULL, 1, 'Try login not exist account: g.IP: 127.0.0.1:59445', '2018-05-31 17:21:49', '2018-05-31 17:21:49'),
+	(139, NULL, 1, 'Try login not exist account: fdf.IP: 127.0.0.1:59448', '2018-05-31 17:21:53', '2018-05-31 17:21:53'),
+	(140, NULL, 1, 'Try login not exist account: fdf.IP: 127.0.0.1:59679', '2018-05-31 17:24:09', '2018-05-31 17:24:09'),
+	(141, NULL, 1, 'Try login not exist account: fdf.IP: 127.0.0.1:59685', '2018-05-31 17:27:21', '2018-05-31 17:27:21'),
+	(142, NULL, 1, 'Try login not exist account: fdf.IP: 127.0.0.1:60065', '2018-05-31 17:28:03', '2018-05-31 17:28:03'),
+	(143, NULL, 1, 'Try login not exist account: fdf.IP: 127.0.0.1:60065', '2018-05-31 17:28:20', '2018-05-31 17:28:20'),
+	(144, NULL, 1, 'Try login not exist account: fds.IP: 127.0.0.1:60068', '2018-05-31 17:28:30', '2018-05-31 17:28:30'),
+	(145, NULL, 1, 'Try login not exist account: f.IP: 127.0.0.1:60214', '2018-05-31 17:29:31', '2018-05-31 17:29:31'),
+	(146, 2, 1, 'Login: testtest1.IP:127.0.0.1:60205', '2018-05-31 17:29:41', '2018-05-31 17:29:41'),
+	(147, 2, 1, 'Login: testtest1.IP:127.0.0.1:60323', '2018-05-31 17:30:36', '2018-05-31 17:30:36'),
+	(148, 2, 1, 'Login: testtest1.IP:127.0.0.1:60336', '2018-05-31 17:30:48', '2018-05-31 17:30:48'),
+	(149, 2, 1, 'Login: testtest1.IP:127.0.0.1:60768', '2018-05-31 17:35:04', '2018-05-31 17:35:04'),
+	(150, 2, 1, 'Login: testtest1.IP:127.0.0.1:60769', '2018-05-31 17:36:06', '2018-05-31 17:36:06'),
+	(151, 2, 1, 'Login: testtest1.IP:127.0.0.1:60770', '2018-05-31 17:36:17', '2018-05-31 17:36:17'),
+	(152, 2, 1, 'Login: testtest1.IP:127.0.0.1:61132', '2018-05-31 17:38:53', '2018-05-31 17:38:53'),
+	(153, 2, 1, 'Login: testtest1.IP:127.0.0.1:62463', '2018-05-31 17:52:35', '2018-05-31 17:52:35'),
+	(154, 2, 1, 'Login: testtest1.IP:127.0.0.1:62933', '2018-05-31 17:57:25', '2018-05-31 17:57:25'),
+	(155, 2, 1, 'Login: testtest1.IP:127.0.0.1:63106', '2018-05-31 17:58:49', '2018-05-31 17:58:49'),
+	(156, 2, 1, 'Login: testtest1.IP:127.0.0.1:63149', '2018-05-31 17:59:12', '2018-05-31 17:59:12'),
+	(157, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:63261', '2018-05-31 18:00:09', '2018-05-31 18:00:09'),
+	(158, 2, 1, 'Login: testtest1.IP:127.0.0.1:63561', '2018-05-31 18:03:03', '2018-05-31 18:03:03'),
+	(159, 2, 1, 'Login: testtest1.IP:127.0.0.1:63811', '2018-05-31 18:05:16', '2018-05-31 18:05:16'),
+	(160, 2, 1, 'Login: testtest1.IP:127.0.0.1:64576', '2018-05-31 18:13:39', '2018-05-31 18:13:39'),
+	(161, 2, 1, 'Login: testtest1.IP:127.0.0.1:49355', '2018-05-31 18:25:50', '2018-05-31 18:25:50'),
+	(162, 2, 1, 'Login: testtest1.IP:127.0.0.1:49782', '2018-05-31 18:29:51', '2018-05-31 18:29:51'),
+	(163, 2, 1, 'Login: testtest1.IP:127.0.0.1:50381', '2018-05-31 18:35:45', '2018-05-31 18:35:45'),
+	(164, 2, 1, 'Login: testtest1.IP:127.0.0.1:50424', '2018-05-31 18:36:18', '2018-05-31 18:36:18'),
+	(165, 2, 1, 'Login: testtest1.IP:127.0.0.1:50508', '2018-05-31 18:36:44', '2018-05-31 18:36:44'),
+	(166, 2, 1, 'Login: testtest1.IP:127.0.0.1:50648', '2018-05-31 18:37:49', '2018-05-31 18:37:49'),
+	(167, 2, 1, 'Login: testtest1.IP:127.0.0.1:50678', '2018-05-31 18:38:07', '2018-05-31 18:38:07'),
+	(168, 2, 1, 'Login: testtest1.IP:127.0.0.1:63205', '2018-06-01 13:47:24', '2018-06-01 13:47:24'),
+	(169, 2, 1, 'Login: testtest1.IP:127.0.0.1:65246', '2018-06-01 14:10:06', '2018-06-01 14:10:06'),
+	(170, 2, 1, 'Login: testtest1.IP:127.0.0.1:50340', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(171, 2, 1, 'Login: testtest1.IP:127.0.0.1:50339', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(172, 2, 1, 'Login: testtest1.IP:127.0.0.1:50343', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(173, 2, 1, 'Login: testtest1.IP:127.0.0.1:50344', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(174, 2, 1, 'Login: testtest1.IP:127.0.0.1:50342', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(175, 2, 1, 'Login: testtest1.IP:127.0.0.1:50341', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(176, 2, 1, 'Login: testtest1.IP:127.0.0.1:50369', '2018-06-01 14:26:07', '2018-06-01 14:26:07'),
+	(177, 2, 1, 'Login: testtest1.IP:127.0.0.1:50388', '2018-06-01 14:26:20', '2018-06-01 14:26:20'),
+	(178, 2, 1, 'Login: testtest1.IP:127.0.0.1:50392', '2018-06-01 14:26:20', '2018-06-01 14:26:20'),
+	(179, 2, 1, 'Login: testtest1.IP:127.0.0.1:50396', '2018-06-01 14:26:22', '2018-06-01 14:26:22'),
+	(180, 2, 1, 'Login: testtest1.IP:127.0.0.1:50452', '2018-06-01 14:26:53', '2018-06-01 14:26:53'),
+	(181, 2, 1, 'Login: testtest1.IP:127.0.0.1:50456', '2018-06-01 14:26:53', '2018-06-01 14:26:53'),
+	(182, 2, 1, 'Login: testtest1.IP:127.0.0.1:50462', '2018-06-01 14:26:55', '2018-06-01 14:26:55'),
+	(183, 2, 1, 'Login: testtest1.IP:127.0.0.1:50466', '2018-06-01 14:26:56', '2018-06-01 14:26:56'),
+	(184, 2, 1, 'Login: testtest1.IP:127.0.0.1:50468', '2018-06-01 14:26:57', '2018-06-01 14:26:57'),
+	(185, 2, 1, 'Login: testtest1.IP:127.0.0.1:50476', '2018-06-01 14:27:00', '2018-06-01 14:27:00'),
+	(186, 2, 1, 'Login: testtest1.IP:127.0.0.1:50474', '2018-06-01 14:27:00', '2018-06-01 14:27:00'),
+	(187, 2, 1, 'Login: testtest1.IP:127.0.0.1:50473', '2018-06-01 14:27:00', '2018-06-01 14:27:00'),
+	(188, 2, 1, 'Login: testtest1.IP:127.0.0.1:50475', '2018-06-01 14:27:00', '2018-06-01 14:27:00'),
+	(189, 2, 1, 'Login: testtest1.IP:127.0.0.1:50477', '2018-06-01 14:27:00', '2018-06-01 14:27:00'),
+	(190, 2, 1, 'Login: testtest1.IP:127.0.0.1:50472', '2018-06-01 14:27:01', '2018-06-01 14:27:01'),
+	(191, 2, 1, 'Login: testtest1.IP:127.0.0.1:50489', '2018-06-01 14:27:01', '2018-06-01 14:27:01'),
+	(192, 2, 1, 'Login: testtest1.IP:127.0.0.1:50569', '2018-06-01 14:27:55', '2018-06-01 14:27:55'),
+	(193, 2, 1, 'Login: testtest1.IP:127.0.0.1:50574', '2018-06-01 14:27:57', '2018-06-01 14:27:57'),
+	(194, 2, 1, 'Login: testtest1.IP:127.0.0.1:50578', '2018-06-01 14:27:58', '2018-06-01 14:27:58'),
+	(195, 2, 1, 'Login: testtest1.IP:127.0.0.1:50583', '2018-06-01 14:28:02', '2018-06-01 14:28:02'),
+	(196, 2, 1, 'Login: testtest1.IP:127.0.0.1:50581', '2018-06-01 14:28:02', '2018-06-01 14:28:02'),
+	(197, 2, 1, 'Login: testtest1.IP:127.0.0.1:50584', '2018-06-01 14:28:02', '2018-06-01 14:28:02'),
+	(198, 2, 1, 'Login: testtest1.IP:127.0.0.1:50585', '2018-06-01 14:28:02', '2018-06-01 14:28:02'),
+	(199, 2, 1, 'Login: testtest1.IP:127.0.0.1:50580', '2018-06-01 14:28:03', '2018-06-01 14:28:03'),
+	(200, 2, 1, 'Login: testtest1.IP:127.0.0.1:50582', '2018-06-01 14:28:03', '2018-06-01 14:28:03'),
+	(201, 2, 1, 'Login: testtest1.IP:127.0.0.1:50598', '2018-06-01 14:28:03', '2018-06-01 14:28:03'),
+	(202, 2, 1, 'Login: testtest1.IP:127.0.0.1:50676', '2018-06-01 14:28:49', '2018-06-01 14:28:49'),
+	(203, 2, 1, 'Login: testtest1.IP:127.0.0.1:50766', '2018-06-01 14:29:42', '2018-06-01 14:29:42'),
+	(204, 2, 1, 'Login: testtest1.IP:127.0.0.1:51641', '2018-06-01 14:38:46', '2018-06-01 14:38:46'),
+	(205, 2, 1, 'Login: testtest1.IP:127.0.0.1:51787', '2018-06-01 14:41:40', '2018-06-01 14:41:40'),
+	(206, 2, 1, 'Login: testtest1.IP:127.0.0.1:51783', '2018-06-01 14:41:47', '2018-06-01 14:41:47'),
+	(207, NULL, 1, 'Try login not exist account: testtest11.IP: 127.0.0.1:51783', '2018-06-01 14:41:56', '2018-06-01 14:41:56'),
+	(208, NULL, 1, 'Try login not exist account: testtest1333.IP: 127.0.0.1:51785', '2018-06-01 14:42:02', '2018-06-01 14:42:02'),
+	(209, NULL, 1, 'Try login not exist account: testtest1343.IP: 127.0.0.1:51787', '2018-06-01 14:42:24', '2018-06-01 14:42:24'),
+	(210, NULL, 1, 'Try login not exist account: testtest1ff.IP: 127.0.0.1:51782', '2018-06-01 14:42:32', '2018-06-01 14:42:32'),
+	(211, NULL, 1, 'Try login not exist account: testtest1ff.IP: 127.0.0.1:52145', '2018-06-01 14:43:52', '2018-06-01 14:43:52'),
+	(212, NULL, 1, 'Try login not exist account: testtest1ff.IP: 127.0.0.1:52144', '2018-06-01 14:43:56', '2018-06-01 14:43:56'),
+	(213, NULL, 1, 'Try login not exist account: testtest1ff.IP: 127.0.0.1:52162', '2018-06-01 14:43:56', '2018-06-01 14:43:56'),
+	(214, 2, 1, 'Login: testtest1.IP:127.0.0.1:52247', '2018-06-01 14:44:43', '2018-06-01 14:44:43'),
+	(215, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:52246', '2018-06-01 14:44:48', '2018-06-01 14:44:48'),
+	(216, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:52243', '2018-06-01 14:44:52', '2018-06-01 14:44:52'),
+	(217, NULL, 1, 'Try login not exist account: testtest122.IP: 127.0.0.1:52247', '2018-06-01 14:44:55', '2018-06-01 14:44:55'),
+	(218, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:52248', '2018-06-01 14:45:01', '2018-06-01 14:45:01'),
+	(219, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:52243', '2018-06-01 14:45:03', '2018-06-01 14:45:03'),
+	(220, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:52247', '2018-06-01 14:45:07', '2018-06-01 14:45:07'),
+	(221, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:52245', '2018-06-01 14:45:16', '2018-06-01 14:45:16'),
+	(222, NULL, 1, 'Try login not locked account: testtest1.IP: 127.0.0.1:52246', '2018-06-01 14:45:28', '2018-06-01 14:45:28'),
+	(223, 2, 1, 'Login: testtest1.IP:127.0.0.1:52244', '2018-06-01 14:45:40', '2018-06-01 14:45:40'),
+	(224, NULL, 1, 'Try login not exist account: testtest17.IP: 127.0.0.1:52248', '2018-06-01 14:45:47', '2018-06-01 14:45:47'),
+	(225, 2, 1, 'Login: testtest1.IP:127.0.0.1:52248', '2018-06-01 14:46:17', '2018-06-01 14:46:17'),
+	(226, 2, 1, 'Login failed: testtest1.IP:127.0.0.1:52244', '2018-06-01 14:46:29', '2018-06-01 14:46:29'),
+	(227, 2, 1, 'Login: testtest1.IP:127.0.0.1:52248', '2018-06-01 14:46:32', '2018-06-01 14:46:32'),
+	(228, 2, 1, 'Login: testtest1.IP:127.0.0.1:52947', '2018-06-01 14:51:58', '2018-06-01 14:51:58'),
+	(229, 2, 1, 'Login: testtest1.IP:127.0.0.1:53057', '2018-06-01 14:52:53', '2018-06-01 14:52:53'),
+	(230, 2, 1, 'Login: testtest1.IP:127.0.0.1:53203', '2018-06-01 14:54:25', '2018-06-01 14:54:25'),
+	(231, 2, 1, 'Login: testtest1.IP:127.0.0.1:53273', '2018-06-01 14:55:13', '2018-06-01 14:55:13'),
+	(232, 2, 1, 'Login: testtest1.IP:127.0.0.1:53395', '2018-06-01 14:55:58', '2018-06-01 14:55:58'),
+	(233, 2, 1, 'Login: testtest1.IP:127.0.0.1:53401', '2018-06-01 14:56:13', '2018-06-01 14:56:13'),
+	(234, 2, 1, 'Login: testtest1.IP:127.0.0.1:53485', '2018-06-01 14:56:55', '2018-06-01 14:56:55'),
+	(235, 2, 1, 'Login: testtest1.IP:127.0.0.1:53484', '2018-06-01 14:59:58', '2018-06-01 14:59:58'),
+	(236, 2, 1, 'Login: testtest1.IP:127.0.0.1:57238', '2018-06-01 15:53:05', '2018-06-01 15:53:05'),
+	(237, 2, 1, 'Login: testtest1.IP:127.0.0.1:57233', '2018-06-01 15:56:06', '2018-06-01 15:56:06'),
+	(238, 2, 1, 'Login: testtest1.IP:127.0.0.1:57233', '2018-06-01 15:56:11', '2018-06-01 15:56:11'),
+	(239, 2, 1, 'Login: testtest1.IP:127.0.0.1:57238', '2018-06-01 15:56:17', '2018-06-01 15:56:17'),
+	(240, 2, 1, 'Login: testtest1.IP:127.0.0.1:59375', '2018-06-01 15:58:08', '2018-06-01 15:58:08'),
+	(241, 2, 1, 'Login: testtest1.IP:127.0.0.1:59380', '2018-06-01 15:59:02', '2018-06-01 15:59:02'),
+	(242, 2, 1, 'Login: testtest1.IP:127.0.0.1:59378', '2018-06-01 15:59:07', '2018-06-01 15:59:07'),
+	(243, 2, 1, 'Login: testtest1.IP:127.0.0.1:59377', '2018-06-01 15:59:18', '2018-06-01 15:59:18'),
+	(244, 2, 1, 'Login: testtest1.IP:127.0.0.1:59690', '2018-06-01 16:01:16', '2018-06-01 16:01:16'),
+	(245, 2, 1, 'Login: testtest1.IP:127.0.0.1:59690', '2018-06-01 16:01:27', '2018-06-01 16:01:27'),
+	(246, 2, 1, 'Login: testtest1.IP:127.0.0.1:60234', '2018-06-01 16:06:34', '2018-06-01 16:06:34'),
+	(247, 2, 1, 'Login: testtest1.IP:127.0.0.1:60363', '2018-06-01 16:07:35', '2018-06-01 16:07:35'),
+	(248, 2, 1, 'Login: testtest1.IP:127.0.0.1:60540', '2018-06-01 16:09:19', '2018-06-01 16:09:19'),
+	(249, 2, 1, 'Login: testtest1.IP:127.0.0.1:60535', '2018-06-01 16:09:26', '2018-06-01 16:09:26'),
+	(250, 2, 1, 'Login: testtest1.IP:127.0.0.1:60537', '2018-06-01 16:09:33', '2018-06-01 16:09:33'),
+	(251, 2, 1, 'Login: testtest1.IP:127.0.0.1:60638', '2018-06-01 16:10:13', '2018-06-01 16:10:13'),
+	(252, 2, 1, 'Login: testtest1.IP:127.0.0.1:60635', '2018-06-01 16:10:54', '2018-06-01 16:10:54'),
+	(253, 2, 1, 'Login: testtest1.IP:127.0.0.1:61018', '2018-06-01 16:14:23', '2018-06-01 16:14:23'),
+	(254, 2, 1, 'Login: testtest1.IP:127.0.0.1:61290', '2018-06-01 16:17:12', '2018-06-01 16:17:12'),
+	(255, 2, 1, 'Login: testtest1.IP:127.0.0.1:61348', '2018-06-01 16:17:42', '2018-06-01 16:17:42'),
+	(256, 2, 1, 'Login: testtest1.IP:127.0.0.1:61344', '2018-06-01 16:17:46', '2018-06-01 16:17:46'),
+	(257, 2, 1, 'Login: testtest1.IP:127.0.0.1:61346', '2018-06-01 16:18:07', '2018-06-01 16:18:07'),
+	(258, 2, 1, 'Login: testtest1.IP:127.0.0.1:61343', '2018-06-01 16:18:15', '2018-06-01 16:18:15'),
+	(259, 2, 1, 'Login: testtest1.IP:127.0.0.1:61462', '2018-06-01 16:18:49', '2018-06-01 16:18:49'),
+	(260, 2, 1, 'Login: testtest1.IP:127.0.0.1:61463', '2018-06-01 16:18:54', '2018-06-01 16:18:54'),
+	(261, 2, 1, 'Login: testtest1.IP:127.0.0.1:61485', '2018-06-01 16:19:55', '2018-06-01 16:19:55'),
+	(262, 2, 1, 'Login: testtest1.IP:127.0.0.1:61864', '2018-06-01 16:22:51', '2018-06-01 16:22:51'),
+	(263, 2, 1, 'Login: testtest1.IP:127.0.0.1:62033', '2018-06-01 16:24:37', '2018-06-01 16:24:37'),
+	(264, 2, 1, 'Login: testtest1.IP:127.0.0.1:62090', '2018-06-01 16:25:06', '2018-06-01 16:25:06'),
+	(265, 2, 1, 'Login: testtest1.IP:127.0.0.1:62163', '2018-06-01 16:25:47', '2018-06-01 16:25:47'),
+	(266, 2, 1, 'Login: testtest1.IP:127.0.0.1:62208', '2018-06-01 16:26:15', '2018-06-01 16:26:15'),
+	(267, 2, 1, 'Login: testtest1.IP:127.0.0.1:62343', '2018-06-01 16:27:33', '2018-06-01 16:27:33'),
+	(268, 2, 1, 'Login: testtest1.IP:127.0.0.1:62413', '2018-06-01 16:28:10', '2018-06-01 16:28:10'),
+	(269, 2, 1, 'Login: testtest1.IP:127.0.0.1:62409', '2018-06-01 16:28:22', '2018-06-01 16:28:22'),
+	(270, 2, 1, 'Login: testtest1.IP:127.0.0.1:62454', '2018-06-01 16:28:28', '2018-06-01 16:28:28'),
+	(271, 2, 1, 'Login: testtest1.IP:127.0.0.1:62480', '2018-06-01 16:28:36', '2018-06-01 16:28:36'),
+	(272, 2, 1, 'Login: testtest1.IP:127.0.0.1:62513', '2018-06-01 16:28:50', '2018-06-01 16:28:50'),
+	(273, 2, 1, 'Login: testtest1.IP:127.0.0.1:55967', '2018-06-01 18:03:11', '2018-06-01 18:03:11'),
+	(274, 2, 1, 'Login: testtest1.IP:127.0.0.1:64502', '2018-06-04 10:53:05', '2018-06-04 10:53:05'),
+	(275, 2, 1, 'Login: testtest1.IP:127.0.0.1:51404', '2018-06-04 14:41:04', '2018-06-04 14:41:04'),
+	(276, 2, 1, 'Login: testtest1.IP:127.0.0.1:60180', '2018-06-05 11:48:39', '2018-06-05 11:48:39'),
+	(277, 2, 1, 'Login: testtest1.IP:127.0.0.1:60249', '2018-06-05 11:49:11', '2018-06-05 11:49:11'),
+	(278, 2, 1, 'Login: testtest1.IP:127.0.0.1:60342', '2018-06-05 11:49:54', '2018-06-05 11:49:54'),
+	(279, 2, 1, 'Login: testtest1.IP:127.0.0.1:60515', '2018-06-05 11:51:46', '2018-06-05 11:51:46'),
+	(280, 2, 1, 'Login: testtest1.IP:127.0.0.1:60700', '2018-06-05 11:53:47', '2018-06-05 11:53:47'),
+	(281, 2, 1, 'Login: testtest1.IP:127.0.0.1:60868', '2018-06-05 11:55:42', '2018-06-05 11:55:42'),
+	(282, 2, 1, 'Login: testtest1.IP:127.0.0.1:60912', '2018-06-05 11:56:07', '2018-06-05 11:56:07'),
+	(283, 2, 1, 'Login: testtest1.IP:127.0.0.1:61135', '2018-06-05 11:58:14', '2018-06-05 11:58:14'),
+	(284, 2, 1, 'Login: testtest1.IP:127.0.0.1:61276', '2018-06-05 11:59:49', '2018-06-05 11:59:49'),
+	(285, 2, 1, 'Login: testtest1.IP:127.0.0.1:59102', '2018-06-05 15:15:57', '2018-06-05 15:15:57'),
+	(286, 2, 1, 'Login: testtest1.IP:127.0.0.1:59205', '2018-06-05 15:16:56', '2018-06-05 15:16:56'),
+	(287, 2, 1, 'Login: testtest1.IP:127.0.0.1:59255', '2018-06-05 15:17:18', '2018-06-05 15:17:18'),
+	(288, 2, 1, 'Login: testtest1.IP:127.0.0.1:59372', '2018-06-05 15:18:21', '2018-06-05 15:18:21'),
+	(289, 2, 1, 'Login: testtest1.IP:127.0.0.1:59731', '2018-06-05 15:21:52', '2018-06-05 15:21:52'),
+	(290, 2, 1, 'Login: testtest1.IP:127.0.0.1:59887', '2018-06-05 15:23:09', '2018-06-05 15:23:09'),
+	(291, 2, 1, 'Login: testtest1.IP:127.0.0.1:59885', '2018-06-05 15:25:39', '2018-06-05 15:25:39'),
+	(292, 2, 1, 'Login: testtest1.IP:127.0.0.1:60233', '2018-06-05 15:26:52', '2018-06-05 15:26:52'),
+	(293, 2, 1, 'Login: testtest1.IP:127.0.0.1:60232', '2018-06-05 15:27:09', '2018-06-05 15:27:09'),
+	(294, 2, 1, 'Login: testtest1.IP:127.0.0.1:60595', '2018-06-05 15:30:18', '2018-06-05 15:30:18'),
+	(295, NULL, 1, 'Try login not exist account: testtest2.IP: 127.0.0.1:61037', '2018-06-05 15:34:55', '2018-06-05 15:34:55'),
+	(296, 2, 1, 'Login: testtest1.IP:127.0.0.1:61034', '2018-06-05 15:35:02', '2018-06-05 15:35:02'),
+	(297, 2, 1, 'Login: testtest1.IP:127.0.0.1:61125', '2018-06-05 15:35:47', '2018-06-05 15:35:47'),
+	(298, 2, 1, 'Login: testtest1.IP:127.0.0.1:61266', '2018-06-05 15:37:11', '2018-06-05 15:37:11'),
+	(299, 2, 1, 'Login: testtest1.IP:127.0.0.1:61521', '2018-06-05 15:39:57', '2018-06-05 15:39:57'),
+	(300, 204, 1, 'Login: testtest2.IP:127.0.0.1:61584', '2018-06-05 15:40:36', '2018-06-05 15:40:36'),
+	(301, 204, 1, 'Login: testtest2.IP:127.0.0.1:61586', '2018-06-05 15:41:44', '2018-06-05 15:41:44'),
+	(302, NULL, 1, 'Try login not exist account: testtest12.IP: 127.0.0.1:61582', '2018-06-05 15:41:56', '2018-06-05 15:41:56'),
+	(303, 2, 1, 'Login: testtest1.IP:127.0.0.1:61594', '2018-06-05 15:42:02', '2018-06-05 15:42:02'),
+	(304, 204, 1, 'Login: testtest2.IP:127.0.0.1:61583', '2018-06-05 15:42:11', '2018-06-05 15:42:11'),
+	(305, 2, 1, 'Login: testtest1.IP:127.0.0.1:62982', '2018-06-05 15:55:19', '2018-06-05 15:55:19'),
+	(306, NULL, 1, 'Try login not exist account: testtest12.IP: 127.0.0.1:62986', '2018-06-05 15:55:27', '2018-06-05 15:55:27'),
+	(307, 204, 1, 'Login: testtest2.IP:127.0.0.1:62988', '2018-06-05 15:55:33', '2018-06-05 15:55:33'),
+	(308, 204, 1, 'Login: testtest2.IP:127.0.0.1:64449', '2018-06-05 16:11:08', '2018-06-05 16:11:08'),
+	(309, 204, 1, 'Login: testtest2.IP:127.0.0.1:64952', '2018-06-05 16:16:52', '2018-06-05 16:16:52'),
+	(310, 204, 1, 'Login: testtest2.IP:127.0.0.1:51978', '2018-06-05 16:56:19', '2018-06-05 16:56:19'),
+	(311, 204, 1, 'Login: testtest2.IP:127.0.0.1:52260', '2018-06-05 16:59:05', '2018-06-05 16:59:05'),
+	(312, 204, 1, 'Login: testtest2.IP:127.0.0.1:52457', '2018-06-05 17:01:08', '2018-06-05 17:01:08'),
+	(313, 204, 1, 'Login: testtest2.IP:127.0.0.1:52948', '2018-06-05 17:06:33', '2018-06-05 17:06:33'),
+	(314, 204, 1, 'Login: testtest2.IP:127.0.0.1:52944', '2018-06-05 17:06:43', '2018-06-05 17:06:43'),
+	(315, 204, 1, 'Login: testtest2.IP:127.0.0.1:52944', '2018-06-05 17:08:01', '2018-06-05 17:08:01'),
+	(316, 204, 1, 'Login: testtest2.IP:127.0.0.1:52947', '2018-06-05 17:09:06', '2018-06-05 17:09:06'),
+	(317, 204, 1, 'Login: testtest2.IP:127.0.0.1:52948', '2018-06-05 17:09:16', '2018-06-05 17:09:16'),
+	(318, 204, 1, 'Login: testtest2.IP:127.0.0.1:52947', '2018-06-05 17:09:44', '2018-06-05 17:09:44'),
+	(319, 204, 1, 'Login: testtest2.IP:127.0.0.1:52949', '2018-06-05 17:10:01', '2018-06-05 17:10:01'),
+	(320, 204, 1, 'Login: testtest2.IP:127.0.0.1:52948', '2018-06-05 17:15:54', '2018-06-05 17:15:54'),
+	(321, 204, 1, 'Login: testtest2.IP:127.0.0.1:52944', '2018-06-05 17:16:03', '2018-06-05 17:16:03'),
+	(322, 204, 1, 'Login: testtest2.IP:127.0.0.1:52944', '2018-06-05 17:16:22', '2018-06-05 17:16:22'),
+	(323, 204, 1, 'Login: testtest2.IP:127.0.0.1:52945', '2018-06-05 17:16:31', '2018-06-05 17:16:31'),
+	(324, 204, 1, 'Login: testtest2.IP:127.0.0.1:52946', '2018-06-05 17:16:38', '2018-06-05 17:16:38'),
+	(325, 204, 1, 'Login: testtest2.IP:127.0.0.1:53904', '2018-06-05 17:26:26', '2018-06-05 17:26:26'),
+	(326, 204, 1, 'Login: testtest2.IP:127.0.0.1:53903', '2018-06-05 17:26:58', '2018-06-05 17:26:58'),
+	(327, 204, 1, 'Login: testtest2.IP:127.0.0.1:53904', '2018-06-05 17:27:37', '2018-06-05 17:27:37'),
+	(328, 204, 1, 'Login: testtest2.IP:127.0.0.1:53904', '2018-06-05 17:27:50', '2018-06-05 17:27:50'),
+	(329, 204, 1, 'Login: testtest2.IP:127.0.0.1:55391', '2018-06-05 17:32:34', '2018-06-05 17:32:34'),
+	(330, 204, 1, 'Login: testtest2.IP:127.0.0.1:55397', '2018-06-05 17:32:57', '2018-06-05 17:32:57'),
+	(331, 204, 1, 'Login: testtest2.IP:127.0.0.1:55391', '2018-06-05 17:33:04', '2018-06-05 17:33:04'),
+	(332, 204, 1, 'Login failed: testtest2.IP:127.0.0.1:55396', '2018-06-05 17:33:13', '2018-06-05 17:33:13'),
+	(333, 204, 1, 'Login: testtest2.IP:127.0.0.1:55395', '2018-06-05 17:33:26', '2018-06-05 17:33:26'),
+	(334, 2, 1, 'Login: testtest1.IP:127.0.0.1:55283', '2018-06-05 17:33:33', '2018-06-05 17:33:33'),
+	(335, 204, 1, 'Login: testtest2.IP:127.0.0.1:55516', '2018-06-05 17:33:54', '2018-06-05 17:33:54'),
+	(336, 204, 1, 'Login: testtest2.IP:127.0.0.1:55518', '2018-06-05 17:34:11', '2018-06-05 17:34:11'),
+	(337, 204, 1, 'Login: testtest2.IP:127.0.0.1:56165', '2018-06-05 17:43:14', '2018-06-05 17:43:14'),
+	(338, 204, 1, 'Login: testtest2.IP:127.0.0.1:56458', '2018-06-05 17:43:57', '2018-06-05 17:43:57'),
+	(339, 2, 1, 'Login: testtest1.IP:127.0.0.1:56512', '2018-06-05 17:44:20', '2018-06-05 17:44:20'),
+	(340, 2, 1, 'Login: testtest1.IP:127.0.0.1:58435', '2018-06-05 18:04:54', '2018-06-05 18:04:54'),
+	(341, 204, 1, 'Login failed: testtest2.IP:127.0.0.1:57987', '2018-06-05 18:05:01', '2018-06-05 18:05:01'),
+	(342, 204, 1, 'Login: testtest2.IP:127.0.0.1:58433', '2018-06-05 18:05:08', '2018-06-05 18:05:08'),
+	(343, 2, 1, 'Login: testtest1.IP:127.0.0.1:58690', '2018-06-05 18:07:41', '2018-06-05 18:07:41'),
+	(344, 204, 1, 'Login: testtest2.IP:127.0.0.1:65253', '2018-06-06 17:33:04', '2018-06-06 17:33:04'),
+	(345, 2, 1, 'Login: testtest1.IP:127.0.0.1:65255', '2018-06-06 17:33:13', '2018-06-06 17:33:13'),
+	(346, 2, 1, 'Login: testtest1.IP:127.0.0.1:49208', '2018-06-06 17:36:31', '2018-06-06 17:36:31'),
+	(347, 2, 1, 'Login: testtest1.IP:127.0.0.1:49347', '2018-06-06 17:38:02', '2018-06-06 17:38:02'),
+	(348, 2, 1, 'Login: testtest1.IP:127.0.0.1:56644', '2018-06-07 14:26:36', '2018-06-07 14:26:36'),
+	(349, 204, 1, 'Login: testtest2.IP:127.0.0.1:57986', '2018-06-07 14:41:28', '2018-06-07 14:41:28'),
+	(350, 204, 1, 'Login: testtest2.IP:127.0.0.1:57985', '2018-06-07 14:41:52', '2018-06-07 14:41:52'),
+	(351, 2, 1, 'Login: testtest1.IP:127.0.0.1:62347', '2018-06-07 15:32:12', '2018-06-07 15:32:12'),
+	(352, 2, 1, 'Login: testtest1.IP:127.0.0.1:62822', '2018-06-07 15:37:14', '2018-06-07 15:37:14'),
+	(353, 2, 1, 'Login: testtest1.IP:127.0.0.1:62926', '2018-06-07 15:38:03', '2018-06-07 15:38:03'),
+	(354, 205, 1, 'Login: testtest23.IP:127.0.0.1:63078', '2018-06-07 15:39:39', '2018-06-07 15:39:39'),
+	(355, 205, 3, 'Password changed by user 205', '2018-06-07 15:40:57', '2018-06-07 15:40:57'),
+	(356, 205, 2, 'Set deactive by user 205', '2018-06-07 15:41:57', '2018-06-07 15:41:57'),
+	(357, 205, 2, 'Set active by user 205', '2018-06-07 15:41:59', '2018-06-07 15:41:59'),
+	(358, 205, 2, 'Set deactive by user 205', '2018-06-07 15:41:59', '2018-06-07 15:41:59'),
+	(359, 205, 2, 'Set active by user 205', '2018-06-07 15:42:01', '2018-06-07 15:42:01'),
+	(360, 195, 2, 'Set deactive by user 205', '2018-06-07 15:42:01', '2018-06-07 15:42:01'),
+	(361, 195, 2, 'Set active by user 205', '2018-06-07 15:42:02', '2018-06-07 15:42:02'),
+	(362, 205, 1, 'Login: testtest23.IP:127.0.0.1:51863', '2018-06-07 16:44:29', '2018-06-07 16:44:29'),
+	(363, 205, 1, 'Login: testtest23.IP:127.0.0.1:53105', '2018-06-07 16:54:26', '2018-06-07 16:54:26'),
+	(364, 204, 1, 'Login: testtest2.IP:127.0.0.1:53107', '2018-06-07 16:57:43', '2018-06-07 16:57:43'),
+	(365, 205, 1, 'Login: testtest23.IP:127.0.0.1:53712', '2018-06-07 17:01:10', '2018-06-07 17:01:10'),
+	(366, 205, 1, 'Login: testtest23.IP:127.0.0.1:55232', '2018-06-07 17:16:37', '2018-06-07 17:16:37'),
+	(367, 205, 1, 'Login: testtest23.IP:127.0.0.1:55229', '2018-06-07 17:16:45', '2018-06-07 17:16:45'),
+	(368, 205, 1, 'Login: testtest23.IP:127.0.0.1:55340', '2018-06-07 17:17:32', '2018-06-07 17:17:32'),
+	(369, 205, 1, 'Login: testtest23.IP:127.0.0.1:55741', '2018-06-07 17:21:50', '2018-06-07 17:21:50'),
+	(370, 205, 1, 'Login: testtest23.IP:127.0.0.1:55792', '2018-06-07 17:22:20', '2018-06-07 17:22:20'),
+	(371, 205, 1, 'Login: testtest23.IP:127.0.0.1:63953', '2018-06-08 11:00:58', '2018-06-08 11:00:58'),
+	(372, 205, 1, 'Login: testtest23.IP:127.0.0.1:62555', '2018-06-08 14:35:26', '2018-06-08 14:35:26'),
+	(373, 205, 1, 'Login: testtest23.IP:127.0.0.1:58713', '2018-06-11 09:41:21', '2018-06-11 09:41:21'),
+	(374, 205, 1, 'Login: testtest23.IP:127.0.0.1:59055', '2018-06-11 10:24:28', '2018-06-11 10:24:28'),
+	(375, 205, 1, 'Login: testtest23.IP:127.0.0.1:59488', '2018-06-11 13:37:34', '2018-06-11 13:37:34'),
+	(376, 205, 1, 'Login: testtest23.IP:127.0.0.1:61208', '2018-06-11 17:20:36', '2018-06-11 17:20:36'),
+	(377, 205, 1, 'Login: testtest23.IP:127.0.0.1:61231', '2018-06-11 17:21:07', '2018-06-11 17:21:07'),
+	(378, 205, 1, 'Login: testtest23.IP:127.0.0.1:61263', '2018-06-11 17:21:48', '2018-06-11 17:21:48'),
+	(379, 205, 1, 'Login: testtest23.IP:127.0.0.1:61335', '2018-06-11 17:35:52', '2018-06-11 17:35:52'),
+	(380, 205, 1, 'Login: testtest23.IP:127.0.0.1:61332', '2018-06-11 17:36:06', '2018-06-11 17:36:06'),
+	(381, 205, 1, 'Login: testtest23.IP:127.0.0.1:61334', '2018-06-11 17:36:45', '2018-06-11 17:36:45'),
+	(382, 205, 1, 'Login: testtest23.IP:127.0.0.1:64562', '2018-06-11 18:12:54', '2018-06-11 18:12:54'),
+	(383, 205, 1, 'Login: testtest23.IP:127.0.0.1:64625', '2018-06-11 18:13:26', '2018-06-11 18:13:26'),
+	(384, 205, 1, 'Login: testtest23.IP:127.0.0.1:64761', '2018-06-11 18:14:49', '2018-06-11 18:14:49'),
+	(385, 205, 1, 'Login: testtest23.IP:127.0.0.1:64978', '2018-06-11 18:17:10', '2018-06-11 18:17:10'),
+	(386, 205, 1, 'Login: testtest23.IP:127.0.0.1:49911', '2018-06-12 10:58:55', '2018-06-12 10:58:55'),
+	(387, 205, 1, 'Login: testtest23.IP:127.0.0.1:50002', '2018-06-12 10:59:49', '2018-06-12 10:59:49'),
+	(388, 205, 1, 'Login: testtest23.IP:127.0.0.1:58980', '2018-06-13 11:45:09', '2018-06-13 11:45:09'),
+	(389, 205, 1, 'Login: testtest23.IP:127.0.0.1:59254', '2018-06-13 11:48:03', '2018-06-13 11:48:03'),
+	(390, 205, 1, 'Login: testtest23.IP:127.0.0.1:59550', '2018-06-13 11:51:15', '2018-06-13 11:51:15'),
+	(391, 205, 1, 'Login: testtest23.IP:127.0.0.1:59549', '2018-06-13 11:52:01', '2018-06-13 11:52:01'),
+	(392, 205, 1, 'Login: testtest23.IP:127.0.0.1:59686', '2018-06-13 11:52:30', '2018-06-13 11:52:30'),
+	(393, 205, 1, 'Login: testtest23.IP:127.0.0.1:59689', '2018-06-13 11:52:59', '2018-06-13 11:52:59'),
+	(394, 205, 1, 'Login: testtest23.IP:127.0.0.1:59691', '2018-06-13 11:53:57', '2018-06-13 11:53:57'),
+	(395, 205, 1, 'Login: testtest23.IP:127.0.0.1:59690', '2018-06-13 11:55:02', '2018-06-13 11:55:02'),
+	(396, 205, 1, 'Login: testtest23.IP:127.0.0.1:59686', '2018-06-13 11:55:47', '2018-06-13 11:55:47'),
+	(397, 205, 1, 'Login: testtest23.IP:127.0.0.1:60106', '2018-06-13 11:57:06', '2018-06-13 11:57:06'),
+	(398, 205, 1, 'Login: testtest23.IP:127.0.0.1:60199', '2018-06-13 11:57:43', '2018-06-13 11:57:43'),
+	(399, 205, 1, 'Login: testtest23.IP:127.0.0.1:57393', '2018-06-13 14:40:54', '2018-06-13 14:40:54'),
+	(400, 205, 1, 'Login: testtest23.IP:127.0.0.1:57913', '2018-06-13 14:46:21', '2018-06-13 14:46:21'),
+	(401, 205, 1, 'Login: testtest23.IP:127.0.0.1:58145', '2018-06-13 14:49:01', '2018-06-13 14:49:01'),
+	(402, 205, 1, 'Login: testtest23.IP:127.0.0.1:58611', '2018-06-13 14:53:53', '2018-06-13 14:53:53'),
+	(403, 205, 1, 'Login: testtest23.IP:127.0.0.1:58759', '2018-06-13 14:55:08', '2018-06-13 14:55:08'),
+	(404, 205, 1, 'Login: testtest23.IP:127.0.0.1:59214', '2018-06-13 15:00:20', '2018-06-13 15:00:20'),
+	(405, 205, 1, 'Login: testtest23.IP:127.0.0.1:59455', '2018-06-13 15:02:26', '2018-06-13 15:02:26'),
+	(406, 205, 1, 'Login: testtest23.IP:127.0.0.1:60380', '2018-06-13 15:12:34', '2018-06-13 15:12:34'),
+	(407, 205, 1, 'Login: testtest23.IP:127.0.0.1:60578', '2018-06-13 15:14:26', '2018-06-13 15:14:26'),
+	(408, 205, 1, 'Login: testtest23.IP:127.0.0.1:61323', '2018-06-13 15:22:58', '2018-06-13 15:22:58'),
+	(409, 205, 1, 'Login: testtest23.IP:127.0.0.1:61396', '2018-06-13 15:23:31', '2018-06-13 15:23:31'),
+	(410, 205, 1, 'Login: testtest23.IP:127.0.0.1:61585', '2018-06-13 15:25:39', '2018-06-13 15:25:39'),
+	(411, 205, 1, 'Login: testtest23.IP:127.0.0.1:62232', '2018-06-13 15:33:11', '2018-06-13 15:33:11'),
+	(412, 205, 1, 'Login: testtest23.IP:127.0.0.1:62490', '2018-06-13 15:35:54', '2018-06-13 15:35:54'),
+	(413, 205, 1, 'Login: testtest23.IP:127.0.0.1:62587', '2018-06-13 15:36:54', '2018-06-13 15:36:54'),
+	(414, 205, 1, 'Login: testtest23.IP:127.0.0.1:63248', '2018-06-13 15:44:11', '2018-06-13 15:44:11'),
+	(415, 205, 1, 'Login: testtest23.IP:127.0.0.1:64078', '2018-06-13 15:53:09', '2018-06-13 15:53:09'),
+	(416, 205, 1, 'Login: testtest23.IP:127.0.0.1:64152', '2018-06-13 15:53:46', '2018-06-13 15:53:46'),
+	(417, 205, 1, 'Login: testtest23.IP:127.0.0.1:64370', '2018-06-13 15:55:43', '2018-06-13 15:55:43'),
+	(418, 205, 1, 'Login: testtest23.IP:127.0.0.1:64463', '2018-06-13 15:56:31', '2018-06-13 15:56:31'),
+	(419, 205, 1, 'Login: testtest23.IP:127.0.0.1:50850', '2018-06-13 16:27:28', '2018-06-13 16:27:28'),
+	(420, 205, 1, 'Login: testtest23.IP:127.0.0.1:50851', '2018-06-13 16:28:50', '2018-06-13 16:28:50'),
+	(421, 205, 1, 'Login: testtest23.IP:127.0.0.1:51240', '2018-06-13 16:31:29', '2018-06-13 16:31:29'),
+	(422, 205, 1, 'Login: testtest23.IP:127.0.0.1:56315', '2018-06-13 17:30:54', '2018-06-13 17:30:54'),
+	(423, 205, 1, 'Login: testtest23.IP:127.0.0.1:56529', '2018-06-13 17:33:07', '2018-06-13 17:33:07'),
+	(424, 205, 1, 'Login: testtest23.IP:127.0.0.1:56653', '2018-06-13 17:34:31', '2018-06-13 17:34:31'),
+	(425, 205, 1, 'Login: testtest23.IP:127.0.0.1:57110', '2018-06-13 17:39:15', '2018-06-13 17:39:15'),
+	(426, 205, 1, 'Login: testtest23.IP:127.0.0.1:57157', '2018-06-13 17:39:38', '2018-06-13 17:39:38'),
+	(427, 205, 1, 'Login: testtest23.IP:127.0.0.1:57208', '2018-06-13 17:39:59', '2018-06-13 17:39:59'),
+	(428, 205, 1, 'Login: testtest23.IP:127.0.0.1:57423', '2018-06-13 17:42:21', '2018-06-13 17:42:21'),
+	(429, 205, 1, 'Login: testtest23.IP:127.0.0.1:57549', '2018-06-13 17:43:37', '2018-06-13 17:43:37'),
+	(430, 205, 1, 'Login: testtest23.IP:127.0.0.1:57608', '2018-06-13 17:44:08', '2018-06-13 17:44:08'),
+	(431, 205, 1, 'Login: testtest23.IP:127.0.0.1:57689', '2018-06-13 17:45:02', '2018-06-13 17:45:02'),
+	(432, 205, 1, 'Login: testtest23.IP:127.0.0.1:58417', '2018-06-13 17:52:35', '2018-06-13 17:52:35'),
+	(433, 205, 1, 'Login: testtest23.IP:127.0.0.1:59461', '2018-06-13 18:03:09', '2018-06-13 18:03:09'),
+	(434, 205, 1, 'Login: testtest23.IP:127.0.0.1:64616', '2018-06-14 14:34:39', '2018-06-14 14:34:39'),
+	(435, 205, 1, 'Login: testtest23.IP:127.0.0.1:52212', '2018-06-14 15:20:12', '2018-06-14 15:20:12'),
+	(436, 205, 1, 'Login: testtest23.IP:127.0.0.1:52208', '2018-06-14 15:23:55', '2018-06-14 15:23:55'),
+	(437, 205, 1, 'Login: testtest23.IP:127.0.0.1:52669', '2018-06-14 15:24:59', '2018-06-14 15:24:59'),
+	(438, 205, 1, 'Login: testtest23.IP:127.0.0.1:56252', '2018-06-14 16:04:35', '2018-06-14 16:04:35'),
+	(439, 205, 1, 'Login: testtest23.IP:127.0.0.1:56254', '2018-06-14 16:05:03', '2018-06-14 16:05:03'),
+	(440, 205, 1, 'Login: testtest23.IP:127.0.0.1:56254', '2018-06-14 16:05:45', '2018-06-14 16:05:45'),
+	(441, 205, 1, 'Login: testtest23.IP:127.0.0.1:56254', '2018-06-14 16:06:16', '2018-06-14 16:06:16'),
+	(442, 205, 1, 'Login: testtest23.IP:127.0.0.1:56249', '2018-06-14 16:07:48', '2018-06-14 16:07:48'),
+	(443, 205, 1, 'Login: testtest23.IP:127.0.0.1:56700', '2018-06-14 16:11:51', '2018-06-14 16:11:51'),
+	(444, 205, 1, 'Login: testtest23.IP:127.0.0.1:56701', '2018-06-14 16:14:18', '2018-06-14 16:14:18'),
+	(445, 205, 1, 'Login: testtest23.IP:127.0.0.1:59315', '2018-06-14 16:37:15', '2018-06-14 16:37:15'),
+	(446, 205, 1, 'Login: testtest23.IP:127.0.0.1:59317', '2018-06-14 16:37:18', '2018-06-14 16:37:18'),
+	(447, 205, 1, 'Login: testtest23.IP:127.0.0.1:59313', '2018-06-14 16:37:22', '2018-06-14 16:37:22'),
+	(448, 205, 1, 'Login: testtest23.IP:127.0.0.1:59316', '2018-06-14 16:37:48', '2018-06-14 16:37:48'),
+	(449, 205, 1, 'Login: testtest23.IP:127.0.0.1:59856', '2018-06-14 16:43:18', '2018-06-14 16:43:18'),
+	(450, 205, 1, 'Login: testtest23.IP:127.0.0.1:59957', '2018-06-14 16:44:08', '2018-06-14 16:44:08'),
+	(451, 205, 1, 'Login: testtest23.IP:127.0.0.1:60123', '2018-06-14 16:45:50', '2018-06-14 16:45:50'),
+	(452, 205, 1, 'Login: testtest23.IP:127.0.0.1:60629', '2018-06-14 16:50:40', '2018-06-14 16:50:40'),
+	(453, 205, 1, 'Login: testtest23.IP:127.0.0.1:60758', '2018-06-14 16:51:55', '2018-06-14 16:51:55'),
+	(454, 205, 1, 'Login: testtest23.IP:127.0.0.1:63355', '2018-06-14 17:21:05', '2018-06-14 17:21:05'),
+	(455, 205, 1, 'Login: testtest23.IP:127.0.0.1:53667', '2018-06-15 13:52:52', '2018-06-15 13:52:52'),
+	(456, 205, 1, 'Login: testtest23.IP:127.0.0.1:53384', '2018-06-20 09:53:34', '2018-06-20 09:53:34');
 /*!40000 ALTER TABLE `log_user_change` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.machines 結構
@@ -362,14 +515,14 @@ CREATE TABLE IF NOT EXISTS `machines` (
   KEY `FK_machines_users` (`user_id`),
   KEY `store_name` (`store_name`),
   CONSTRAINT `FK_machines_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='機器實體';
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8 COMMENT='機器實體';
 
 -- 正在傾印表格  pcb.machines 的資料：~2 rows (大約)
 DELETE FROM `machines`;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
 INSERT INTO `machines` (`id`, `store_name`, `machine_name`, `pcb_id`, `user_id`, `delete_flag`, `created_time`, `update_time`) VALUES
-	(49, 'nnnkk', '', '954455522', 199, b'0', '2018-05-10 18:18:20', '2018-05-25 15:01:14'),
-	(50, 'ddd', '', '434344', 2, b'0', '2018-05-10 18:23:15', '2018-05-25 11:15:37');
+	(49, 'nnnkk', '', '954455522', 200, b'0', '2018-05-10 18:18:20', '2018-06-08 11:01:30'),
+	(50, 'ddd', '', '434344', 203, b'0', '2018-05-10 18:23:15', '2018-06-08 11:03:27');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.machine_version 結構
@@ -459,14 +612,18 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COMMENT='角色表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
--- 正在傾印表格  pcb.roles 的資料：~2 rows (大約)
+-- 正在傾印表格  pcb.roles 的資料：~6 rows (大約)
 DELETE FROM `roles`;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 INSERT INTO `roles` (`id`, `name`, `description`, `update_time`, `created_time`) VALUES
 	(1, 'coreuser', 'default admin', '2018-05-15 16:32:53', '2018-05-15 16:16:54'),
-	(2, 'agency', 'default agency', '2018-05-15 16:17:29', '2018-05-15 16:17:05');
+	(2, 'agency', 'default agency', '2018-05-15 16:17:29', '2018-05-15 16:17:05'),
+	(3, 'testtest2', 'specific permissions', '2018-06-05 15:40:18', '2018-06-05 15:40:18'),
+	(4, 'Admin-1', 'specific permissions', '2018-06-07 15:41:09', '2018-06-07 15:41:09'),
+	(5, 'Admin-4', 'specific permissions', '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(6, 'testtest1', 'specific permissions', '2018-06-08 17:07:20', '2018-06-08 17:07:20');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.role_permission 結構
@@ -482,7 +639,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
   CONSTRAINT `FK_role_permission_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色權限對應表';
 
--- 正在傾印表格  pcb.role_permission 的資料：~31 rows (大約)
+-- 正在傾印表格  pcb.role_permission 的資料：~97 rows (大約)
 DELETE FROM `role_permission`;
 /*!40000 ALTER TABLE `role_permission` DISABLE KEYS */;
 INSERT INTO `role_permission` (`role_id`, `permission_id`, `created_time`, `update_time`) VALUES
@@ -516,16 +673,84 @@ INSERT INTO `role_permission` (`role_id`, `permission_id`, `created_time`, `upda
 	(2, 14, '2018-05-15 16:28:07', '2018-05-15 16:28:07'),
 	(2, 15, '2018-05-15 16:28:07', '2018-05-15 16:28:07'),
 	(2, 16, '2018-05-15 16:28:07', '2018-05-15 16:28:07'),
-	(2, 17, '2018-05-15 16:28:07', '2018-05-15 16:28:07');
+	(2, 17, '2018-05-15 16:28:07', '2018-05-15 16:28:07'),
+	(3, 1, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 2, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 3, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 4, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 6, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 14, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 15, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 18, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(3, 20, '2018-06-07 16:57:37', '2018-06-07 16:57:37'),
+	(4, 1, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 2, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 3, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 4, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 5, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 6, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 7, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 8, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 9, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 10, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 11, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 12, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 13, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 14, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 15, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 16, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 17, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 18, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 19, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(4, 20, '2018-06-07 16:47:52', '2018-06-07 16:47:52'),
+	(5, 1, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 2, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 3, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 4, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 5, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 6, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 7, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 8, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 9, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 10, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 11, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 12, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 14, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 15, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 16, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 17, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 18, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 19, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(5, 20, '2018-06-07 16:48:00', '2018-06-07 16:48:00'),
+	(6, 1, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 2, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 3, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 4, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 5, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 8, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 9, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 10, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 11, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 12, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 13, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 14, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 15, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 16, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 17, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 18, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 19, '2018-06-08 17:07:24', '2018-06-08 17:07:24'),
+	(6, 20, '2018-06-08 17:07:24', '2018-06-08 17:07:24');
 /*!40000 ALTER TABLE `role_permission` ENABLE KEYS */;
 
 -- 傾印  程序 pcb.sp_addMachine 結構
 DROP PROCEDURE IF EXISTS `sp_addMachine`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_addMachine`(
+	IN `p_exeid` INT,
 	IN `p_pcbID` VARCHAR(50),
 	IN `p_storeName` VARCHAR(50),
 	IN `p_userID` INT
+
 
 
 )
@@ -545,38 +770,11 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `sp_addUser`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_addUser`(
+	IN `p_ip` VARCHAR(50),
 	IN `p_exeid` INT,
 	IN `p_account` VARCHAR(50),
 	IN `p_pwd` VARCHAR(500),
 	IN `p_admin` BIT
-
-
-
-,
-	IN `p_createdtime` DATETIME
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -614,7 +812,7 @@ proc_label:BEGIN
 		END;
 		ELSE
 		BEGIN
-			INSERT INTO users(account, encrypted_password, admin, created_time) VALUES(p_account, p_pwd, p_admin, p_createdtime);
+			INSERT INTO users(account, encrypted_password, admin) VALUES(p_account, p_pwd, p_admin);
 			SET @userID = LAST_INSERT_ID();
 			IF p_admin AND @exeIsAdmin THEN
 			BEGIN
@@ -688,6 +886,7 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `sp_deleteMachine`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_deleteMachine`(
+	IN `p_exeid` INT,
 	IN `p_id` INT
 
 
@@ -695,23 +894,49 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_deleteMachine`(
 
 
 
+
+
 )
-IF NOT EXISTS (SELECT 1 FROM transactions where pcb_id = (SELECT pcb_id FROM machines WHERE id = p_id) LIMIT 1) THEN
 BEGIN
-	DELETE FROM machines WHERE id = p_id;
-END;
-ELSE
-BEGIN
-	SIGNAL SQLSTATE '45000'
- 	SET MESSAGE_TEXT = 'Exist transaction records, can''t delete.';
-END;
-END IF//
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	IF NOT EXISTS (SELECT 1 FROM transactions where pcb_id = (SELECT pcb_id FROM machines WHERE id = p_id) LIMIT 1) THEN
+	BEGIN
+		SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+		SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+		CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+			SELECT 1
+			FROM machines m RIGHT JOIN user_node un ON m.user_id = un.user_id AND !ISNULL(m.id) AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+			WHERE delete_flag <> 1 AND m.id = p_id
+			LIMIT 1
+		);
+		IF EXISTS (SELECT 1 FROM _tmp) THEN
+		BEGIN
+			DELETE FROM machines WHERE id = p_id;
+		END;
+		ELSE
+		BEGIN
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Permission denied.';
+		END;
+		END IF;
+	END;
+	ELSE
+	BEGIN
+		SIGNAL SQLSTATE '45000'
+	 	SET MESSAGE_TEXT = 'Exist transaction records, can''t delete.';
+	END;
+	END IF;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_editMachine 結構
 DROP PROCEDURE IF EXISTS `sp_editMachine`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editMachine`(
+	IN `p_exeid` INT,
 	IN `p_id` INT,
 	IN `p_storeName` VARCHAR(50),
 	IN `p_userID` INT
@@ -719,9 +944,40 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editMachine`(
 
 
 
+
+
+
+
+
+
+
 )
-UPDATE machines SET store_name = p_storeName, user_id = p_userID
-WHERE id = p_id//
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+		SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, m.user_id, m.created_time, m.update_time 
+		FROM machines m RIGHT JOIN user_node un ON m.user_id = un.user_id AND !ISNULL(m.id) AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+		WHERE delete_flag <> 1 AND m.id = p_id
+		LIMIT 1
+	);
+	IF EXISTS(SELECT 1 FROM _tmp) THEN
+	BEGIN
+		UPDATE machines SET store_name = p_storeName, user_id = p_userID
+		WHERE id = p_id;
+	END;
+	ELSE
+	BEGIN
+		SIGNAL SQLSTATE '45000'
+	 	SET MESSAGE_TEXT = 'Permission denied.';
+	END;
+	END IF;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_editUserActive 結構
@@ -729,36 +985,47 @@ DROP PROCEDURE IF EXISTS `sp_editUserActive`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editUserActive`(
 	IN `p_exeid` INT,
-	IN `p_id` INT
+	IN `p_userid` INT
+
+
+
+
 
 )
-IF EXISTS(SELECT 1 FROM users WHERE id = p_id) THEN
-	BEGIN
-		SET @currentState = null;
-		SELECT state FROM users WHERE id = p_id LIMIT 1 INTO @currentState;
-		IF @currentState = 1 THEN
-			BEGIN
-				UPDATE users SET state = 2
-				WHERE id = p_id;
-				INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_id, 2, CONCAT('Set deactive by user ', p_exeid));
-				SELECT 2 AS `state`;
-			END;
-		ELSE IF @currentState = 2 THEN
-			BEGIN
-				UPDATE users SET state = 1
-				WHERE id = p_id;
-				INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_id, 2, CONCAT('Set active by user ', p_exeid));
-				SELECT 1 AS `state`;
-			END;
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	IF EXISTS(SELECT 1 FROM users WHERE id = p_userid) AND (d_isAdmin OR EXISTS(SELECT 1 FROM user_node WHERE user_id = p_userid AND lft BETWEEN d_lft AND d_rgt)) THEN
+		BEGIN
+			SET @currentState = null;
+			SELECT state FROM users WHERE id = p_userid LIMIT 1 INTO @currentState;
+			IF @currentState = 1 THEN
+				BEGIN
+					UPDATE users SET state = 2
+					WHERE id = p_userid;
+					INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_userid, 2, CONCAT('Set deactive by user ', p_exeid));
+					SELECT 2 AS `state`;
+				END;
+			ELSE IF @currentState = 2 THEN
+				BEGIN
+					UPDATE users SET state = 1
+					WHERE id = p_userid;
+					INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_userid, 2, CONCAT('Set active by user ', p_exeid));
+					SELECT 1 AS `state`;
+				END;
+				END IF;
 			END IF;
-		END IF;
-	END;
-ELSE
-	BEGIN
-		SIGNAL SQLSTATE '45000'
-	 	SET MESSAGE_TEXT = 'Account not found.';
-	END;
-END IF//
+		END;
+	ELSE
+		BEGIN
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account not found.';
+		END;
+	END IF;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_editUserPassword 結構
@@ -766,7 +1033,7 @@ DROP PROCEDURE IF EXISTS `sp_editUserPassword`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editUserPassword`(
 	IN `p_exeid` INT,
-	IN `p_id` INT,
+	IN `p_userid` INT,
 	IN `p_pwd` VARCHAR(500)
 
 
@@ -774,19 +1041,42 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editUserPassword`(
 
 
 
+
+
+
+
+
+
 )
-IF EXISTS(SELECT 1 FROM users WHERE id = p_id) AND p_pwd > '' THEN
-	BEGIN
-		UPDATE users SET encrypted_password = p_pwd
-		WHERE id = p_id;
-		INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_id, 1, CONCAT('Password changed by user ', p_exeid));
-	END;
-ELSE
 BEGIN
-	SIGNAL SQLSTATE '45000'
- 	SET MESSAGE_TEXT = 'Account not found or password is blank.'; 	
-END;
-END IF//
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE exit handler for sqlexception
+	BEGIN
+	ROLLBACK;
+	GET DIAGNOSTICS CONDITION 1
+	@p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
+	SELECT 0;
+	RESIGNAL;
+	END;
+	
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	IF EXISTS(SELECT 1 FROM users WHERE id = p_userid) AND p_pwd > '' AND (d_isAdmin OR EXISTS(SELECT 1 FROM user_node WHERE user_id = p_userid AND lft BETWEEN d_lft AND d_rgt)) THEN
+		BEGIN
+			UPDATE users SET encrypted_password = p_pwd
+			WHERE id = p_userid;
+			INSERT INTO log_user_change(user_id, `action`, memo) VALUES(p_userid, 3, CONCAT('Password changed by user ', p_exeid));
+		END;
+	ELSE
+		BEGIN
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account not found or password is blank.'; 	
+		END;
+	END IF;
+	SELECT 1;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_editUserPermissions 結構
@@ -819,8 +1109,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_editUserPermissions`(
 
 
 
+
+
+
+
+
+
 )
 proc_label:BEGIN
+	DECLARE d_isExeAdmin BOOL;
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_account VARCHAR(128);
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_roleID INT;
+	DECLARE d_permissionList TEXT;
+	DECLARE d_permissionStub TEXT;
+	DECLARE d_permissionCount TEXT;
+	DECLARE d_permissionID INT;
+	DECLARE d_permission VARCHAR(128);
 	DECLARE exit handler for sqlexception
 	BEGIN
 	ROLLBACK;
@@ -829,32 +1136,26 @@ proc_label:BEGIN
 	SELECT 0;
 	RESIGNAL;
 	END;
-	/*
-	DECLARE exit handler for sqlwarning
-	BEGIN
-	GET DIAGNOSTICS CONDITION 1
-	@p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
-	SELECT @p1 as RETURNED_SQLSTATE  , @p2 as MESSAGE_TEXT;
-	ROLLBACK;
-	RESIGNAL;
-	END;
-	*/
-	START TRANSACTION;
-	SET @roleID = 0;
-	SET @permissionList = CONCAT('''',REPLACE(REPLACE(p_permissions ,' ',''),',',QUOTE(',')),'''');
-	SET @permissionStub = REPLACE(@permissionList,',','');
-	SET @permissionCount = CASE WHEN(ISNULL(p_permissions) OR p_permissions = '') THEN 0 ELSE (LENGTH(@permissionList) - LENGTH(@permissionStub) + 1) END;
-	SELECT account,admin INTO @account, @isAdmin FROM users WHERE id = p_userid;
 	
-	IF p_userid = p_exeid THEN
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	
+	START TRANSACTION;
+	SET d_roleID = 0;
+	SET d_permissionList = CONCAT('''',REPLACE(REPLACE(p_permissions ,' ',''),',',QUOTE(',')),'''');
+	SET d_permissionStub = REPLACE(d_permissionList,',','');
+	SET d_permissionCount = CASE WHEN(ISNULL(p_permissions) OR p_permissions = '') THEN 0 ELSE (LENGTH(d_permissionList) - LENGTH(d_permissionStub) + 1) END;
+	SELECT account,admin INTO d_account, d_isAdmin FROM users WHERE id = p_userid;
+	
+	IF p_userid = p_exeid OR (!d_isExeAdmin AND !EXISTS(SELECT 1 FROM user_node WHERE user_id = p_userid AND lft BETWEEN d_lft AND d_rgt)) THEN
 	BEGIN
 		SIGNAL SQLSTATE '45000'
-	 	SET MESSAGE_TEXT = 'Permission denied.';
+	 	SET MESSAGE_TEXT = d_isAdmin;
 	 	LEAVE proc_label;
 	END;
 	END IF;
 	
-	IF @account = '' OR ISNULL(@account) THEN
+	IF d_account = '' OR ISNULL(d_account) THEN
 	BEGIN
 		SIGNAL SQLSTATE '45000'
 	 	SET MESSAGE_TEXT = 'Account not found.';
@@ -865,32 +1166,34 @@ proc_label:BEGIN
 	#IF role is default, create new role map to user
 	IF EXISTS(SELECT 1 FROM roles r INNER JOIN user_role ur ON ur.user_id = p_userid AND ur.role_id = r.id WHERE (r.name = "coreuser" OR r.name = "agency")) THEN
 	BEGIN
-		INSERT INTO roles(name, description) VALUES(@account, "specific permissions");
-		SET @roleID = LAST_INSERT_ID();
-		UPDATE user_role SET role_id = @roleID WHERE user_id = p_userid;
+		INSERT INTO roles(name, description) VALUES(d_account, "specific permissions");
+		SET d_roleID = LAST_INSERT_ID();
+		UPDATE user_role SET role_id = d_roleID WHERE user_id = p_userid;
 	END;
 	ELSE
 	BEGIN
-		SELECT id INTO @roleID FROM roles r INNER JOIN user_role ur ON ur.user_id = p_userid AND ur.role_id = r.id;
+		SELECT id INTO d_roleID FROM roles r INNER JOIN user_role ur ON ur.user_id = p_userid AND ur.role_id = r.id;
 	END;
 	END IF;
 	
-	DELETE FROM role_permission WHERE role_id = @roleID;
+	DELETE FROM role_permission WHERE role_id = d_roleID;
 	
 	SET @x = 0;
-	WHILE @x < @permissionCount DO
+	WHILE @x < d_permissionCount DO
 		SET @x = @x + 1;
-		SET @permission = SUBSTRING_INDEX(SUBSTRING_INDEX(p_permissions, ',', @x), ',', -1);
-		SELECT id INTO @permissionID FROM permissions WHERE name = @permission;
-		IF ISNULL(@permissionID) THEN
+		SET d_permission = SUBSTRING_INDEX(SUBSTRING_INDEX(p_permissions, ',', @x), ',', -1);
+		SELECT id INTO d_permissionID FROM permissions WHERE name = d_permission;
+		
+		IF ISNULL(d_permissionID) THEN
 		BEGIN
 			SIGNAL SQLSTATE '45000'
 			SET MESSAGE_TEXT = 'Input permission string error, can not found.';
 			LEAVE proc_label;
 		END;
 		END IF;
-		IF NOT EXISTS(SELECT 1 FROM role_permission rp INNER JOIN user_role ur ON ur.user_id = p_exeid AND rp.role_id = ur.role_id WHERE rp.permission_id = @permissionID)  OR
-			EXISTS(SELECT 1 FROM role_permission rp INNER JOIN permissions p ON rp.permission_id=@permissionID AND rp.permission_id = p.id WHERE admin_only = 1 AND !(@isAdmin = 1))
+		
+		IF NOT EXISTS(SELECT 1 FROM role_permission rp INNER JOIN user_role ur ON ur.user_id = p_exeid AND rp.role_id = ur.role_id WHERE rp.permission_id = d_permissionID)  OR
+			EXISTS(SELECT 1 FROM role_permission rp INNER JOIN permissions p ON rp.permission_id = d_permissionID AND rp.permission_id = p.id WHERE admin_only = 1 AND !d_isAdmin)
 		THEN
 		BEGIN
 			SIGNAL SQLSTATE '45000'
@@ -899,13 +1202,22 @@ proc_label:BEGIN
 		END;
 		ELSE
 		BEGIN
-			INSERT INTO role_permission(role_id, permission_id) VALUES(@roleID, @permissionID);
+			INSERT INTO role_permission(role_id, permission_id) VALUES(d_roleID, d_permissionID);
 		END;
 		END IF;
 	END WHILE;
    SET @rowCount = 1;
 	COMMIT;
 	SELECT @rowCount;
+END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_getAccountings 結構
+DROP PROCEDURE IF EXISTS `sp_getAccountings`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAccountings`()
+BEGIN
+
 END//
 DELIMITER ;
 
@@ -984,17 +1296,86 @@ FROM transactions
 WHERE created_time BETWEEN DATE_SUB(p_start_time, INTERVAL 1 MONTH) AND p_end_time) T)//
 DELIMITER ;
 
+-- 傾印  程序 pcb.sp_getListMachines 結構
+DROP PROCEDURE IF EXISTS `sp_getListMachines`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getListMachines`(
+	IN `p_exeid` INT
+
+
+)
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	SELECT m.id, m.store_name, m.machine_name, m.pcb_id
+	FROM machines m JOIN user_node un ON (m.user_id = un.user_id)
+	WHERE delete_flag <> 1 AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+	ORDER BY m.pcb_id;
+END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_getListUsers 結構
+DROP PROCEDURE IF EXISTS `sp_getListUsers`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getListUsers`(
+	IN `p_exeid` INT
+
+)
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
+		SELECT u.id, u.account
+		FROM users u LEFT JOIN user_node un ON u.id = un.user_id AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+		ORDER BY u.account DESC
+	);
+	SELECT t.* FROM _tmp t;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+END//
+DELIMITER ;
+
 -- 傾印  程序 pcb.sp_getMachine 結構
 DROP PROCEDURE IF EXISTS `sp_getMachine`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getMachine`(
+	IN `p_exeid` INT,
 	IN `p_id` INT
 
 
+
+
+
+
+
+
+
+
+
+
 )
-SELECT id, pcb_id, store_name, user_id 
-FROM machines m
-WHERE m.id = p_id//
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+		SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, m.user_id, m.created_time, m.update_time 
+		FROM machines m RIGHT JOIN user_node un ON m.user_id = un.user_id AND !ISNULL(m.id) AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+		WHERE delete_flag <> 1 AND m.id = p_id
+
+		LIMIT 1
+	);
+	SELECT * FROM _tmp;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_getMachines 結構
@@ -1005,17 +1386,29 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getMachines`(
 
 
 
+
+
+
+
+
+
+
 )
 BEGIN
-	SELECT lft, rgt INTO @lft, @rgt FROM user_node WHERE user_id = p_exeid;
-		CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
-		SELECT SQL_CALC_FOUND_ROWS id, store_name, machine_name, pcb_id, m.user_id, m.created_time, m.update_time 
-		FROM machines m RIGHT JOIN user_node un ON m.user_id = un.user_id AND un.lft BETWEEN @lft AND @rgt AND !ISNULL(m.id)
-		WHERE delete_flag <> 1
-		ORDER BY created_time DESC
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+		SELECT SQL_CALC_FOUND_ROWS m.id, m.store_name, machine_name, pcb_id, m.user_id, m.created_time, m.update_time 
+		FROM machines m JOIN user_node un ON (m.user_id = un.user_id)
+		WHERE m.delete_flag <> 1 AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+		ORDER BY m.created_time DESC
 	);
-	SET @total = FOUND_ROWS();
-	SELECT @total AS total,t.* FROM _tmp t;
+	SET d_total = FOUND_ROWS();
+	SELECT d_total AS total,t.* FROM _tmp t;
 	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
 END//
 DELIMITER ;
@@ -1032,27 +1425,189 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getMachinesWithUsers`(
 
 
 
+
+
+
+
 )
 BEGIN
-	DECLARE exeLft INT;   
-	DECLARE exeRgt INT;  
-	SELECT lft, rgt INTO exeLft, exeRgt FROM user_node WHERE user_id = p_exeid;
-	
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_exeLft INT;
+	DECLARE d_exeRgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_exeLft, d_exeRgt FROM user_node WHERE user_id = p_exeid;
 	SELECT IFNULL(m.id, 0) AS machine_id, IFNULL(m.store_name, '') AS store_name, IFNULL(m.machine_name, '') AS machine_name, IFNULL(m.pcb_id, '') AS pcb_id, t.user_id, u.account, parent_id FROM 
 	machines AS m RIGHT JOIN
 	users AS u ON m.user_id = u.id
 	INNER JOIN(
-	
 		SELECT parent.user_id, parent.parent_id, COUNT(m.id) AS mcount
 		FROM user_node AS node ,
 	        user_node AS parent,
 	        machines m
 		WHERE node.lft BETWEEN parent.lft AND parent.rgt 
-				AND parent.lft BETWEEN exeLft AND exeRgt
+				AND (parent.lft BETWEEN d_exeLft AND d_exeRgt OR d_isAdmin)
 		      AND node.user_id = m.user_id
 		GROUP BY parent.user_id
 		ORDER BY node.lft) t ON u.id = t.user_id
 	ORDER BY parent_id;
+END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_getOperations 結構
+DROP PROCEDURE IF EXISTS `sp_getOperations`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getOperations`()
+BEGIN
+
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	/*
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+		SELECT m.store_name, m.pcb_id, m.machine_name, t.transaction_type, t.game_type, t.start_credit,
+		 t.result_credit, t.credit_in, t.credit_out, t.bet, t.memo, t.created_time, t.credit_type, t.round_id,
+	 	 t.jp1_win, t.jp2_win, t.jp3_win, t.jp4_win, t.win
+		FROM
+		user_node un INNER JOIN machines m ON un.user_id = m.user_id AND (d_isAdmin OR un.lft BETWEEN d_lft AND d_rgt)
+		INNER JOIN transactions t ON m.pcb_id = t.pcb_id
+		WHERE 
+			(ISNULL(p_users) OR FIND_IN_SET(un.user_id, p_users)) AND
+			(ISNULL(p_stores) OR FIND_IN_SET(m.store_name, p_stores)) AND
+			(ISNULL(p_machines) OR FIND_IN_SET(m.id, p_machines)) AND
+			(ISNULL(p_transactiontypes) OR FIND_IN_SET(t.transaction_type, p_transactiontypes)) AND
+			(ISNULL(p_gametypes) OR FIND_IN_SET(t.game_type, p_gametypes)) AND
+			t.created_time BETWEEN p_startTime AND p_endTime
+		ORDER BY t.created_time ASC
+	);
+	SET d_total = FOUND_ROWS();
+	SELECT d_total AS total,t.* FROM _tmp t;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;*/
+	#SELECT * from transactions t;-- GROUP BY YEAR(DATE_ADD(t.created_time, INTERVAL -6 HOUR)),MONTH(DATE_ADD(t.created_time, INTERVAL -6 HOUR)),DAY(DATE_ADD(t.created_time, INTERVAL -6 HOUR));
+
+	SET @p_exeid = 2;
+	SET @p_users =NULL;
+	SET @p_stores =NULL;
+	SET @p_machines =NULL;
+	SET @p_startTime = '2010/1/1';
+	SET @p_groupBy = 'machine';
+	SET @p_endTime = NOW();
+	SET @d_isAdmin = FALSE;
+	SET @d_lft =0;
+	SET @d_rgt =0;
+	SET @d_total =0;
+	SET @d_sqlString ='';
+	
+	SELECT admin INTO @d_isAdmin FROM users WHERE id = @p_exeid;
+	SELECT lft, rgt INTO @d_lft, @d_rgt FROM user_node WHERE user_id = @p_exeid;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS(
+		SELECT SQL_CALC_FOUND_ROWS 
+			un.user_id,
+			m.store_name,
+			m.machine_name,
+			t.transaction_type,
+			t.credit_type,
+			t.credit_in,
+			t.credit_out,
+			t.bet,
+			t.win,
+			t.jp1_win,
+			t.jp2_win,
+			t.jp3_win,
+			t.jp4_win,
+			t.pcb_id,
+			t.created_time,
+			YEAR(DATE_ADD(t.created_time, INTERVAL -6 HOUR)) AS created_year,
+			MONTH(DATE_ADD(t.created_time, INTERVAL -6 HOUR)) AS created_month,
+			DAY(DATE_ADD(t.created_time, INTERVAL -6 HOUR)) AS created_day
+		FROM transactions t INNER JOIN machines m ON t.pcb_id = m.pcb_id
+			INNER JOIN user_node un ON (m.user_id = un.user_id) AND (un.lft BETWEEN @d_lft AND @d_rgt OR @d_isAdmin)
+		WHERE m.delete_flag <> 1 AND
+			(ISNULL(@p_users) OR FIND_IN_SET(un.user_id, @p_users)) AND
+			(ISNULL(@p_stores) OR FIND_IN_SET(m.store_name, @p_stores)) AND
+			(ISNULL(@p_machines) OR FIND_IN_SET(m.id, @p_machines)) AND
+			t.created_time BETWEEN @p_startTime AND @p_endTime
+	);
+			
+	SET @d_total = FOUND_ROWS();
+	
+	IF @d_total > 1000000 THEN
+	BEGIN
+		SIGNAL SQLSTATE '45000'
+	 	SET MESSAGE_TEXT = 'Data for processed too many, please change search conditions.';
+	END;
+	END IF;
+	
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp2 AS(
+		SELECT t.*
+		FROM
+			(SELECT
+				CONCAT(YEAR(DATE_ADD(created_time, INTERVAL -6 HOUR)), '/', MONTH(DATE_ADD(created_time, INTERVAL -6 HOUR)), '/', DAY(DATE_ADD(created_time, INTERVAL -6 HOUR))) AS date,
+				store_name,
+				machine_name,
+				pcb_id,
+				user_id,
+				SUM(credit_in) AS total_in,
+				SUM(CASE WHEN credit_type = 1 THEN credit_in ELSE 0 END) AS total_coin_in,
+				SUM(CASE WHEN credit_type = 2 THEN credit_in ELSE 0 END) AS total_bill_in,
+				SUM(CASE WHEN credit_type = 3 THEN credit_in ELSE 0 END) AS total_key_in,
+				SUM(credit_out) AS total_out,
+				SUM(CASE WHEN credit_type = 11 THEN credit_in ELSE 0 END) AS total_coin_out,
+				SUM(CASE WHEN credit_type = 12 THEN credit_in ELSE 0 END) AS total_bill_out,
+				SUM(CASE WHEN credit_type = 13 THEN credit_in ELSE 0 END) AS total_key_out,
+				SUM(bet) AS total_bet,
+				SUM(win + jp1_win + jp2_win + jp3_win + jp4_win) AS total_win,
+				SUM(jp1_win + jp2_win + jp3_win + jp4_win) AS total_jp_win,
+				SUM(jp1_win) AS total_jp1_win,
+				SUM(jp2_win) AS total_jp2_win,
+				SUM(jp3_win) AS total_jp3_win,
+				SUM(jp4_win) AS total_jp4_win,
+				SUM(CASE WHEN bet > 0 THEN 1 ELSE 0 END) AS total_play_times,
+				SUM(CASE WHEN bet > 0 AND win > 0 THEN 1 ELSE 0 END) AS total_win_times,
+				created_year,
+				created_month,
+				created_day
+			FROM
+				_tmp
+			GROUP BY 
+				created_year,
+				created_month,
+				created_day,
+				user_id,
+				pcb_id,
+				store_name) t
+	);
+	
+	SET @d_sqlString = '
+	SELECT *,
+		CASE WHEN total_in = 0 THEN 0.0 ELSE (total_out/total_in) END AS out_rate,
+		CASE WHEN total_bet = 0 THEN 0.0 ELSE (total_win/total_bet) END AS win_rate,
+		CASE WHEN total_play_times = 0 THEN 0.0 ELSE (total_win_times/total_play_times) END AS hit_rate,
+		FOUND_ROWS() AS total
+	FROM _tmp2 GROUP BY created_year, created_month, created_day';
+	
+	IF @p_groupBy = 'machine' THEN
+	BEGIN
+		SET @d_sqlString = CONCAT(@d_sqlString, ', pcb_id;');
+	END;
+	ELSEIF @p_groupBy = 'user' THEN
+	BEGIN
+		SET @d_sqlString = CONCAT(@d_sqlString, ', user_id;');
+	END;
+	ELSEIF @p_groupBy = 'storename' THEN
+	BEGIN
+		SET @d_sqlString = CONCAT(@d_sqlString, ', store_name;');
+	END;
+	END IF;
+	
+	PREPARE stmt FROM @d_sqlString;
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+	
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp2`;
 END//
 DELIMITER ;
 
@@ -1098,13 +1653,122 @@ ORDER BY value DESC
 LIMIT 5//
 DELIMITER ;
 
+-- 傾印  程序 pcb.sp_getTransactions 結構
+DROP PROCEDURE IF EXISTS `sp_getTransactions`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getTransactions`(
+	IN `p_exeid` INT
+
+
+,
+	IN `p_users` VARCHAR(10000),
+	IN `p_stores` VARCHAR(10000),
+	IN `p_machines` VARCHAR(10000),
+	IN `p_transactiontypes` VARCHAR(10000),
+	IN `p_gametypes` VARCHAR(10000)
+
+
+
+
+,
+	IN `p_startTime` DATETIME,
+	IN `p_endTime` DATETIME
+
+
+)
+    DETERMINISTIC
+BEGIN
+
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS ( 
+		SELECT m.store_name, m.pcb_id, m.machine_name, t.transaction_type, t.game_type, t.start_credit,
+		 t.result_credit, t.credit_in, t.credit_out, t.bet, t.memo, t.created_time, t.credit_type, t.round_id,
+	 	 t.jp1_win, t.jp2_win, t.jp3_win, t.jp4_win, t.win
+		FROM
+		user_node un INNER JOIN machines m ON un.user_id = m.user_id AND (d_isAdmin OR un.lft BETWEEN d_lft AND d_rgt)
+		INNER JOIN transactions t ON m.pcb_id = t.pcb_id
+		WHERE 
+			(ISNULL(p_users) OR FIND_IN_SET(un.user_id, p_users)) AND
+			(ISNULL(p_stores) OR FIND_IN_SET(m.store_name, p_stores)) AND
+			(ISNULL(p_machines) OR FIND_IN_SET(m.id, p_machines)) AND
+			(ISNULL(p_transactiontypes) OR FIND_IN_SET(t.transaction_type, p_transactiontypes)) AND
+			(ISNULL(p_gametypes) OR FIND_IN_SET(t.game_type, p_gametypes)) AND
+			t.created_time BETWEEN p_startTime AND p_endTime
+		ORDER BY t.created_time ASC
+	);
+	SET d_total = FOUND_ROWS();
+	SELECT d_total AS total,t.* FROM _tmp t;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+END//
+DELIMITER ;
+
 -- 傾印  程序 pcb.sp_getUser 結構
 DROP PROCEDURE IF EXISTS `sp_getUser`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getUser`(
-	IN `p_id` INT
+	IN `p_exeid` INT,
+	IN `p_userid` INT
+
+
+
+
 )
-SELECT id, account, created_time FROM users WHERE id = p_id//
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	IF d_isAdmin OR EXISTS(SELECT 1 FROM user_node WHERE user_id = p_userid AND lft BETWEEN d_lft AND d_rgt) THEN
+	BEGIN
+		SELECT id, account, created_time FROM users WHERE id = p_userid;
+	END;
+	ELSE
+	BEGIN
+		SIGNAL SQLSTATE '45000'
+	 	SET MESSAGE_TEXT = 'Permission denied.';
+	END;
+	END IF;
+END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_getUserByAccount_temp 結構
+DROP PROCEDURE IF EXISTS `sp_getUserByAccount_temp`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getUserByAccount_temp`(
+	IN `p_account` VARCHAR(50)
+
+
+
+)
+BEGIN
+	DECLARE exit handler for sqlexception
+	BEGIN
+	ROLLBACK;
+	GET DIAGNOSTICS CONDITION 1
+	@p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
+	SELECT 0;
+	RESIGNAL;
+	END;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
+		SELECT id, account, created_time FROM users WHERE account = p_account limit 1
+	);
+	IF NOT EXISTS(SELECT 1 FROM _tmp) THEN
+		BEGIN
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account locked. Please contact to your administrator.';
+		END;
+	ELSE
+		SELECT id, account, created_time FROM _tmp;
+	END IF;
+	
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_getUserPermissions 結構
@@ -1119,34 +1783,61 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getUserPermissions`(
 
 ,
 	IN `p_admin` BIT
+
 )
-SELECT u.id, u.name, CASE WHEN(ISNULL(e.id)) THEN FALSE ELSE TRUE END AS active FROM
-(SELECT p.id, p.name, p.description, p.sort FROM permissions p 
-INNER JOIN role_permission rp on p.id = rp.permission_id AND rp.role_id = (SELECT role_id FROM user_role WHERE user_id = p_exeid) WHERE admin_only=false || admin_only=p_admin) u
-LEFT JOIN
-(SELECT p.id, p.name, p.description, p.sort FROM permissions p 
-INNER JOIN role_permission rp on p.id = rp.permission_id AND rp.role_id = (SELECT role_id FROM user_role WHERE user_id = p_userid) WHERE admin_only=false || admin_only=p_admin) e
-ON u.id = e.id
-ORDER BY u.sort//
+BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
+	IF d_isAdmin OR EXISTS(SELECT 1 FROM user_node WHERE user_id = p_userid AND lft BETWEEN d_lft AND d_rgt) THEN
+	BEGIN
+		SELECT u.id, u.name, CASE WHEN(ISNULL(e.id)) THEN FALSE ELSE TRUE END AS active FROM
+		(SELECT p.id, p.name, p.description, p.sort FROM permissions p 
+		INNER JOIN role_permission rp on p.id = rp.permission_id AND rp.role_id = (SELECT role_id FROM user_role WHERE user_id = p_exeid) WHERE admin_only=false || admin_only=p_admin) u
+		LEFT JOIN
+		(SELECT p.id, p.name, p.description, p.sort FROM permissions p 
+		INNER JOIN role_permission rp on p.id = rp.permission_id AND rp.role_id = (SELECT role_id FROM user_role WHERE user_id = p_userid) WHERE admin_only=false || admin_only=p_admin) e
+		ON u.id = e.id
+		ORDER BY u.sort;
+	END;
+	ELSE
+	BEGIN
+		SIGNAL SQLSTATE '45000'
+	 	SET MESSAGE_TEXT = 'Permission denied.';
+	END;
+	END IF;
+END//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_getUsers 結構
 DROP PROCEDURE IF EXISTS `sp_getUsers`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getUsers`(
+	IN `p_exeid` INT,
 	IN `p_admin` BIT
+
+
+
 
 
 )
 BEGIN
+	DECLARE d_isAdmin BOOL;
+	DECLARE d_lft INT;
+	DECLARE d_rgt INT;
+	DECLARE d_total INT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
 	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-		SELECT SQL_CALC_FOUND_ROWS id, account, state, created_time, update_time 
-		FROM users 
-		WHERE admin = p_admin
-		ORDER BY created_time DESC
+		SELECT SQL_CALC_FOUND_ROWS u.id, u.account, u.state, u.created_time, u.update_time 
+		FROM users u LEFT JOIN user_node un ON u.id = un.user_id AND (un.lft BETWEEN d_lft AND d_rgt OR d_isAdmin)
+		WHERE u.admin = p_admin AND u.id <> p_exeid
+		ORDER BY u.created_time DESC
 	);
-	SET @total = FOUND_ROWS();
-	SELECT @total AS total,t.* FROM _tmp t;
+	SET d_total = FOUND_ROWS();
+	SELECT d_total AS total,t.* FROM _tmp t;
 	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
 END//
 DELIMITER ;
@@ -1159,13 +1850,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getUsersTree`(
 
 
 
+
 )
 BEGIN
-	DECLARE exeLft INT;   
-	DECLARE exeRgt INT;  
-	DECLARE isAdmin BIT;
-	SELECT admin INTO isAdmin FROM users WHERE id = p_exeid;
-	SELECT lft, rgt INTO exeLft, exeRgt FROM user_node WHERE user_id = p_exeid;
+	DECLARE d_exeLft INT;   
+	DECLARE d_exeRgt INT;  
+	DECLARE d_isAdmin BIT;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_exeLft, d_exeRgt FROM user_node WHERE user_id = p_exeid;
 	SELECT t.user_id, u.account, parent_id FROM 
 	users AS u
 	INNER JOIN(
@@ -1173,12 +1865,93 @@ BEGIN
 	FROM user_node AS node ,
 	     user_node AS parent
 	WHERE node.lft BETWEEN parent.lft AND parent.rgt 
-			AND parent.lft BETWEEN exeLft AND exeRgt
-			OR isAdmin
+			AND (parent.lft BETWEEN d_exeLft AND d_exeRgt OR d_isAdmin)
 	GROUP BY parent.user_id
 	ORDER BY node.lft) t ON u.id = t.user_id
 	ORDER BY parent_id;
 END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_login 結構
+DROP PROCEDURE IF EXISTS `sp_login`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_login`(
+	IN `p_account` VARCHAR(50),
+	IN `p_pwd` CHAR(128)
+
+
+
+
+
+,
+	IN `p_ip` VARCHAR(50)
+
+
+
+
+
+
+
+)
+BEGIN
+	DECLARE userID int;
+	DECLARE exit handler for sqlexception
+	BEGIN
+	ROLLBACK;
+	GET DIAGNOSTICS CONDITION 1
+	@p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
+	RESIGNAL;
+	END;
+	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
+		SELECT id, account, created_time, login_fail_count, encrypted_password, state FROM users WHERE account = p_account LIMIT 1
+	);
+	SELECT id INTO userID FROM _tmp;
+	
+	#account locked or no account
+	IF NOT EXISTS(SELECT 1 FROM _tmp) THEN
+		BEGIN
+			INSERT INTO log_user_change(user_id, action, memo, created_time, update_time) VALUES(NULL, 1, CONCAT('Try login not exist account: ', p_account, '.IP: ', p_ip), NOW(), NOW());
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account locked. Please contact to your administrator.';
+		END;
+	ELSEIF EXISTS(SELECT 1 FROM _tmp WHERE state <> 1) THEN
+		BEGIN
+			INSERT INTO log_user_change(user_id, action, memo, created_time, update_time) VALUES(NULL, 1, CONCAT('Try login not locked account: ', p_account, '.IP: ', p_ip), NOW(), NOW());
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account locked. Please contact to your administrator.';
+		END;
+	ELSEIF NOT EXISTS(SELECT 1 FROM _tmp WHERE encrypted_password = p_pwd) THEN
+		BEGIN
+			UPDATE users SET login_fail_count = login_fail_count +1 WHERE id = userID;
+			INSERT INTO log_user_change(user_id, action, memo, created_time, update_time) VALUES(userID, 1, CONCAT('Login failed: ', p_account, '.IP:', p_ip), NOW(), NOW());
+			IF EXISTS(SELECT 1 FROM _tmp WHERE id = userID AND login_fail_count >= 3) THEN
+				UPDATE users SET state = 2 WHERE id = userID;
+			END IF;
+			SIGNAL SQLSTATE '45000'
+		 	SET MESSAGE_TEXT = 'Account or password incorrect.';
+		END;
+	ELSEIF EXISTS(SELECT 1 FROM _tmp WHERE encrypted_password = p_pwd AND state = 1) THEN
+		BEGIN
+			UPDATE users SET login_fail_count = 0 WHERE id = userID;
+			INSERT INTO log_user_change(user_id, action, memo, created_time, update_time) VALUES(userID, 1, CONCAT('Login: ', p_account, '.IP:', p_ip), NOW(), NOW());
+			SELECT id, account, created_time FROM _tmp;
+		END;
+	END IF;
+END//
+DELIMITER ;
+
+-- 傾印  程序 pcb.sp_loginPermisisons 結構
+DROP PROCEDURE IF EXISTS `sp_loginPermisisons`;
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_loginPermisisons`(
+	IN `p_userid` INT
+
+
+)
+SELECT p.id, p.name, CASE WHEN(ISNULL(p.id)) THEN FALSE ELSE TRUE END AS active FROM
+(SELECT p.id, p.name, p.description, p.sort FROM permissions p 
+INNER JOIN role_permission rp on p.id = rp.permission_id AND rp.role_id = (SELECT role_id FROM user_role WHERE user_id = p_userid)) p
+ORDER BY p.sort//
 DELIMITER ;
 
 -- 傾印  程序 pcb.sp_transferMachines 結構
@@ -1196,8 +1969,17 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_transferMachines`(
 
 
 
+
 )
 proc_label: BEGIN
+	DECLARE d_exeLft INT;   
+	DECLARE d_exeRgt INT;  
+	DECLARE d_isAdmin BIT;
+	DECLARE d_machineList TEXT;   
+	DECLARE d_machineStub TEXT;  
+	DECLARE d_machineCount INT;
+	DECLARE d_machineid INT;
+	DECLARE d_ownerid INT;
 	DECLARE exit handler for sqlexception
 	BEGIN
 	ROLLBACK;
@@ -1208,16 +1990,14 @@ proc_label: BEGIN
 	END;
 	
 	#foreach machines
-	SELECT admin INTO @isAdmin FROM users WHERE id = p_exeid;
-	SELECT lft, rgt INTO @exeLft, @exeRgt FROM user_node WHERE user_id = p_exeid;
-	SET @machineList = CONCAT('''',REPLACE(REPLACE(p_machinids ,' ',''),',',QUOTE(',')),'''');
-	SET @machineStub = REPLACE(@machineList,',','');
-	SET @machineCount = CASE WHEN(ISNULL(p_machinids) OR p_machinids = '') THEN 0 ELSE (LENGTH(@machineList) - LENGTH(@machineStub) + 1) END;
+	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
+	SELECT lft, rgt INTO d_exeLft, d_exeRgt FROM user_node WHERE user_id = p_exeid;
+	SET d_machineList = CONCAT('''',REPLACE(REPLACE(p_machinids ,' ',''),',',QUOTE(',')),'''');
+	SET d_machineStub = REPLACE(d_machineList,',','');
+	SET d_machineCount = CASE WHEN(ISNULL(p_machinids) OR p_machinids = '') THEN 0 ELSE (LENGTH(d_machineList) - LENGTH(d_machineStub) + 1) END;
 	
 	#check targetid is in exeid
-	IF @isAdmin THEN
-		SET @nouse = 0; #is admin not nothing include check select(for performace). include self
-	ELSEIF !EXISTS(SELECT 1 FROM user_node WHERE user_id = p_targetid AND lft >= @exeLft AND rgt <= @exeRgt) THEN
+	IF !d_isAdmin AND !EXISTS(SELECT 1 FROM user_node WHERE user_id = p_targetid AND lft >= d_exeLft AND rgt <= d_exeRgt) THEN
 	BEGIN
 		SIGNAL SQLSTATE '45000'
 	 	SET MESSAGE_TEXT = 'Permission denied.';
@@ -1227,13 +2007,13 @@ proc_label: BEGIN
 
 	SET @x = 0;
 	START TRANSACTION;
-	WHILE @x < @machineCount DO
+	WHILE @x < d_machineCount DO
 		SET @x = @x + 1;
-		SET @machineid = SUBSTRING_INDEX(SUBSTRING_INDEX(p_machinids, ',', @x), ',', -1);
+		SET d_machineid = SUBSTRING_INDEX(SUBSTRING_INDEX(p_machinids, ',', @x), ',', -1);
 		#check the machines is in exeid OR exeid is admin
-		SELECT user_id INTO @ownerid FROM machines WHERE id = @machineid;
+		SELECT user_id INTO d_ownerid FROM machines WHERE id = d_machineid;
 		
-		IF ISNULL(@ownerid) THEN
+		IF ISNULL(d_ownerid) THEN
 		BEGIN
 			SIGNAL SQLSTATE '45000'
 		 	SET MESSAGE_TEXT = 'Machine not exist.';
@@ -1241,9 +2021,7 @@ proc_label: BEGIN
 		END;
 		END IF;
 		
-		IF @isAdmin THEN
-			SET @nouse = 0; #is admin not nothing include check select(for performace).
-		ELSEIF !EXISTS(SELECT 1 FROM user_node WHERE user_id = @ownerid AND lft >= @exeLft AND rgt <= @exeRgt) THEN #include self
+		IF !d_isAdmin AND !EXISTS(SELECT 1 FROM user_node WHERE user_id = d_ownerid AND lft >= d_exeLft AND rgt <= d_exeRgt) THEN #include self
 		BEGIN
 			SIGNAL SQLSTATE '45000'
 		 	SET MESSAGE_TEXT = 'Permission denied.';
@@ -1251,8 +2029,8 @@ proc_label: BEGIN
 		END;
 		END IF;
 		
-		#update machine owen to targetid
-		UPDATE machines SET user_id = p_targetid WHERE id = @machineid;
+		#update machine owenr to targetid
+		UPDATE machines SET user_id = p_targetid WHERE id = d_machineid;
 	END WHILE;
 	COMMIT;
 	SELECT 1;
@@ -1514,15 +2292,19 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   `round_id` varchar(64) NOT NULL,
   `currency_id` int(10) unsigned NOT NULL,
   `money_to_credit_radio` int(10) unsigned NOT NULL COMMENT '這邊是1元換幾分',
-  `transaction_type` bigint(20) unsigned NOT NULL,
+  `transaction_type` int(10) unsigned NOT NULL,
   `start_credit` int(10) unsigned NOT NULL,
   `result_credit` int(10) unsigned NOT NULL,
   `credit_in` int(10) unsigned NOT NULL DEFAULT '0',
   `credit_out` int(10) unsigned NOT NULL DEFAULT '0',
-  `credit_type` bigint(20) unsigned DEFAULT NULL,
+  `credit_type` int(10) unsigned NOT NULL DEFAULT '0',
   `bet` int(10) unsigned NOT NULL DEFAULT '0',
   `win` int(10) unsigned NOT NULL DEFAULT '0',
-  `game_type` int(10) unsigned DEFAULT NULL,
+  `jp1_win` int(11) unsigned NOT NULL DEFAULT '0',
+  `jp2_win` int(11) unsigned NOT NULL DEFAULT '0',
+  `jp3_win` int(11) unsigned NOT NULL DEFAULT '0',
+  `jp4_win` int(11) unsigned NOT NULL DEFAULT '0',
+  `game_type` int(10) unsigned NOT NULL DEFAULT '0',
   `memo` json DEFAULT NULL,
   `created_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -1534,16 +2316,17 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   KEY `pcb_id` (`pcb_id`),
   CONSTRAINT `FK_transactions_currencies` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
   CONSTRAINT `FK_transactions_machines` FOREIGN KEY (`pcb_id`) REFERENCES `machines` (`pcb_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='交易資料表，包含SPIN、儲值、兌回、JP等';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='交易資料表，包含SPIN、儲值、兌回、JP等';
 
--- 正在傾印表格  pcb.transactions 的資料：~3 rows (大約)
+-- 正在傾印表格  pcb.transactions 的資料：~5 rows (大約)
 DELETE FROM `transactions`;
 /*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
-INSERT INTO `transactions` (`id`, `pcb_id`, `round_id`, `currency_id`, `money_to_credit_radio`, `transaction_type`, `start_credit`, `result_credit`, `credit_in`, `credit_out`, `credit_type`, `bet`, `win`, `game_type`, `memo`, `created_time`, `update_time`) VALUES
-	(1, '954455522', '21589965', 1, 100, 1, 2262, 2362, 0, 0, NULL, 50, 150, 1, '{}', '2018-05-08 10:26:27', '2018-05-10 18:14:06'),
-	(2, '954455522', '21589965', 1, 100, 1, 2262, 2362, 0, 0, NULL, 50, 0, 1, '{}', '2018-05-08 10:26:27', '2018-05-10 18:14:08'),
-	(3, '954455522', '21589965', 1, 100, 1, 2262, 2362, 120, 0, NULL, 0, 0, 1, '{}', '2018-05-08 10:26:27', '2018-05-10 18:14:10'),
-	(5, '434344', '21589965', 1, 100, 1, 2262, 2362, 120, 0, NULL, 0, 0, 1, '{}', '2018-05-08 10:26:27', '2018-05-10 18:14:10');
+INSERT INTO `transactions` (`id`, `pcb_id`, `round_id`, `currency_id`, `money_to_credit_radio`, `transaction_type`, `start_credit`, `result_credit`, `credit_in`, `credit_out`, `credit_type`, `bet`, `win`, `jp1_win`, `jp2_win`, `jp3_win`, `jp4_win`, `game_type`, `memo`, `created_time`, `update_time`) VALUES
+	(1, '954455522', '21589965', 1, 100, 5, 2262, 2362, 0, 0, 0, 50, 150, 0, 0, 0, 0, 1, '{}', '2018-05-07 05:59:59', '2018-06-15 18:29:04'),
+	(2, '954455522', '21589965', 1, 100, 5, 2262, 2362, 0, 0, 0, 0, 5000, 0, 0, 0, 0, 2, '{}', '2018-05-08 06:00:00', '2018-06-15 18:29:16'),
+	(3, '954455522', '21589964', 1, 100, 5, 2262, 2362, 120, 0, 0, 500, 10, 0, 0, 0, 0, 3, '{}', '2018-05-09 05:59:59', '2018-06-15 18:31:44'),
+	(5, '434344', '21589964', 1, 100, 5, 2262, 2362, 120, 0, 0, 0, 0, 0, 0, 0, 0, 4, '{}', '2018-05-09 10:26:27', '2018-06-15 18:28:16'),
+	(6, '434344', '21589964', 1, 100, 1, 2262, 2362, 120, 0, 1, 0, 5000, 100000, 200000, 300, 500, 2, '{}', '2018-05-09 05:59:59', '2018-06-15 18:31:51');
 /*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.users 結構
@@ -1561,14 +2344,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `account` (`account`)
-) ENGINE=InnoDB AUTO_INCREMENT=204 DEFAULT CHARSET=utf8 COMMENT='使用者主表';
+) ENGINE=InnoDB AUTO_INCREMENT=207 DEFAULT CHARSET=utf8 COMMENT='使用者主表';
 
--- 正在傾印表格  pcb.users 的資料：~10 rows (大約)
+-- 正在傾印表格  pcb.users 的資料：~13 rows (大約)
 DELETE FROM `users`;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `account`, `encrypted_password`, `current_sign_in_ip`, `last_sign_in_ip`, `admin`, `state`, `login_fail_count`, `created_time`, `update_time`) VALUES
-	(2, 'testtest1', 'ae7fc45fda7215a7999d2a60d5117d64caba6490188cd6d8412fadfd4138c54fa23cdb54ecc7b0e5cb546b2cf3aa0bf78c4226539b02c0a40cccce560b60e52c', '', '', b'1', 1, 0, '2018-05-11 14:15:26', '2018-05-14 17:11:22'),
-	(195, 'Admin-1', '', '', '', b'1', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
+	(2, 'testtest1', '8d60e43446ad6f2a0f2fd1608817843ec086cff247016123c4398c11412bc91e68a84e3113ef25352c57b8a48ae20480274bd66632523d6f6ca2328e694c0cbd', '', '', b'1', 1, 0, '2018-05-11 14:15:26', '2018-06-01 14:46:32'),
+	(195, 'Admin-1', '', '', '', b'1', 1, 0, '2018-05-25 14:53:42', '2018-06-07 15:42:02'),
 	(196, 'Admin-2', '', '', '', b'1', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(197, 'Admin-3', '', '', '', b'1', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(198, 'Admin-4', '', '', '', b'1', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
@@ -1576,7 +2359,10 @@ INSERT INTO `users` (`id`, `account`, `encrypted_password`, `current_sign_in_ip`
 	(200, 'Agency-2', '', '', '', b'0', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(201, 'Agency-3', '', '', '', b'0', 1, 0, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(202, 'Agency-4', '', '', '', b'0', 1, 0, '2018-05-25 14:53:43', '2018-05-25 14:53:43'),
-	(203, 'Agency-5', '', '', '', b'0', 1, 0, '2018-05-25 14:53:43', '2018-05-25 14:53:43');
+	(203, 'Agency-5', '', '', '', b'0', 1, 0, '2018-05-25 14:53:43', '2018-05-25 14:53:43'),
+	(204, 'testtest2', '020438e6beb605c4386624a0c6c15672e16c9c0fbd78c187b91aa3e47fb1f2bb00bc8eb2b68f9248f2f15faa55e35c2ec2889045e6adf5d1791d84a9c40c7a63', '', '', b'0', 1, 0, '2018-06-05 15:40:04', '2018-06-07 14:46:09'),
+	(205, 'testtest23', '03ce454df694b61848c6d8f45469964d37ac95def4530c91c925bf002c4e5084cd175633fff6294983ea123a68b8b0c4c35d4fb0ca32e5ffc92fa0a7fdaf902e', '', '', b'1', 1, 0, '2018-06-07 15:32:45', '2018-06-07 15:42:01'),
+	(206, 'testtest233', '4dcc1bbe5fac4085dd34e918022aa4e70017c9a54003b41ea9f462cae40f1d33146533869d08711029dfdc09e230000ce55fb21b1f21d8f80e865728e1a0d45f', '', '', b'1', 1, 0, '2018-06-07 15:42:44', '2018-06-07 15:42:44');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.user_node 結構
@@ -1593,20 +2379,23 @@ CREATE TABLE IF NOT EXISTS `user_node` (
   CONSTRAINT `FK_user_node_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='使用者節點描述表';
 
--- 正在傾印表格  pcb.user_node 的資料：~10 rows (大約)
+-- 正在傾印表格  pcb.user_node 的資料：~13 rows (大約)
 DELETE FROM `user_node`;
 /*!40000 ALTER TABLE `user_node` DISABLE KEYS */;
 INSERT INTO `user_node` (`user_id`, `parent_id`, `lft`, `rgt`, `created_time`, `update_time`) VALUES
-	(2, 0, 1, 20, '2018-05-17 17:38:46', '2018-05-25 14:53:43'),
-	(195, 2, 12, 19, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(196, 2, 4, 11, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(197, 2, 2, 3, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(198, 195, 17, 18, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(199, 195, 15, 16, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(200, 195, 13, 14, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(201, 196, 5, 10, '2018-05-25 14:53:42', '2018-05-25 14:53:43'),
-	(202, 201, 8, 9, '2018-05-25 14:53:43', '2018-05-25 14:53:43'),
-	(203, 201, 6, 7, '2018-05-25 14:53:43', '2018-05-25 14:53:43');
+	(2, 0, 1, 26, '2018-05-17 17:38:46', '2018-06-07 15:42:44'),
+	(195, 2, 18, 25, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(196, 2, 10, 17, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(197, 2, 8, 9, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(198, 195, 23, 24, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(199, 195, 21, 22, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(200, 195, 19, 20, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(201, 196, 11, 16, '2018-05-25 14:53:42', '2018-06-07 15:42:44'),
+	(202, 201, 14, 15, '2018-05-25 14:53:43', '2018-06-07 15:42:44'),
+	(203, 201, 12, 13, '2018-05-25 14:53:43', '2018-06-07 15:42:44'),
+	(204, 2, 6, 7, '2018-06-05 15:40:04', '2018-06-07 15:42:44'),
+	(205, 2, 2, 5, '2018-06-07 15:32:45', '2018-06-07 15:42:44'),
+	(206, 205, 3, 4, '2018-06-07 15:42:44', '2018-06-07 15:42:44');
 /*!40000 ALTER TABLE `user_node` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.user_role 結構
@@ -1622,20 +2411,23 @@ CREATE TABLE IF NOT EXISTS `user_role` (
   CONSTRAINT `FK_user_role_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='使用者角色對應表';
 
--- 正在傾印表格  pcb.user_role 的資料：~10 rows (大約)
+-- 正在傾印表格  pcb.user_role 的資料：~13 rows (大約)
 DELETE FROM `user_role`;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
 INSERT INTO `user_role` (`user_id`, `role_id`, `created_time`, `update_time`) VALUES
-	(2, 1, '2018-05-15 16:50:10', '2018-05-16 18:24:34'),
-	(195, 1, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
+	(2, 6, '2018-05-15 16:50:10', '2018-06-08 17:07:20'),
+	(195, 4, '2018-05-25 14:53:42', '2018-06-07 15:41:09'),
 	(196, 1, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(197, 1, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
-	(198, 1, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
+	(198, 5, '2018-05-25 14:53:42', '2018-06-07 16:48:00'),
 	(199, 2, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(200, 2, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(201, 2, '2018-05-25 14:53:42', '2018-05-25 14:53:42'),
 	(202, 2, '2018-05-25 14:53:43', '2018-05-25 14:53:43'),
-	(203, 2, '2018-05-25 14:53:43', '2018-05-25 14:53:43');
+	(203, 2, '2018-05-25 14:53:43', '2018-05-25 14:53:43'),
+	(204, 3, '2018-06-05 15:40:04', '2018-06-05 15:40:18'),
+	(205, 1, '2018-06-07 15:32:45', '2018-06-07 15:32:45'),
+	(206, 1, '2018-06-07 15:42:44', '2018-06-07 15:42:44');
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

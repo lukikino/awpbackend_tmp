@@ -9,16 +9,16 @@
             <div class="col-lg-12">
                 <form>
                     <div class="form-group">
-                        <dropdown :items="accounts"></dropdown>
+                        <dropdown :items="users"></dropdown>
                         <dropdown :items="stores"></dropdown>
                         <dropdown :items="machines"></dropdown>
                         <dropdown :items="transactionTypes"></dropdown>
                         <dropdown :items="gameTypes"></dropdown>
                         <label class="col-form-label m-r-10">Duration :</label>
                         <div class="btn-group">
-                            <input type="date" class="form-control input-sm" placeholder="dd/mm/yyyy">
+                            <date-picker name="date" v-model="searchData.startTime"></date-picker>
                             <span class="col-form-label"> ～ </span>
-                            <input type="date" class="form-control input-sm" placeholder="dd/mm/yyyy">
+                            <date-picker name="date" v-model="searchData.endTime"></date-picker>
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-primary btn-sm" type="button" @click="search">
@@ -52,8 +52,9 @@
                                 Detail
                             </button>
                         </div>
-                        <div class="alert alert-danger" v-if="viewData.length === 0">There is no data cloud display.</div>
-                        <table id="myTable" class="table table-hover no-footer" role="grid" aria-describedby="myTable_info">
+                        <div class="alert alert-danger" v-if="viewData.length === 0 && searched">There is no data cloud display.</div>
+                        <div class="alert alert-info" v-if="viewData.length === 0 && !searched">Press search button to start.</div>
+                        <table v-if="viewData.length > 0" id="myTable" class="table table-hover no-footer" role="grid" aria-describedby="myTable_info">
                             <thead>
                                 <tr role="row">
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Store Name</th>
@@ -72,19 +73,19 @@
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">JP Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Description</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending"
+                                    <th style="display:none;!important" class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending"
                                         v-if="view==2">Start Symbols</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending"
+                                    <th style="display:none;!important" class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending"
                                         v-if="view==2">Result Symbols</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending"
-                                        v-if="view==2">ID</th>
+                                        v-if="view==2">Round ID</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Time</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr role="row" v-for="item in viewData">
                                     <td>{/ item.storeName /}</td>
-                                    <td v-if="view==2">{/ item.machineId /}</td>
+                                    <td v-if="view==2">{/ item.pcbID /}</td>
                                     <td>{/ item.machineName /}</td>
                                     <td>{/ item.transactionType /}</td>
                                     <td>{/ item.gameType /}</td>
@@ -94,22 +95,23 @@
                                     <td>{/ thousandFormat(item.out) /}</td>
                                     <td>{/ thousandFormat(item.bet) /}</td>
                                     <td>{/ thousandFormat(item.win) /}</td>
-                                    <td>{/ thousandFormat(item.jpWin) /}</td>
-                                    <td>{/ item.description /}</td>
-                                    <td v-if="view==2">
-                                        {/ item.startSymbols /}
+                                    <td :title="jpTitle(item)">{/ thousandFormat(item.jp1Win + item.jp2Win + item.jp3Win + item.jp4Win) /}</td>
+                                    <td>{/ item.memo.desc /}</td>
+                                    <td style="display:none;!important" v-if="view==2">
+                                        {/ item.memo.startSymbols /}
                                         <button type="button" class="btn btn-sm btn-light">View</button>
                                     </td>
-                                    <td v-if="view==2">
-                                        {/ item.resultSymbols /}
+                                    <td style="display:none;!important" v-if="view==2">
+                                        {/ item.memo.resultSymbols /}
                                         <button type="button" class="btn btn-sm btn-light">View</button>
                                     </td>
-                                    <td v-if="view==2">{/ item.id /}</td>
-                                    <td>{/ item.time /}</td>
+                                    <td v-if="view==2">{/ item.roundID /}</td>
+                                    <td>{/ item.createdTime /}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(viewData.length, endRow) /} of {/ reportData.items.length /} entries</div>
+                        <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(viewData.length, endRow) /} of {/ reportData.items.length
+                            /} entries</div>
                         <div class="dataTables_paginate paging_simple_numbers" id="myTable_paginate" v-if="viewData.length > 0">
                             <a @click="changePage(currentPage-1)" v-if="currentPage > 1" class="paginate_button btn-sm previous" aria-controls="myTable"
                                 data-dt-idx="0" tabindex="0" id="myTable_previous">Previous</a>

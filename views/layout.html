@@ -17,10 +17,15 @@
     <link href="/static/css/lib/owl.carousel.min.css" rel="stylesheet" />
     <link href="/static/css/lib/owl.theme.default.min.css" rel="stylesheet" />
     <!-- Bootstrap Core CSS -->
+    <link href="/static/icons/font-awesome/css/fontawesome-all.min.css" rel="stylesheet">
+    <!-- <link href="/static/icons/font-awesome/css/fa-regular.css" rel="stylesheet">
+    <link href="/static/icons/font-awesome/css/fa-solid.css" rel="stylesheet"> -->
     <link href="/static/css/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
     <link href="/static/css/bootstrap-vue.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="/static/css/lib/nestable/nestable.css" rel="stylesheet">
+    <!-- <link href="/static/css/lib/nestable/nestable.css" rel="stylesheet"> -->
+
     <link href="/static/css/helper.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
     <link href="/static/css/custom.css" rel="stylesheet">
@@ -73,11 +78,10 @@
                     </ul>
                     <!-- User profile and search -->
                     <ul class="navbar-nav my-lg-0">
-
                         <!-- Comment -->
-                        <li class="nav-item dropdown">
+                        <li class="nav-item dropdown" v-show="false">
                             <a class="nav-link dropdown-toggle text-muted text-muted" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-bell"></i>
+                                <i class="fas fa-bell"></i>
                                 <div class="notify">
                                     <span class="heartbit"></span>
                                     <span class="point"></span>
@@ -93,7 +97,7 @@
                                             <!-- Message -->
                                             <a href="#">
                                                 <div class="btn btn-danger btn-circle m-r-10">
-                                                    <i class="fa fa-link"></i>
+                                                    <i class="fas fa-link"></i>
                                                 </div>
                                                 <div class="mail-contnet">
                                                     <h5>This is title</h5>
@@ -139,7 +143,7 @@
                                     <li>
                                         <a class="nav-link text-center" href="javascript:void(0);">
                                             <strong>Check all notifications</strong>
-                                            <i class="fa fa-angle-right"></i>
+                                            <i class="fas fa-angle-right"></i>
                                         </a>
                                     </li>
                                 </ul>
@@ -147,24 +151,23 @@
                         </li>
                         <!-- End Comment -->
                         <!-- Profile -->
-                        <li class="nav-item dropdown">
+                        <div class="nav-item dropdown">
+                            <b-dropdown id="ddown-aria" right variant="link" class="m-2">
+                                <template slot="button-content">
+                                    <span>{/ $root.loginUser.account /}</span>
+                                </template>
+                                <b-dropdown-item-button><a href="#">
+                                    <i class="ti-settings"></i> Setting</a></b-dropdown-item-button>
+                                <b-dropdown-item-button @click="logout"><a href="javascript:">
+                                    <i class="fas fa-power-off"></i> Logout</a></b-dropdown-item-button>
+                            </b-dropdown>
+                          </div>
+                        <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img src="/static/images/users/5.jpg" alt="user" class="profile-pic" />
+                                <img src="/static/images/users/1.jpg" alt="user" class="profile-pic" />
                             </a>
                             <div class="dropdown-menu dropdown-menu-right animated zoomIn">
                                 <ul class="dropdown-user">
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-user"></i> Profile</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-wallet"></i> Balance</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">
-                                            <i class="ti-email"></i> Inbox</a>
-                                    </li>
                                     <li>
                                         <a href="#">
                                             <i class="ti-settings"></i> Setting</a>
@@ -175,7 +178,7 @@
                                     </li>
                                 </ul>
                             </div>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </nav>
@@ -192,14 +195,14 @@
                         <li class="nav-label">Home</li>
                         <li>
                             <a class="" href="/" aria-expanded="false">
-                                <i class="fa fa-tachometer"></i>
+                                <i class="fas fa-tachometer-alt"></i>
                                 <span class="hide-menu">Dashboard </span>
                             </a>
                         </li>
-                        <li class="nav-label">Accountings</li>
-                        <li>
+                        <li v-if="$root.chkPermission('operations.view') || $root.chkPermission('accounting.view') || $root.chkPermission('transactions.view')" class="nav-label">Accountings</li>
+                        <li v-if="$root.chkPermission('operations.view')">
                             <a class="has-arrow" aria-expanded="false" href="javascript:">
-                                <i class="fa fa-line-chart"></i>
+                                <i class="fas fa-chart-line"></i>
                                 <span class="hide-menu">Operations</span>
                             </a>
                             <ul aria-expanded="false" class="collapse">
@@ -214,9 +217,9 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <li v-if="$root.chkPermission('accounting.view')">
                             <a class="has-arrow" aria-expanded="false" href="javascript:">
-                                <i class="fa fa-btc"></i>
+                                <i class="fas fa-money-bill-alt"></i>
                                 <span class="hide-menu">Accounting</span>
                             </a>
                             <ul aria-expanded="false" class="collapse">
@@ -231,9 +234,9 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                        <li v-if="$root.chkPermission('transactions.view')">
                             <a class="" href="/transactions" aria-expanded="false">
-                                <i class="fa fa-handshake-o"></i>
+                                <i class="fas fa-handshake"></i>
                                 <span class="hide-menu">Transactions</span>
                             </a>
                         </li>
@@ -262,42 +265,42 @@
                         <span class="hide-menu">Behavior</span>
                     </a>
                 </li> -->
-                        <li class="nav-label">Machines</li>
+                        <li v-if="$root.chkPermission('machineList.view') || $root.chkPermission('machineTransfer.view')" class="nav-label">Machines</li>
                         <li>
-                            <a class="  " href="/machines/list" aria-expanded="false">
-                                <i class="fa fa-microchip"></i>
+                            <a v-if="$root.chkPermission('machineList.view')" href="/machines/list" aria-expanded="false">
+                                <i class="fas fa-laptop"></i>
                                 <span class="hide-menu">Machine List </span>
                             </a>
                         </li>
                         <li>
-                            <a class="  " href="/machines/transfer" aria-expanded="false">
-                                <i class="fa fa-link"></i>
+                            <a v-if="$root.chkPermission('machineTransfer.view')" href="/machines/transfer" aria-expanded="false">
+                                <i class="fas fa-exchange-alt"></i>
                                 <span class="hide-menu">Machine Transfer </span>
                             </a>
                         </li>
-                        <li class="nav-label">User Manager</li>
-                        <li>
+                        <li v-if="$root.chkPermission('coreUser.view') || $root.chkPermission('agency.view')" class="nav-label">User Manager</li>
+                        <li v-if="$root.chkPermission('coreUser.view')">
                             <a class="  " href="/users/core" aria-expanded="false">
-                                <i class="fa fa-user-circle"></i>
+                                <i class="fas fa-user-circle"></i>
                                 <span class="hide-menu">Core Users </span>
                             </a>
                         </li>
-                        <li>
+                        <li v-if="$root.chkPermission('agency.view')">
                             <a class="  " href="/users/agency" aria-expanded="false">
-                                <i class="fa fa-user"></i>
+                                <i class="fas fa-user"></i>
                                 <span class="hide-menu">Agency </span>
                             </a>
                         </li>
-                        <li class="nav-label">Settings</li>
-                        <li>
+                        <li v-if="$root.chkPermission('versionSetting.view') || $root.chkPermission('jpStatus.view')" class="nav-label">Settings</li>
+                        <li v-if="$root.chkPermission('versionSetting.view')">
                             <a class="  " href="/settings/version" aria-expanded="false">
-                                <i class="fa fa-vimeo-square"></i>
+                                <i class="fab fa-vimeo-square"></i>
                                 <span class="hide-menu">Version Setting </span>
                             </a>
                         </li>
-                        <li>
+                        <li v-if="$root.chkPermission('jpStatus.view')">
                             <a class="  " href="/settings/jpserver" aria-expanded="false">
-                                <i class="fa fa-wrench"></i>
+                                <i class="fas fa-wrench"></i>
                                 <span class="hide-menu">JP Status </span>
                             </a>
                         </li>
@@ -312,11 +315,11 @@
     </div>
     <!-- End Wrapper -->
     <script type="text/x-template" id="dropdown">
-        <div class="dropdown btn-group">
-            <button class="btn btn-info dropdown-toggle btn-sm" type="button" data-toggle="dropdown" aria-expanded="false">{/buttonText/}
+        <div class="dropdown btn-group" ref="dropdownMenu">
+            <button @click="toggle" class="btn btn-info dropdown-toggle btn-sm" type="button">{/buttonText/}
                 <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu" x-placement="bottom-start">
+            <ul v-show="show" class="dropdown-menu show">
                 <li>
                     <div class="form-check">
                         <label class="form-check-label" for="dropdownCheck" @click="checkAll" v-if="!allChecked">
@@ -330,7 +333,7 @@
                 <li v-for="item in items.items">
                     <div class="form-check">
                         <label class="form-check-label" :for="domId(item.id)">
-                            <input type="checkbox" class="form-check-input" :id="domId(item.id)" v-model="item.check"> 
+                            <input type="checkbox" class="form-check-input" :id="domId(item.id)" v-model="item.checked"> 
                             {/ item.text /}
                         </label>
                     </div>
@@ -343,7 +346,7 @@
         <div class="tree-menu">
             <div class="label-wrapper" v-if="machine">
                 <div class="label-item" :style="indent">
-                    <b-form-checkbox :value="machine" v-model="checkList.machines[machine.machineID]" @change="toggleMachineSelect"><i class="fa fa-microchip"></i> {/ machine.pcbID /}({/ machine.storeName /}-{/ machine.machineName /})</b-form-checkbox>
+                    <b-form-checkbox :value="machine" v-model="checkList.machines[machine.machineID]" @change="toggleMachineSelect"><i class="fas fa-microchip"></i> {/ machine.pcbID /}({/ machine.storeName /}-{/ machine.machineName /})</b-form-checkbox>
                 </div>
             </div>
             <div class="label-wrapper" @click="toggleChildren" v-if="!machine">
@@ -412,7 +415,11 @@
     <script src="/static/js/vue-resource.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.0.0-rc.8/dist/bootstrap-vue.js"></script>
     <!--Custom JavaScript -->
+    <script src="/static/js/moment.js"></script>
+    <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="/static/js/vue-bootstrap-datetimepicker.min.js"></script>
     <script src="/static/js/custom.min.js"></script>
+    <script src="/static/js/utils.js"></script>
     <script src="/static/js/app.js"></script>
     <template vueTemplate></template>
 </body>

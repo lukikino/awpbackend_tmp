@@ -9,7 +9,7 @@
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-title">
-                        <b-btn v-b-modal.addMachineDialog variant="btn btn-sm btn-primary">
+                        <b-btn v-if="$root.chkPermission('machineList.create')" v-b-modal.addMachineDialog variant="btn btn-sm btn-primary">
                             <i class="ti-plus"></i> Add Machine
                         </b-btn>
                     </div>
@@ -47,10 +47,10 @@
                                             <td>{/ item.pcbID /}</td>
                                             <td>{/ item.storeName /}</td>
                                             <td>
-                                                <b-btn @click="startEditMachine($event, item.ID)" variant="btn btn-sm btn-primary">
+                                                <b-btn v-if="$root.chkPermission('machineList.edit')" @click="startEditMachine($event, item.ID)" variant="btn btn-sm btn-primary">
                                                     <i class="ti-edit"></i> Edit
                                                 </b-btn>
-                                                <b-btn @click="startDeleteMachine($event, item.ID)" variant="btn btn-sm btn-secondary">
+                                                <b-btn v-if="$root.chkPermission('machineList.delete')" @click="startDeleteMachine($event, item.ID)" variant="btn btn-sm btn-secondary">
                                                     <i class="ti-delete"></i> Delete
                                                 </b-btn>
                                             </td>
@@ -89,7 +89,7 @@
                         </b-form-input>
                     </b-form-group>
                     <b-form-group label="Owner:">
-                        <b-form-select :options="accounts" required v-model="addModel.userID" :class='{"is-invalid": !addModel.owner&&submited}'>
+                        <b-form-select :options="listUsers" required v-model="addModel.userID" :class='{"is-invalid": !addModel.userID&&submited}'>
                         </b-form-select>
                         <div class="invalid-feedback">
                             Please choose a owner.
@@ -108,7 +108,7 @@
                         </b-form-input>
                     </b-form-group>
                     <b-form-group label="Owner:">
-                        <b-form-select :options="accounts" required v-model="editModel.userID" :class='{"is-invalid": !addModel.owner&&submited}'>
+                        <b-form-select :options="listUsers" required v-model="editModel.userID" :class='{"is-invalid": !addModel.owner&&submited}'>
                         </b-form-select>
                         <div class="invalid-feedback">
                             Please choose a owner.

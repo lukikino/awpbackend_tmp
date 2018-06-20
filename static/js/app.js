@@ -1,17 +1,31 @@
-const getTemplate = function (path, component) {
+const getTemplate = function (path, component, permission) {
     return Vue.component(path.replace(/\//ig, '_'), function (resolve, reject) {
-        Vue.http.get('/static/views/' + path + '.html').then(function (r) {
-            component.template = r.body;
-            component.delimiters = ['{/', '/}'];
-            resolve(component);
-        });
+        var func = function () {
+            if (!app) {
+                setTimeout(func, 20);
+                return;
+            }
+            app.getUserStatus(function () {
+                if(this.chkPermission(permission)){
+                    Vue.http.get('/static/views/' + path + '.html').then(function (r) {
+                        component.template = r.body;
+                        component.delimiters = ['{/', '/}'];
+                        resolve(component);
+                    })
+                }
+                else{
+                    throw new Error();
+                }
+            });
+        };
+        setTimeout(func, 20);
     });
 }
 
 var fakeData = { items: [] };
 var fakeDataTotal = {};
 for (var i = 1; i < 60; i++) {
-    let item = {
+    var item = {
         date: '2018/5/22',
         account: 'peter' + Math.floor(Math.random() * 10),
         storeName: 'Jungle' + Math.floor(Math.random() * 10),
@@ -45,7 +59,7 @@ fakeDataTotal.hitRate = fakeDataTotal.winTimes / fakeDataTotal.playTimes * 100;
 
 var fakeTransactions = { items: [] };
 for (var i = 1; i < 60; i++) {
-    let item = {
+    var item = {
         storeName: 'Jungle' + Math.floor(Math.random() * 10),
         machineId: Math.floor(Math.random() * 10000000000),
         machineName: 'desert' + i,
@@ -69,7 +83,7 @@ for (var i = 1; i < 60; i++) {
 
 var fakeMachines = { items: [] };
 for (var i = 1; i < 60; i++) {
-    let item = {
+    var item = {
         machineId: Math.floor(Math.random() * 10000000000),
         storeName: 'Jungle' + Math.floor(Math.random() * 10),
         machineName: 'Dialbo' + Math.floor(Math.random() * 10),
@@ -83,7 +97,7 @@ for (var i = 1; i < 60; i++) {
 }
 var fakeAccounts = { items: [] };
 for (var i = 1; i < 60; i++) {
-    let item = {
+    var item = {
         account: Math.floor(Math.random() * 10000000000),
         status: Math.floor(Math.random() * 3) + 1,
         createTime: '2020/5/5 12:55:12',
@@ -108,10 +122,15 @@ var common = {
 Vue.component('dropdown', {
     delimiters: ['{/', '/}'],
     template: '#dropdown',
-    props: ['items'],
+    props: ['items', 'defaultCheckAll'],
+    data: function(){
+        return {
+            show: false
+        }
+    },
     computed: {
         selectedLength: function () {
-            return this.items.items.filter(function (v) { return v.check == true; }).length
+            return this.items.items.filter(function (v) { return v.checked == true; }).length
         },
         allChecked: function () {
             return !this.items.items || this.selectedLength == this.items.items.length;
@@ -129,20 +148,30 @@ Vue.component('dropdown', {
         },
         checkAll: function () {
             for (var index in this.items.items) {
-                this.items.items[index].check = true;
+                Vue.set(this.items.items[index], "checked", true);
             }
         },
         uncheckAll: function () {
             for (var index in this.items.items) {
-                this.items.items[index].check = false;
+                Vue.set(this.items.items[index], "checked", false);
+            }
+        },
+        toggle: function(){
+            this.show = !this.show;
+        },
+        documentClick: function(e){
+            var el = this.$refs.dropdownMenu;
+            var target = e.target;
+            if (( el !== target) && !el.contains(target)) {
+              this.show=false;
             }
         }
     },
     mounted: function () {
-        //prevent dropdown click close event (for bootstrap dropdown)
-        $('.dropdown-menu').click(function (e) {
-            e.stopPropagation();
-        });
+        document.addEventListener('click', this.documentClick);
+    },
+    destroyed: function() {
+        document.removeEventListener('click', this.documentClick);
     }
 });
 
@@ -156,20 +185,21 @@ Vue.component('treemenu', {
             type: Object,
             default: Object
         },
-        'checkList':  {
+        'checkList': {
             type: Object,
             default: Object
         },
         'depth': Number,
         'machine': Object,
         'onlyAccount': Boolean,
-        'extendLevel': Number },
-    data: function() {
+        'extendLevel': Number
+    },
+    data: function () {
         return { inited: false }
     },
     watch: {
-        nodes: function(){
-            if(this.depth < (this.extendLevel || 0) && !this.inited){
+        nodes: function () {
+            if (this.depth < (this.extendLevel || 0) && !this.inited) {
                 Vue.set(this.nodes, 'show', true);
                 Vue.set(this.checkList, 'account', 0);
                 Vue.set(this.checkList, 'machines', {});
@@ -178,64 +208,64 @@ Vue.component('treemenu', {
         }
     },
     computed: {
-        labelClasses: function() {
-          return { 'has-children': this.children }
+        labelClasses: function () {
+            return { 'has-children': this.children }
         },
-        iconClasses: function() {
+        iconClasses: function () {
             return {
-            'fa-plus-square-o': !this.showChildren,
-            'fa-minus-square-o': this.showChildren
-          }
+                'fa-plus-square-o': !this.showChildren,
+                'fa-minus-square-o': this.showChildren
+            }
         },
-        indent: function() {
+        indent: function () {
             return { transform: `translate(${this.depth * 50}px)` }
         },
-        showChildren: function(){
+        showChildren: function () {
             Vue.set(this.nodes, 'show', !!this.nodes.show);
             return this.nodes.show;
         }
     },
     methods: {
-        toggleChildren: function() {
+        toggleChildren: function () {
             this.nodes.show = !this.nodes.show;
         },
-        toggleMachineSelect: function(value){
-            if(value){
+        toggleMachineSelect: function (value) {
+            if (value) {
                 console.log(1)
                 var machine = value;
                 Vue.set(machine, 'owner', machine.owner.account);
                 Vue.set(this.checkList.machines, machine.machineID, machine);
             }
         },
-        toggleAccountSelect: function(value){
-            if(value){
+        toggleAccountSelect: function (value) {
+            if (value) {
                 Vue.set(this.checkList, 'account', value);
             }
         },
-        toggleSelectChildren: function(value){
+        toggleSelectChildren: function (value) {
             var check = value;
-            var recurciveCheck = function(node, checkList){
+            var recurciveCheck = function (node, checkList) {
                 Vue.set(node, 'checked', check);
                 Vue.set(node, 'show', check);
-                for(var key in node.machines){
+                for (var key in node.machines) {
                     Vue.set(node.machines[key], 'checked', check);
                     Vue.set(node.machines[key], 'owner', node.account);
                     var machineID = node.machines[key].machineID;
-                    if(check){
+                    if (check) {
                         Vue.set(checkList.machines, machineID, node.machines[key]);
                     }
-                    else if(!check){
+                    else if (!check) {
                         Vue.set(checkList.machines, machineID, false);
                     }
                 }
-                for(var key in node.children){
+                for (var key in node.children) {
                     recurciveCheck(node.children[key], checkList);
                 }
             };
             recurciveCheck(this.nodes, this.checkList);
         }
     },
-    created: function(){
+    created: function () {
         Vue.set(this.checkList, 'machines', this.checkList.machines || {});
     }
 });
@@ -332,35 +362,35 @@ const Home = {
     },
     methods: {
         search: function () {
-            let vm = this;
+            var vm = this;
             this.loading = true;
-            this.$http.get('/').then(function () {
+            Vue.http.get('/').then(function () {
                 setTimeout(() => {
                     vm.loading = false;
                 }, 2000);
-            });
+            }).catch(app.handlerError);
         }
     },
     created: function () {
-        let vm = this;
+        var vm = this;
         app.getAccounts((function (v) { this.accounts.items = v; }).bind(this));
         app.getStores((function (v) { this.stores.items = v; }).bind(this));
 
-        this.$http.get('/api/index/dashboard').then(function (res) {
+        Vue.http.get('/api/index/dashboard').then(function (res) {
             vm.summaryData.today = res.body[0];
             vm.summaryData.yesterday = res.body[1];
             vm.summaryData.wtd = res.body[2];
             vm.summaryData.mtd = res.body[3];
-        });
-        this.$http.get('/api/index/topoutrate').then(function (res) {
+        }).catch(app.handlerError);
+        Vue.http.get('/api/index/topoutrate').then(function (res) {
             vm.topOutRate.items = res.body;
-        });
-        this.$http.get('/api/index/topwinrate').then(function (res) {
+        }).catch(app.handlerError);
+        Vue.http.get('/api/index/topwinrate').then(function (res) {
             vm.topWinRate.items = res.body;
-        });
-        this.$http.get('/api/index/tophitrate').then(function (res) {
+        }).catch(app.handlerError);
+        Vue.http.get('/api/index/tophitrate').then(function (res) {
             vm.topHitRate.items = res.body;
-        });
+        }).catch(app.handlerError);
     },
     mounted: function () {
     }
@@ -401,20 +431,20 @@ const Operations = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
                 s = this.reportData.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.reportData.items.length < e)
                 e = this.reportData.items.length;
             return e;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.reportData.items.slice(start, end);
         }
     },
@@ -427,7 +457,7 @@ const Operations = {
             return group != this.group || 'active';
         },
         changeView: function (view) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -441,7 +471,7 @@ const Operations = {
             return this.currentPage != page || 'current';
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -449,16 +479,16 @@ const Operations = {
             }, 300);
         },
         search: function () {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             vm.searching = true;
-            vm.$http.get('/').then(function () {
+            Vue.http.get('/').then(function () {
                 vm.totalPage = Math.ceil(vm.reportData.items.length / vm.unit);
                 setTimeout(() => {
                     vm.loading = false;
                     vm.searching = false;
                 }, 2000);
-            });
+            }).catch(app.handlerError);
         }
     },
     created: function () {
@@ -506,20 +536,20 @@ const Accounting = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
                 s = this.reportData.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.reportData.items.length < e)
                 e = this.reportData.items.length;
             return e;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.reportData.items.slice(start, end);
         }
     },
@@ -532,7 +562,7 @@ const Accounting = {
             return group != this.group || 'active';
         },
         changeView: function (view) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -546,7 +576,7 @@ const Accounting = {
             return this.currentPage != page || 'current';
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -554,16 +584,16 @@ const Accounting = {
             }, 300);
         },
         search: function () {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             vm.searching = true;
-            vm.$http.get('/').then(function () {
+            Vue.http.get('/').then(function () {
                 vm.totalPage = Math.ceil(vm.reportData.items.length / vm.unit);
                 setTimeout(() => {
                     vm.loading = false;
                     vm.searching = false;
                 }, 2000);
-            });
+            }).catch(app.handlerError);
         }
     },
     created: function () {
@@ -580,14 +610,20 @@ const Transactions = {
     mixins: [common],
     data: function () {
         return {
+            searched: false,
             loading: false,
             searching: false,
-            reportData: fakeTransactions,
+            options: {
+                // https://momentjs.com/docs/#/displaying/
+            },
+            searchData: {startTime: Utils.date.todayStart().toString('yyyy/M/d H:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d H:mm:ss')},
+            // searchData: {startTime: new Date(), endTime: new Date()},
+            reportData: {items:[]},
             unit: 10,
             currentPage: 1,
             totalPage: 1,
             view: 1,
-            accounts: {
+            users: {
                 type: "Account",
                 items: []
             },
@@ -617,26 +653,26 @@ const Transactions = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
                 s = this.reportData.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.reportData.items.length < e)
                 e = this.reportData.items.length;
             return e;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.reportData.items.slice(start, end);
         }
     },
     methods: {
         changeView: function (view) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -650,32 +686,62 @@ const Transactions = {
             return this.currentPage != page || 'current';
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
                 vm.currentPage = page;
             }, 300);
         },
+        jpTitle: function(item){
+            return ["JP1：", this.thousandFormat(item.jp1Win),"\nJP2：", this.thousandFormat(item.jp2Win),"\nJP3：", this.thousandFormat(item.jp3Win),"\nJP4：", this.thousandFormat(item.jp4Win)].join("");
+        },
+        determineSearchString: function(items, determineKey){
+            if(!items || !items.map){return null;}
+            var len = items.length;
+            var checkedList = items.filter(function(item){ return item[determineKey] == true;})
+                .map(function(item){ return item["id"];});;
+            console.log(checkedList.length)
+            return (checkedList.length === len) ? null : checkedList.join(",");
+        },
         search: function () {
-            let vm = this;
+            console.log("search")
+            var vm = this;
             vm.loading = true;
             vm.searching = true;
-            vm.$http.get('/').then(function () {
-                vm.totalPage = Math.ceil(vm.reportData.items.length / vm.unit);
-                setTimeout(() => {
-                    vm.loading = false;
-                    vm.searching = false;
-                }, 2000);
-            });
+            vm.searched = true;
+            var search = {
+                users: vm.determineSearchString(vm.users.items, "checked"),
+                machines: vm.determineSearchString(vm.machines.items, "checked"),
+                stores: vm.determineSearchString(vm.stores.items, "checked"),
+                transactionTypes: vm.determineSearchString(vm.transactionTypes.items, "checked"),
+                gameTypes: vm.determineSearchString(vm.gameTypes.items, "checked"),
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime
+            };
+            Vue.http.post('/api/transactions', search).then(function (res) {
+                vm.reportData.items = res.body.data;
+                for(var i in vm.reportData.items){
+                    vm.reportData.items[i].memo = JSON.parse(vm.reportData.items[i].memo );
+                }
+                vm.total = res.body.total;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
+            }).catch(app.handlerError);
+        },
+        dropClick: function(ev){
+            ev.stopPropagation;
         }
     },
     created: function () {
-        app.getAccounts((function (v) { this.accounts.items = v; }).bind(this));
-        app.getStores((function (v) { this.stores.items = v; }).bind(this));
-        app.getMachines((function (v) { this.machines.items = v; }).bind(this));
-        app.getTransactionTypes((function (v) { this.transactionTypes.items = v; }).bind(this));
-        app.getGameTypes((function (v) { this.gameTypes.items = v; }).bind(this));
+        var vm = this;
+        app.getLists((function(data){
+            Vue.set(vm.users, "items", data.users.map(function(item){return {checked: true, id: item.userID, text: item.account}}));
+            Vue.set(vm.machines, "items", data.machines.map(function(item){return {checked: true,id: item.ID, text: item.pcbID + "-" + item.machineName}}));
+            Vue.set(vm.stores, "items",data.stores.map(function(item){return {checked: true,id: item, text: item}}));
+            Vue.set(vm.transactionTypes, "items",  data.transactionTypes.map(function(item){return {checked: true,id: item.ID, text: item.name}}));
+            Vue.set(vm.gameTypes, "items", data.gameTypes.map(function(item){return {checked: true,id: item.ID, text: item.name}}));
+        }).bind(vm));
     },
     mounted: function () {
         this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
@@ -688,6 +754,7 @@ const MachineList = {
         return {
             loading: false,
             filter: '',
+            listUsers: [],
             machines: { items: [] },
             unit: 10,
             currentPage: 1,
@@ -702,11 +769,7 @@ const MachineList = {
             },
             deleteModel: {
                 ID: null, pcbID: null, storeName: null, userID: null, confirm: null
-            },
-            accounts: [
-                { text: 'Select Owner', value: null },
-                { text: '1', value: 1 }
-            ]
+            }
         }
     },
     watch: {
@@ -721,27 +784,27 @@ const MachineList = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.total < s)
                 s = this.total - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.total < e)
                 e = this.total;
             return e;
         },
         filteredData: function () {
-            let rex = new RegExp(this.filter, "i");
-            let _filtered = this.machines.items.filter(function (item) {
+            var rex = new RegExp(this.filter, "i");
+            var _filtered = this.machines.items.filter(function (item) {
                 return rex.test(item.storeName) || rex.test(item.pcbID);
             });
             return _filtered;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.filteredData.slice(start, end);
         }
     },
@@ -750,17 +813,17 @@ const MachineList = {
             return this.currentPage != page || 'current';
         },
         getMachines: function () {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
-            this.$http.get('/api/machines').then(function (res) {
-                vm.machines.items = res.body.data
-                vm.total = res.body.total
+            Vue.http.get('/api/machines').then(function (res) {
+                vm.machines.items = res.body.data;
+                vm.total = res.body.total;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
-            });
+            }).catch(app.handlerError);
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -769,20 +832,21 @@ const MachineList = {
         },
         cancelAdd: function () {
             this.submited = false;
-            this.addModel.pcbID = this.addModel.storeName = this.addModel.userID = null;
+            this.addModel.userID = this.$root.loginUser.ID;
+            this.addModel.pcbID = this.addModel.storeName = null;
         },
         addMachine: function (ev) {
-            let vm = this;
+            var vm = this;
             if (vm.addModel.pcbID && vm.addModel.userID) {
                 vm.submited = false;
-                vm.$http.post('/api/machines', vm.addModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/machines', vm.addModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         vm.getMachines();
                     }
-                    else{
+                    else {
                         alert("Add Machine Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 this.submited = true;
@@ -793,42 +857,42 @@ const MachineList = {
             this.submited = false;
             this.editModel.ID = this.editModel.pcbID = this.editModel.storeName = this.editModel.userID = null;
         },
-        startEditMachine: function($event, id){
-            let vm = this;
-            vm.$http.get('/api/machines/' + id).then(function (res) {
-                if(res.body.code == 200){
+        startEditMachine: function ($event, id) {
+            var vm = this;
+            Vue.http.get('/api/machines/' + id).then(function (res) {
+                if (res.body.code == 200) {
                     Vue.set(vm, "editModel", res.body.data);
                     vm.$root.$emit('bv::show::modal', 'editMachineDialog', $event.target);
                 }
-                else{
+                else {
                     alert("Get Machine Data Error: " + res.body.message);
                 }
-            });
+            }).catch(app.handlerError);
         },
-        startDeleteMachine: function($event, id){
-            let vm = this;
-            vm.$http.get('/api/machines/' + id).then(function (res) {
-                if(res.body.code == 200){
+        startDeleteMachine: function ($event, id) {
+            var vm = this;
+            Vue.http.get('/api/machines/' + id).then(function (res) {
+                if (res.body.code == 200) {
                     Vue.set(vm, "deleteModel", res.body.data);
                     vm.$root.$emit('bv::show::modal', 'deleteMachineDialog', $event.target);
                 }
-                else{
+                else {
                     alert("Get Machine Data Error: " + res.body.message);
                 }
-            });
+            }).catch(app.handlerError);
         },
         editMachine: function (ev) {
-            let vm = this;
+            var vm = this;
             if (vm.editModel.userID) {
                 vm.submited = false;
-                vm.$http.post('/api/machines/' + vm.editModel.ID, vm.editModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/machines/' + vm.editModel.ID, vm.editModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         vm.getMachines();
                     }
-                    else{
+                    else {
                         alert("Edit Machine Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 this.submited = true;
@@ -836,17 +900,17 @@ const MachineList = {
             }
         },
         deleteMachine: function (ev) {
-            let vm = this;
+            var vm = this;
             if (vm.deleteModel.confirm == vm.deleteModel.pcbID) {
                 vm.submited = false;
-                vm.$http.delete('/api/machines/' + vm.deleteModel.ID).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.delete('/api/machines/' + vm.deleteModel.ID).then(function (res) {
+                    if (res.body.code == 200) {
                         vm.getMachines();
                     }
-                    else{
+                    else {
                         alert("Delete Machine Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 this.submited = true;
@@ -856,8 +920,21 @@ const MachineList = {
     },
     created: function () {
         this.getMachines();
+        this.addModel.userID = this.$root.loginUser.ID;
     },
     mounted: function () {
+        var vm = this;
+        Vue.http.get('/api/common/list/users').then(function (res) {
+            if (res.body.code == 200) {
+                vm.listUsers = res.body.data.map(function(item){
+                    return {text: item.account, value: item.userID};
+                });
+                vm.listUsers.unshift({text: "Select an owner", value: null});
+            }
+            else {
+                alert("Get MachineList Error: " + res.body.message);
+            }
+        }).catch(app.handlerError);
     }
 };
 
@@ -865,29 +942,29 @@ const MachineTransfer = {
     data: function () {
         return {
             step: 1,
-            machinesWithUsersTree: {nodes:{}, roots:{}},
-            usersTree: {nodes:{}, roots:{}},
+            machinesWithUsersTree: { nodes: {}, roots: {} },
+            usersTree: { nodes: {}, roots: {} },
             checkList: {}
         }
     },
     computed: {
-        checkedMachines: function(){
+        checkedMachines: function () {
             var vm = this;
-            return Object.keys(vm.checkList.machines).filter(function(key){
+            return Object.keys(vm.checkList.machines).filter(function (key) {
                 return vm.checkList.machines[key];
             });
         },
-        toTransferMachines: function(){
+        toTransferMachines: function () {
             return this.checkList.machines;
         }
     },
     methods: {
         toStep: function (step) {
-            if(this.step === 1 && step ===2 && !this.checkedMachines.length){
+            if (this.step === 1 && step === 2 && !this.checkedMachines.length) {
                 alert('Must select at least one machine.')
                 return;
             }
-            else if(this.step === 2 && step ===3 && !this.checkList.account){
+            else if (this.step === 2 && step === 3 && !this.checkList.account) {
                 alert('Must select one account.')
                 return;
             }
@@ -896,20 +973,20 @@ const MachineTransfer = {
         transfer: function () {
             var vm = this;
             var result = confirm('Really excuting machines transfer?');
-            var postData = {machines: vm.checkedMachines, account: vm.checkList.account.userID};
-            if(result){
-                vm.$http.post('/api/machinetransfer', postData).then(function (res) {
-                    if(res.body.code == 200){
+            var postData = { machines: vm.checkedMachines, account: vm.checkList.account.userID };
+            if (result) {
+                Vue.http.post('/api/machinetransfer', postData).then(function (res) {
+                    if (res.body.code == 200) {
                         alert('Transfer completed.');
                         location.reload();
                     }
-                    else{
+                    else {
                         alert("Add Machine Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
         },
-        _generatorTree: function(source){
+        _generatorTree: function (source) {
             var data = source;
             var machinesWithAccounts = [];
             var treeNodes = {};
@@ -920,13 +997,13 @@ const MachineTransfer = {
                 var current = treeNodes[item.userID];
                 var parent = treeNodes[item.parentID];
                 //build relation
-                if(!current){
+                if (!current) {
                     current = treeNodes[item.userID] = {
                         account: item.account,
                         userID: item.userID,
                         parentID: item.parentID
                     }
-                    if(parent){
+                    if (parent) {
                         current.parent = parent;
                         parent.children = parent.children || {};
                         parent.children[item.userID] = current;
@@ -934,11 +1011,11 @@ const MachineTransfer = {
                 }
 
                 //add machine
-                if(item.machineID){
+                if (item.machineID) {
                     current.machines = treeNodes[item.userID].machines || [];
-                    current.machines.push({machineID: item.machineID, machineName: item.machineName, storeName: item.storeName, pcbID: item.pcbID, owner: current});
+                    current.machines.push({ machineID: item.machineID, machineName: item.machineName, storeName: item.storeName, pcbID: item.pcbID, owner: current });
                 }
-                if(i === 0){
+                if (i === 0) {
                     tree.roots = current;
                 }
             }
@@ -948,25 +1025,25 @@ const MachineTransfer = {
     },
     mounted: function () {
         var vm = this;
-        this.$http.get('/api/common/getuserstree').then(function (res) {
-            if(res.body.code == 200){
+        Vue.http.get('/api/common/getuserstree').then(function (res) {
+            if (res.body.code == 200) {
                 // Vue.set(vm, "userstree", vm._generatorTree(res.body.data));
                 vm.usersTree = vm._generatorTree(res.body.data);
             }
-            else{
+            else {
                 alert("Get MachineList Error: " + res.body.message);
             }
-        });
+        }).catch(app.handlerError);
 
-        this.$http.get('/api/machinetransfer').then(function (res) {
-            if(res.body.code == 200){
+        Vue.http.get('/api/machinetransfer').then(function (res) {
+            if (res.body.code == 200) {
                 // Vue.set(vm, "machinesWithUsersTree", vm._generatorTree(res.body.data));
                 vm.machinesWithUsersTree = vm._generatorTree(res.body.data);
             }
-            else{
+            else {
                 alert("Get MachineList Error: " + res.body.message);
             }
-        });
+        }).catch(app.handlerError);
     }
 };
 
@@ -976,16 +1053,16 @@ const Core = {
         return {
             loading: false,
             filter: '',
-            users: {items:[]},
-            permissionList: {items:[]},
+            users: { items: [] },
+            permissionList: { items: [] },
             addModel: {
                 account: null, password: null, confirm: null
             },
             pwdModel: {
                 ID: null, account: null, password: null, confirm: null
             },
-            permissionModel:{
-                ID: null, account: null, items:[], list:{}
+            permissionModel: {
+                ID: null, account: null, items: [], list: {}
             },
             unit: 10,
             currentPage: 1,
@@ -1007,27 +1084,27 @@ const Core = {
         chkPageCurrent: function (page) {
             return this.currentPage != page || 'current';
         },
-        chkPolicy: function(model){
+        chkPolicy: function (model) {
             return this.chkAccount(model.account) && this.chkPassword(model.password) && model.password == model.confirm;
         },
-        chkAccount: function(account){
+        chkAccount: function (account) {
             return /^[a-zA-Z0-9]{6,16}$/.test(account);
         },
-        chkPassword: function(pwd){
+        chkPassword: function (pwd) {
             return /^(?=.*[0-9])(?=.*[a-z])(.{8,20})$/.test(pwd);
         },
-        encryptedPassword: function(pwd){
-            return CryptoJS.SHA512(pwd).toString(CryptoJS.enc.Hex)
+        encryptedPassword: function (pwd) {
+            return CryptoJS.SHA512(pwd).toString(CryptoJS.enc.Hex);
         },
         getPermissions: function (id, account) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
-            this.$http.get('/api/coreusers/permissions/' + id).then(function (res) {
+            Vue.http.get('/api/coreusers/permissions/' + id).then(function (res) {
                 vm.permissionModel.ID = id;
                 vm.permissionModel.account = account;
                 vm.permissionModel.items = res.body.data || [];
                 vm.permissionModel.list = {};
-                for(var i in res.body.data){
+                for (var i in res.body.data) {
                     var item = res.body.data[i];
                     var cat = item.name.split('_')[0];
                     var name = item.name.split('_')[1];
@@ -1036,7 +1113,7 @@ const Core = {
                     vm.permissionModel.list[cat][name] = item;
                 }
                 vm.loading = false;
-            });
+            }).catch(app.handlerError);
         },
         cancelPermissions: function () {
             this.submited = false;
@@ -1045,41 +1122,41 @@ const Core = {
             this.permissionModel.list = {};
         },
         editPermissions: function (ev) {
-            let vm = this;
-            vm.$http.post('/api/coreusers/permissions', {ID: vm.permissionModel.ID, permissions: vm.permissionModel.items}).then(function (res) {
-                if(res.body.code == 200){
+            var vm = this;
+            Vue.http.post('/api/coreusers/permissions', { ID: vm.permissionModel.ID, permissions: vm.permissionModel.items }).then(function (res) {
+                if (res.body.code == 200) {
                     alert("Permission change saved.")
                 }
-                else{
+                else {
                     alert("Permission change save Error: " + res.body.message);
                 }
-            });
+            }).catch(app.handlerError);
         },
         getUsers: function () {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
-            this.$http.get('/api/coreusers').then(function (res) {
+            Vue.http.get('/api/coreusers').then(function (res) {
                 vm.users.items = res.body.data;
                 vm.total = res.body.total;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
-            });
+            }).catch(app.handlerError);
         },
-        toggleActive: function(id){
-            let vm = this;
-            let user = vm.users.items.filter(function(item){
+        toggleActive: function (id) {
+            var vm = this;
+            var user = vm.users.items.filter(function (item) {
                 return item.ID === id;
             });
-            if(user && user.length === 1){
+            if (user && user.length === 1) {
                 user = user[0];
-                vm.$http.post('/api/coreusers/active/' + user.ID).then(function (res) {
-                    if(res.body.code == 200 && res.body.data){
+                Vue.http.post('/api/coreusers/active/' + user.ID).then(function (res) {
+                    if (res.body.code == 200 && res.body.data) {
                         user.state = res.body.data.state;
                     }
-                    else{
+                    else {
                         alert("Change active/deactive failed: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
         },
         cancelAdd: function () {
@@ -1087,55 +1164,55 @@ const Core = {
             this.addModel.account = this.addModel.password = this.addModel.confirm = null;
         },
         addUser: function (ev) {
-            let vm = this;
+            var vm = this;
             vm.submited = true;
             if (vm.chkPolicy(vm.addModel)) {
                 vm.submited = false;
                 delete vm.addModel.confirm;
                 vm.addModel.password = vm.encryptedPassword(vm.addModel.password);
-                vm.$http.post('/api/coreusers', vm.addModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/coreusers', vm.addModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         vm.getUsers();
                     }
-                    else{
+                    else {
                         alert("Add User Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 this.submited = true;
                 ev.preventDefault();
             }
         },
-        openChangePassword: function(id){
-            let vm = this;
-            let user = vm.users.items.filter(function(item){
+        openChangePassword: function (id) {
+            var vm = this;
+            var user = vm.users.items.filter(function (item) {
                 return item.ID === id;
             });
-            if(user && user.length === 1){
+            if (user && user.length === 1) {
                 vm.pwdModel.account = user[0].account;
                 vm.pwdModel.ID = user[0].ID;
             }
         },
-        cancelChangePassword: function(){
-            let vm = this;
+        cancelChangePassword: function () {
+            var vm = this;
             vm.pwdModel.ID = vm.pwdModel.account = vm.pwdModel.password = vm.pwdModel.confirm = null;
         },
-        changePassword: function(ev){
-            let vm = this;
+        changePassword: function (ev) {
+            var vm = this;
             vm.submited = true;
             if (vm.chkPolicy(vm.pwdModel)) {
                 vm.submited = false;
                 delete vm.pwdModel.confirm;
                 vm.pwdModel.password = vm.encryptedPassword(vm.pwdModel.password);
-                vm.$http.post('/api/coreusers/password/' + vm.pwdModel.ID, vm.pwdModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/coreusers/password/' + vm.pwdModel.ID, vm.pwdModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         alert("Password changed.");
                     }
-                    else{
+                    else {
                         alert("Change password failed: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 vm.submited = true;
@@ -1143,7 +1220,7 @@ const Core = {
             }
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -1166,31 +1243,31 @@ const Core = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.users.items.length < s)
                 s = this.users.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.users.items.length < e)
                 e = this.users.items.length;
             return e;
         },
         filteredData: function () {
-            let rex = new RegExp(this.filter, "ig");
-            let _filtered = this.users.items.filter(function (item) {
+            var rex = new RegExp(this.filter, "ig");
+            var _filtered = this.users.items.filter(function (item) {
                 return rex.test(item.account);
             });
             return _filtered;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.filteredData.slice(start, end);
         }
     },
-    created: function(){
+    created: function () {
         this.getUsers();
         // this.getPermissionList();
     },
@@ -1204,16 +1281,16 @@ const Agency = {
         return {
             loading: false,
             filter: '',
-            users: {items:[]},
-            permissionList: {items:[]},
+            users: { items: [] },
+            permissionList: { items: [] },
             addModel: {
                 account: null, password: null, confirm: null
             },
             pwdModel: {
                 ID: null, account: null, password: null, confirm: null
             },
-            permissionModel:{
-                ID: null, account: null, items:[], list:{}
+            permissionModel: {
+                ID: null, account: null, items: [], list: {}
             },
             unit: 10,
             currentPage: 1,
@@ -1235,27 +1312,27 @@ const Agency = {
         chkPageCurrent: function (page) {
             return this.currentPage != page || 'current';
         },
-        chkPolicy: function(model){
+        chkPolicy: function (model) {
             return this.chkAccount(model.account) && this.chkPassword(model.password) && model.password == model.confirm;
         },
-        chkAccount: function(account){
+        chkAccount: function (account) {
             return /^[a-zA-Z0-9]{6,16}$/.test(account);
         },
-        chkPassword: function(pwd){
+        chkPassword: function (pwd) {
             return /^(?=.*[0-9])(?=.*[a-z])(.{8,20})$/.test(pwd);
         },
-        encryptedPassword: function(pwd){
+        encryptedPassword: function (pwd) {
             return CryptoJS.SHA512(pwd).toString(CryptoJS.enc.Hex)
         },
         getPermissions: function (id, account) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
-            this.$http.get('/api/agency/permissions/' + id).then(function (res) {
+            Vue.http.get('/api/agency/permissions/' + id).then(function (res) {
                 vm.permissionModel.ID = id;
                 vm.permissionModel.account = account;
                 vm.permissionModel.items = res.body.data || [];
                 vm.permissionModel.list = {};
-                for(var i in res.body.data){
+                for (var i in res.body.data) {
                     var item = res.body.data[i];
                     var cat = item.name.split('_')[0];
                     var name = item.name.split('_')[1];
@@ -1264,7 +1341,7 @@ const Agency = {
                     vm.permissionModel.list[cat][name] = item;
                 }
                 vm.loading = false;
-            });
+            }).catch(app.handlerError);
         },
         cancelPermissions: function () {
             this.submited = false;
@@ -1273,41 +1350,42 @@ const Agency = {
             this.permissionModel.list = {};
         },
         editPermissions: function (ev) {
-            let vm = this;
-            vm.$http.post('/api/coreusers/permissions', {ID: vm.permissionModel.ID, permissions: vm.permissionModel.items}).then(function (res) {
-                if(res.body.code == 200){
+            var vm = this;
+            Vue.http.post('/api/agency/permissions', { ID: vm.permissionModel.ID, permissions: vm.permissionModel.items }).then(function (res) {
+                if (res.body.code == 200) {
                     alert("Permission change saved.")
                 }
-                else{
+                else {
                     alert("Permission change save Error: " + res.body.message);
                 }
-            });
+            }).catch(app.handlerError);
         },
         getUsers: function () {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
-            this.$http.get('/api/agency').then(function (res) {
+            console.log()
+            Vue.http.get('/api/agency').then(function (res) {
                 vm.users.items = res.body.data;
                 vm.total = res.body.total;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
-            });
+            }).catch(app.handlerError);
         },
-        toggleActive: function(id){
-            let vm = this;
-            let user = vm.users.items.filter(function(item){
+        toggleActive: function (id) {
+            var vm = this;
+            var user = vm.users.items.filter(function (item) {
                 return item.ID === id;
             });
-            if(user && user.length === 1){
+            if (user && user.length === 1) {
                 user = user[0];
-                vm.$http.post('/api/agency/active/' + user.ID).then(function (res) {
-                    if(res.body.code == 200 && res.body.data){
+                Vue.http.post('/api/agency/active/' + user.ID).then(function (res) {
+                    if (res.body.code == 200 && res.body.data) {
                         user.state = res.body.data.state;
                     }
-                    else{
+                    else {
                         alert("Change active/deactive failed: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
         },
         cancelAdd: function () {
@@ -1315,55 +1393,55 @@ const Agency = {
             this.addModel.account = this.addModel.password = this.addModel.confirm = null;
         },
         addUser: function (ev) {
-            let vm = this;
+            var vm = this;
             vm.submited = true;
             if (vm.chkPolicy(vm.addModel)) {
                 vm.submited = false;
                 delete vm.addModel.confirm;
                 vm.addModel.password = vm.encryptedPassword(vm.addModel.password);
-                vm.$http.post('/api/agency', vm.addModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/agency', vm.addModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         vm.getUsers();
                     }
-                    else{
+                    else {
                         alert("Add User Error: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 this.submited = true;
                 ev.preventDefault();
             }
         },
-        openChangePassword: function(id){
-            let vm = this;
-            let user = vm.users.items.filter(function(item){
+        openChangePassword: function (id) {
+            var vm = this;
+            var user = vm.users.items.filter(function (item) {
                 return item.ID === id;
             });
-            if(user && user.length === 1){
+            if (user && user.length === 1) {
                 vm.pwdModel.account = user[0].account;
                 vm.pwdModel.ID = user[0].ID;
             }
         },
-        cancelChangePassword: function(){
-            let vm = this;
+        cancelChangePassword: function () {
+            var vm = this;
             vm.pwdModel.ID = vm.pwdModel.account = vm.pwdModel.password = vm.pwdModel.confirm = null;
         },
-        changePassword: function(ev){
-            let vm = this;
+        changePassword: function (ev) {
+            var vm = this;
             vm.submited = true;
             if (vm.chkPolicy(vm.pwdModel)) {
                 vm.submited = false;
                 delete vm.pwdModel.confirm;
                 vm.pwdModel.password = vm.encryptedPassword(vm.pwdModel.password);
-                vm.$http.post('/api/agency/password/' + vm.pwdModel.ID, vm.pwdModel, {emulateJSON: true}).then(function (res) {
-                    if(res.body.code == 200){
+                Vue.http.post('/api/agency/password/' + vm.pwdModel.ID, vm.pwdModel, { emulateJSON: true }).then(function (res) {
+                    if (res.body.code == 200) {
                         alert("Password changed.");
                     }
-                    else{
+                    else {
                         alert("Change password failed: " + res.body.message);
                     }
-                });
+                }).catch(app.handlerError);
             }
             else {
                 vm.submited = true;
@@ -1371,7 +1449,7 @@ const Agency = {
             }
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -1394,31 +1472,31 @@ const Agency = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.users.items.length < s)
                 s = this.users.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.users.items.length < e)
                 e = this.users.items.length;
             return e;
         },
         filteredData: function () {
-            let rex = new RegExp(this.filter, "ig");
-            let _filtered = this.users.items.filter(function (item) {
+            var rex = new RegExp(this.filter, "ig");
+            var _filtered = this.users.items.filter(function (item) {
                 return rex.test(item.account);
             });
             return _filtered;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.filteredData.slice(start, end);
         }
     },
-    created: function(){
+    created: function () {
         this.getUsers();
     },
     mounted: function () {
@@ -1452,7 +1530,7 @@ const VersionSetting = {
             return this.currentPage != page || 'current';
         },
         changePage: function (page) {
-            let vm = this;
+            var vm = this;
             vm.loading = true;
             setTimeout(() => {
                 vm.loading = false;
@@ -1474,27 +1552,27 @@ const VersionSetting = {
     },
     computed: {
         startRow: function () {
-            let s = (this.currentPage - 1) * this.unit;
+            var s = (this.currentPage - 1) * this.unit;
             if (this.machines.items.length < s)
                 s = this.machines.items.length - 1;
             return s;
         },
         endRow: function () {
-            let e = this.currentPage * this.unit;
+            var e = this.currentPage * this.unit;
             if (this.machines.items.length < e)
                 e = this.machines.items.length;
             return e;
         },
         filteredData: function () {
-            let rex = new RegExp(this.filter, "ig");
-            let _filtered = this.machines.items.filter(function (item) {
+            var rex = new RegExp(this.filter, "ig");
+            var _filtered = this.machines.items.filter(function (item) {
                 return rex.test(item.machineId) || rex.test(item.machineName) || rex.test(item.storeName) || rex.test(item.currentVersion);
             });
             return _filtered;
         },
         viewData: function () {
-            let start = this.startRow;
-            let end = this.endRow;
+            var start = this.startRow;
+            var end = this.endRow;
             return this.filteredData.slice(start, end);
         }
     },
@@ -1512,65 +1590,128 @@ const JPServer = {
     }
 };
 
+Vue.component('date-picker', VueBootstrapDatetimePicker);
+$.extend(true, $.fn.datetimepicker.defaults, {
+    // debug: true,
+    format : 'YYYY/MM/DD H:mm:ss',
+    showClear: true,
+    showClose: true,
+    icons: {
+      time: 'far fa-clock',
+      date: 'far fa-calendar',
+      up: 'fas fa-arrow-up',
+      down: 'fas fa-arrow-down',
+      previous: 'fas fa-chevron-left',
+      next: 'fas fa-chevron-right',
+      today: 'fas fa-calendar-check',
+      clear: 'far fa-trash-alt',
+      close: 'far fa-times-circle'
+    }
+  });
+
 const router = new VueRouter({
     mode: 'history',
     base: '/',
     routes: [
-        { path: '/', component: getTemplate('index', Home) },
-        { path: '/machines/list', component: getTemplate('machines/list', MachineList) },
-        { path: '/machines/transfer', component: getTemplate('machines/transfer', MachineTransfer) },
-        { path: '/accounting/machines', component: getTemplate('accounting/accounting', Accounting) },
-        { path: '/accounting/accounts', component: getTemplate('accounting/accounting', Accounting) },
-        { path: '/accounting/stores', component: getTemplate('accounting/accounting', Accounting) },
-        { path: '/operations/day', component: getTemplate('operations/operations', Operations) },
-        { path: '/operations/week', component: getTemplate('operations/operations', Operations) },
-        { path: '/operations/month', component: getTemplate('operations/operations', Operations) },
-        { path: '/transactions', component: getTemplate('transactions/transactions', Transactions) },
-        { path: '/users/core', component: getTemplate('users/core', Core) },
-        { path: '/users/agency', component: getTemplate('users/agency', Agency) },
-        { path: '/settings/version', component: getTemplate('settings/versionsetting', VersionSetting) },
-        { path: '/settings/jpserver', component: getTemplate('settings/jpserver', JPServer) },
-        { path: '/reports/jackpot', component: getTemplate('reports/jackpot', Home) },
+        { path: '/', component: getTemplate('dashboard', Home) },
+        { path: '/machines/list', component: getTemplate('machines/list', MachineList, "machineList.view") },
+        { path: '/machines/transfer', component: getTemplate('machines/transfer', MachineTransfer, "machineTransfer.view") },
+        { path: '/accounting/machines', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/accounting/accounts', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/accounting/stores', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/operations/day', component: getTemplate('operations/operations', Operations, "operations.view") },
+        { path: '/operations/week', component: getTemplate('operations/operations', Operations, "operations.view") },
+        { path: '/operations/month', component: getTemplate('operations/operations', Operations, "operations.view") },
+        { path: '/transactions', component: getTemplate('transactions/transactions', Transactions, "transactions.view") },
+        { path: '/users/core', component: getTemplate('users/core', Core, "coreUser.view") },
+        { path: '/users/agency', component: getTemplate('users/agency', Agency, "agency.view") },
+        { path: '/settings/version', component: getTemplate('settings/versionsetting', VersionSetting, "versionSetting.view") },
+        { path: '/settings/jpserver', component: getTemplate('settings/jpserver', JPServer, "jpStatus.view") },
+        { path: '/reports/jackpot', component: getTemplate('reports/jackpot', Home, "machineTransfer.view") },
     ]
-})
+});
+
 var app = new Vue({
     router,
     delimiters: ['{/', '/}'],
     el: '#app',
     data: {
+        loginUser: {}
     },
     methods: {
+        logout: function () {
+            $('<form action="/logout" method="POST"></form>').appendTo('body').submit();
+        },
+        handlerError: function (err) {
+            console.log(err)
+            alert('Login session expired or no permission, please login.');
+            location = ["/login", "?r=", location.pathname].join('');
+        },
+        chkPermission: function(permission){
+            permission = permission || "";
+            var _t = this.loginUser.permissions || {};
+            var _ps = permission.split(".");
+            for (var i in _ps) {
+                _t = _t[_ps[i]] || {};
+            }
+            if (/true/i.test(_t) || permission === "") {
+                return true;
+            }
+            else{
+                return false;
+            }
+        },
+        getUserStatus: function (callback) {
+            var vm = this;
+            Vue.http.get("/getloginstatus").then(function (res) {
+                if (res.body.code == 200) {
+                    Vue.set(vm, "loginUser", res.body.data);
+                    if (callback && typeof (callback) === "function") {
+                        callback.apply(vm);
+                    }
+                }
+            }).catch(this.handlerError);
+        },
+        getLists: function(cb){
+            var vm = this;
+            Vue.http.get("/api/common/list/all").then(function (res) {
+                if (res.body.code == 200) {
+                    cb.call(vm, res.body.data);
+                }
+            }).catch(this.handlerError);
+        },
         getAccounts: function (cb) {
-            let r = [];
+            var r = [];
             for (var i = 0; i < 20; i++) {
                 r.push({ text: 'test test' + i, id: i, check: true });
             } cb(r);
         },
         getStores: function (cb) {
-            let r = [];
+            var r = [];
             for (var i = 0; i < 30; i++) {
                 r.push({ text: 'test test' + i, id: i, check: true });
             } cb(r);
         },
         getMachines: function (cb) {
-            let r = [];
+            var r = [];
             for (var i = 0; i < 50; i++) {
                 r.push({ text: 'test test' + i, id: i, check: true });
             } cb(r);
         },
         getTransactionTypes: function (cb) {
-            let r = [];
+            var r = [];
             for (var i = 0; i < 50; i++) {
                 r.push({ text: 'test test' + i, id: i, check: true });
             } cb(r);
         },
         getGameTypes: function (cb) {
-            let r = [];
+            var r = [];
             for (var i = 0; i < 10; i++) {
                 r.push({ text: 'test test' + i, id: i, check: true });
             } cb(r);
         }
     },
-    monted: function () {
+    mounted: function () {
+        //this.getUserStatus();
     }
 })
