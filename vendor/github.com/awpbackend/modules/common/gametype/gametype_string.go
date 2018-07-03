@@ -4,9 +4,9 @@ package gametype
 
 import "strconv"
 
-const _GameType_name = "MainGameFreeGameFeverGame"
+const _GameType_name = "MainGameFreeGameFeverGameJPGame"
 
-var _GameType_index = [...]uint8{0, 8, 16, 25}
+var _GameType_index = [...]uint8{0, 8, 16, 25, 31}
 
 func (i GameType) String() string {
 	i -= 1

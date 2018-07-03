@@ -9,14 +9,14 @@
             <div class="col-lg-12">
                 <form>
                     <div class="form-group">
-                        <dropdown :items="accounts"></dropdown>
+                        <dropdown :items="users"></dropdown>
                         <dropdown :items="stores"></dropdown>
                         <dropdown :items="machines"></dropdown>
                         <label class="col-form-label m-r-10">Duration :</label>
                         <div class="btn-group">
-                            <input type="date" class="form-control input-sm" placeholder="dd/mm/yyyy">
+                            <date-picker name="date" v-model="searchData.startTime"></date-picker>
                             <span class="col-form-label"> ～ </span>
-                            <input type="date" class="form-control input-sm" placeholder="dd/mm/yyyy">
+                            <date-picker name="date" v-model="searchData.endTime"></date-picker>
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-primary btn-sm" type="button" @click="search">
@@ -43,13 +43,13 @@
                         </div>
                         <div class="dataTables_length m-r-20">
                             <label>Group View By </label>
-                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup(1)" @click="changeGroup(1)">
+                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup('machine')" @click="changeGroup('machine')">
                                 Machine
                             </button>
-                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup(2)" @click="changeGroup(2)">
+                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup('user')" @click="changeGroup('user')">
                                 Account
                             </button>
-                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup(3)" @click="changeGroup(3)">
+                            <button class="btn btn-sm btn-outline-primary" type="button" :class="chkGroup('storename')" @click="changeGroup('storename')">
                                 Store
                             </button>
                         </div>
@@ -62,54 +62,71 @@
                                 Detail
                             </button>
                         </div>
-                        <div class="alert alert-danger" v-if="viewData.length === 0">There is no data cloud display.</div>
-                        <table id="myTable" class="table table-hover no-footer" role="grid" aria-describedby="myTable_info">
+                        <div class="alert alert-danger" v-if="viewData.length === 0 && searched">There is no data cloud display.</div>
+                        <div class="alert alert-info" v-if="viewData.length === 0 && !searched">Press search button to start.</div>
+                        <table v-if="viewData.length" id="myTable" class="table table-hover no-footer" role="grid" aria-describedby="myTable_info">
                             <thead>
                                 <tr role="row">
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">Date</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
-                                        v-if="group!=2">Store Name</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
-                                        v-if="group==2">Account</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Machine ID: activate to sort column ascending"
-                                        v-if="view==2&&group==1">Machine ID</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Machine Name: activate to sort column ascending"
-                                        v-if="group==1">Machine Name</th>
+                                        v-if="searchData.groupBy=='machine'">Machine</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
+                                        v-if="searchData.groupBy!='user'">Store Name</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
+                                        v-if="searchData.groupBy=='user' || searchData.groupBy=='machine'">Account</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending">Total In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Coin In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Bill In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Key In</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Out: activate to sort column ascending">Total Out</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Out Rate: activate to sort column ascending"
-                                        v-if="view==2">Out Rate</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Coin Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Bill Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Key Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1"
+                                        colspan="1" aria-label="Out Rate: activate to sort column ascending" v-if="showDetail">Out Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Bet: activate to sort column ascending">Total Bet</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Win Rate: activate to sort column ascending"
-                                        v-if="view==2">Win Rate</th>
+                                        v-if="showDetail">Win Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Play Times: activate to sort column ascending">Total Play Times</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win Times: activate to sort column ascending">Total Win Times</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Hit Rate: activate to sort column ascending"
-                                        v-if="view==2">Hit Rate</th>
+                                        v-if="showDetail">Hit Rate</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr role="row" v-for="item in viewData">
                                     <td>{/ item.date /}</td>
-                                    <td v-if="group!=2">{/ item.storeName /}</td>
-                                    <td v-if="group==2">{/ item.account /}</td>
-                                    <td v-if="view==2&&group==1">{/ item.machineId /}</td>
-                                    <td v-if="group==1">{/ item.machineName /}</td>
-                                    <td>{/ thousandFormat(item.in) /}</td>
-                                    <td>{/ thousandFormat(item.out) /}</td>
-                                    <td v-if="view==2">{/ percentageFormat(item.outRate) /}</td>
-                                    <td>{/ thousandFormat(item.bet) /}</td>
-                                    <td>{/ thousandFormat(item.win) /}</td>
-                                    <td v-if="view==2">{/ percentageFormat(item.winRate) /}</td>
-                                    <td>{/ item.playTimes /}</td>
-                                    <td>{/ item.winTimes /}</td>
-                                    <td v-if="view==2">{/ percentageFormat(item.hitRate) /}</td>
+                                    <td v-if="searchData.groupBy=='machine'">{/ item.pcbID /}({/ item.machineName /})</td>
+                                    <td v-if="searchData.groupBy!='user'">{/ item.storeName /}</td>
+                                    <td v-if="searchData.groupBy=='user' || searchData.groupBy=='machine'">{/ item.account /}</td>
+                                    <td>{/ thousandFormat(item.totalIn) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalCoinIn) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalBillIn) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalKeyIn) /}</td>
+                                    <td>{/ thousandFormat(item.totalOut) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalCoinOut) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalBillOut) /}</td>
+                                    <td v-if="showDetail">{/ thousandFormat(item.totalKeyOut) /}</td>
+                                    <td v-if="showDetail">{/ percentageFormat(item.outRate) /}</td>
+                                    <td>{/ thousandFormat(item.totalBet) /}</td>
+                                    <td>{/ thousandFormat(item.totalWin) /}</td>
+                                    <td v-if="showDetail">{/ percentageFormat(item.winRate) /}</td>
+                                    <td>{/ item.totalPlayTimes /}</td>
+                                    <td>{/ item.totalWinTimes /}</td>
+                                    <td v-if="showDetail">{/ percentageFormat(item.hitRate) /}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(viewData.length, endRow) /} of {/ reportData.items.length /} entries</div>
-                        <div class="dataTables_paginate paging_simple_numbers" id="myTable_paginate" v-if="viewData.length > 0">
+                        <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(viewData.length, endRow) /} of {/ reportData.items.length
+                            /} entries</div>
+                        <div v-if="totalPage > 1" class="dataTables_paginate paging_simple_numbers" id="myTable_paginate">
                             <a @click="changePage(currentPage-1)" v-if="currentPage > 1" class="paginate_button btn-sm previous" aria-controls="myTable"
                                 data-dt-idx="0" tabindex="0" id="myTable_previous">Previous</a>
                             <span>
@@ -125,15 +142,27 @@
             <div class="col-lg-12" v-if="viewData.length > 0">
                 <h4>Total</h4>
                 <div class="table-responsive">
-                    <svg class="circular" viewBox="25 25 50 50" v-if="searching">
+                    <svg class="circular" viewBox="25 25 50 50" v-if="loading">
                         <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
                     </svg>
-                    <div id="myTable_wrapper" class="dataTables_wrapper no-footer" :class='{"loading-opacity": searching}'>
+                    <div id="myTable_wrapper" class="dataTables_wrapper no-footer" :class='{"loading-opacity": loading}'>
                         <table id="myTable" class="table  no-footer" role="grid" aria-describedby="myTable_info">
                             <thead>
                                 <tr role="row">
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending">Total In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Coin In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Bill In</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Key In</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending">Total Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Coin Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Bill Out</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
+                                        v-if="showDetail">Total Key Out</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Out Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Total Bet</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending">Total Win</th>
@@ -146,15 +175,23 @@
                             <tbody>
                                 <tr role="row">
                                     <tr role="row">
-                                        <td>{/ thousandFormat(reportDataTotal.in) /}</td>
-                                        <td>{/ thousandFormat(reportDataTotal.out) /}</td>
-                                        <td>{/ percentageFormat(reportDataTotal.outRate) /}</td>
-                                        <td>{/ thousandFormat(reportDataTotal.bet) /}</td>
-                                        <td>{/ thousandFormat(reportDataTotal.win) /}</td>
-                                        <td>{/ percentageFormat(reportDataTotal.winRate) /}</td>
-                                        <td>{/ reportDataTotal.playTimes /}</td>
-                                        <td>{/ reportDataTotal.winTimes /}</td>
-                                        <td>{/ percentageFormat(reportDataTotal.hitRate) /}</td>
+                                        <td>{/ thousandFormat(summaryReportData.totalIn) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalCoinIn) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalBillIn) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalKeyIn) /}</td>
+                                        <td>{/ thousandFormat(summaryReportData.totalOut) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalCoinOut) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalBillOut) /}</td>
+                                        <td v-if="showDetail">{/ thousandFormat(summaryReportData.totalKeyOut) /}</td>
+                                        <td>{/ percentageFormat(summaryReportData.totalOut/summaryReportData.totalIn*100) /}</td>
+                                        <td>{/ thousandFormat(summaryReportData.totalBet) /}</td>
+                                        <td>{/ thousandFormat(summaryReportData.totalWin) /}</td>
+                                        <td>{/ percentageFormat(summaryReportData.totalWin/summaryReportData.totalBet*100) /}</td>
+                                        <td>{/ summaryReportData.totalPlayTimes /}</td>
+                                        <td>{/ summaryReportData.totalWinTimes /}</td>
+                                        <td>{/ percentageFormat(summaryReportData.totalWinTimes/summaryReportData.totalPlayTimes*100)
+                                            /}
+                                        </td>
                                     </tr>
                                 </tr>
                             </tbody>

@@ -22,6 +22,9 @@ func GetStaticPermissions() PermissionEnum {
 			Agency:          PermissionEnumAction{View: "active", Create: "active", Edit: "active", Delete: "active"},
 			VersionSetting:  PermissionEnumAction{View: "active", Edit: "active"},
 			JPStatus:        PermissionEnumAction{View: "active"},
+			ReportJackpot:   PermissionEnumAction{View: "active"},
+			ReportMachine:   PermissionEnumAction{View: "active"},
+			ReportRevenue:   PermissionEnumAction{View: "active"},
 		}
 		v := reflect.ValueOf(&permissionEnum).Elem()
 		// for i := 0; i < v.Elem().Type().NumField(); i++ {
@@ -54,6 +57,9 @@ type PermissionEnum struct {
 	Agency          PermissionEnumAction `db:"agency" json:"agency,omitempty"`
 	VersionSetting  PermissionEnumAction `db:"versionsetting" json:"versionSetting,omitempty"`
 	JPStatus        PermissionEnumAction `db:"jpstatus" json:"jpStatus,omitempty"`
+	ReportJackpot   PermissionEnumAction `db:"reportjackpot" json:"reportJackpot,omitempty"`
+	ReportMachine   PermissionEnumAction `db:"reportmachine" json:"reportMachine,omitempty"`
+	ReportRevenue   PermissionEnumAction `db:"reportrevenue" json:"reportRevenue,omitempty"`
 }
 
 type PermissionEnumAction struct {

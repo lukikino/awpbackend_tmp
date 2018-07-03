@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	common "github.com/awpbackend/modules/common"
 	"github.com/awpbackend/modules/common/gametype"
@@ -62,6 +63,16 @@ func (t *Common) GetLists() {
 	list.GameTypes = gametype.GetGameTypes()
 	t.RenderJSON(m.BoxingToResult(list, nil), http.StatusOK)
 }
+func (t *Common) GenFakeData() {
+	m.GenFakeData()
+}
+
+func (t *Common) GenTransactions() {
+	turns, err := strconv.Atoi(t.Ctx.Params["turns"])
+	if err == nil {
+		m.GenTransactions(turns)
+	}
+}
 
 //NewTodo returns a new  todo list controller
 func NewCommon() controller.Controller {
@@ -71,6 +82,8 @@ func NewCommon() controller.Controller {
 			"get;/api/common/getuserstree;GeUsersTree",
 			"get;/api/common/list/users;GetListUsers",
 			"get;/api/common/list/all;GetLists",
+			"get;/api/common/fake;GenFakeData",
+			"get;/api/common/faketurn/{turns};GenTransactions",
 		},
 	}
 }

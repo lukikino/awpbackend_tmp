@@ -4,14 +4,23 @@ package transactiontype
 
 import "strconv"
 
-const _TransactionType_name = "KeyinKeyoutCoininCoinoutPlay"
+const (
+	_TransactionType_name_0 = "CreditInCreditOut"
+	_TransactionType_name_1 = "Play"
+)
 
-var _TransactionType_index = [...]uint8{0, 5, 11, 17, 24, 28}
+var (
+	_TransactionType_index_0 = [...]uint8{0, 8, 17}
+)
 
 func (i TransactionType) String() string {
-	i -= 1
-	if i < 0 || i >= TransactionType(len(_TransactionType_index)-1) {
-		return "TransactionType(" + strconv.FormatInt(int64(i+1), 10) + ")"
+	switch {
+	case 1 <= i && i <= 2:
+		i -= 1
+		return _TransactionType_name_0[_TransactionType_index_0[i]:_TransactionType_index_0[i+1]]
+	case i == 10:
+		return _TransactionType_name_1
+	default:
+		return "TransactionType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _TransactionType_name[_TransactionType_index[i]:_TransactionType_index[i+1]]
 }

@@ -1,64 +1,38 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 
+	common "github.com/awpbackend/modules/common"
+	m "github.com/awpbackend/modules/models"
 	"github.com/gernest/utron/controller"
 )
 
 //comments
-type Operation struct {
+type Operations struct {
 	controller.BaseController
 	Routes []string
 }
 
-//comments
-func (t *Operation) Day() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
+func (t *Operations) GetOperations() {
+	CheckPermission(t.Ctx, common.GetStaticPermissions().Operations.View)
+	req := t.Ctx.Request()
+	decoder := json.NewDecoder(req.Body)
+	var data m.OperationSearch
+	if err := decoder.Decode(&data); err != nil {
+		t.Ctx.Data["Message"] = err.Error()
+		t.RenderJSON(m.ErrorResult(err.Error(), "400"), http.StatusBadRequest)
+		return
+	} else {
+		t.RenderJSON(m.GetOperations(GetLoginStatus(t.Ctx.Request()).ID, data), http.StatusOK)
 	}
-	t.Ctx.Template = "operations/operationsHTML"
-	t.HTML(http.StatusOK)
-}
-
-//comments
-func (t *Operation) Week() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
-	}
-	t.Ctx.Template = "operations/operationsHTML"
-	t.HTML(http.StatusOK)
-}
-
-//comments
-func (t *Operation) Month() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
-	}
-	t.Ctx.Template = "operations/operationsHTML"
-	t.HTML(http.StatusOK)
-}
-
-//comments
-func (t *Operation) Machines() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
-	}
-	t.Ctx.Template = "operations/operationsHTML"
-	t.HTML(http.StatusOK)
 }
 
 //comments
 func NewOperations() controller.Controller {
-	return &Operation{
-		Routes: []string{},
+	return &Operations{
+		Routes: []string{
+			"post;/api/operations;GetOperations"},
 	}
 }

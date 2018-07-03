@@ -156,12 +156,16 @@
                                 <template slot="button-content">
                                     <span>{/ $root.loginUser.account /}</span>
                                 </template>
-                                <b-dropdown-item-button><a href="#">
-                                    <i class="ti-settings"></i> Setting</a></b-dropdown-item-button>
-                                <b-dropdown-item-button @click="logout"><a href="javascript:">
-                                    <i class="fas fa-power-off"></i> Logout</a></b-dropdown-item-button>
+                                <b-dropdown-item-button>
+                                    <a href="#">
+                                        <i class="ti-settings"></i> Setting</a>
+                                </b-dropdown-item-button>
+                                <b-dropdown-item-button @click="logout">
+                                    <a href="javascript:">
+                                        <i class="fas fa-power-off"></i> Logout</a>
+                                </b-dropdown-item-button>
                             </b-dropdown>
-                          </div>
+                        </div>
                         <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted  " href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="/static/images/users/1.jpg" alt="user" class="profile-pic" />
@@ -194,12 +198,17 @@
                         <li class="nav-devider"></li>
                         <li class="nav-label">Home</li>
                         <li>
-                            <a class="" href="/" aria-expanded="false">
+                            <router-link :to="{ path:'/dashboard' }" aria-expanded="false">
                                 <i class="fas fa-tachometer-alt"></i>
                                 <span class="hide-menu">Dashboard </span>
-                            </a>
+                            </router-link>
+                            <!-- <a class="" href="/" aria-expanded="false">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span class="hide-menu">Dashboard </span>
+                            </a> -->
                         </li>
-                        <li v-if="$root.chkPermission('operations.view') || $root.chkPermission('accounting.view') || $root.chkPermission('transactions.view')" class="nav-label">Accountings</li>
+                        <li v-if="$root.chkPermission('operations.view') || $root.chkPermission('accounting.view') || $root.chkPermission('transactions.view')"
+                            class="nav-label">Accountings</li>
                         <li v-if="$root.chkPermission('operations.view')">
                             <a class="has-arrow" aria-expanded="false" href="javascript:">
                                 <i class="fas fa-chart-line"></i>
@@ -207,13 +216,16 @@
                             </a>
                             <ul aria-expanded="false" class="collapse">
                                 <li>
-                                    <a href="/operations/day">Day</a>
+                                    <router-link v-if="$root.chkPermission('operations.view')" :to="{ path:'/operations/day' }">Day</router-link>
+                                    <!-- <a href="/operations?interval=day">Day</a> -->
                                 </li>
                                 <li>
-                                    <a href="/operations/week">Week</a>
+                                    <router-link v-if="$root.chkPermission('operations.view')" :to="{ path:'/operations/week' }">Week</router-link>
+                                    <!-- <a href="/operations?interval=week">Week</a> -->
                                 </li>
                                 <li>
-                                    <a href="/operations/month">Month</a>
+                                    <router-link v-if="$root.chkPermission('operations.view')" :to="{ path:'/operations/month' }">Month</router-link>
+                                    <!-- <a href="/operations?interval=month">Month</a> -->
                                 </li>
                             </ul>
                         </li>
@@ -224,85 +236,116 @@
                             </a>
                             <ul aria-expanded="false" class="collapse">
                                 <li>
-                                    <a href="/accounting/machines">Machines</a>
+                                    <router-link v-if="$root.chkPermission('accounting.view')" :to="{ path:'/accounting/machine' }">Machines</router-link>
+                                    <!-- <a href="/accounting?group=machine">Machines</a> -->
                                 </li>
                                 <li>
-                                    <a href="/accounting/accounts">Account</a>
+                                    <router-link v-if="$root.chkPermission('accounting.view')" :to="{ path:'/accounting/user' }">Account</router-link>
+                                    <!-- <a href="/accounting?group=user">Account</a> -->
                                 </li>
                                 <li>
-                                    <a href="/accounting/stores">Store</a>
+                                    <router-link v-if="$root.chkPermission('accounting.view')" :to="{ path:'/accounting/storename' }">Store</router-link>
+                                    <!-- <a href="/accounting?group=storename">Store</a> -->
                                 </li>
                             </ul>
                         </li>
                         <li v-if="$root.chkPermission('transactions.view')">
-                            <a class="" href="/transactions" aria-expanded="false">
+                            <router-link :to="{ path:'/transactions' }" aria-expanded="false">
+                                <i class="fas fa-handshake"></i>
+                                <span class="hide-menu">Transactions </span>
+                            </router-link>
+                            <!-- <a class="" href="/transactions" aria-expanded="false">
                                 <i class="fas fa-handshake"></i>
                                 <span class="hide-menu">Transactions</span>
-                            </a>
+                            </a> -->
                         </li>
-                        <!-- <li class="nav-label">Reports</li>
-                <li>
-                    <a class="  " href="/reports/jackpot" aria-expanded="false">
-                        <i class="fa fa-rocket"></i>
-                        <span class="hide-menu">Jackpot</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="  " href="/reports/machines" aria-expanded="false">
-                        <i class="fa fa-hdd-o"></i>
-                        <span class="hide-menu">Machines</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="  " href="/reports/revenue" aria-expanded="false">
-                        <i class="fa fa-money"></i>
-                        <span class="hide-menu">Revenue</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="  " href="/reports/behavior" aria-expanded="false">
-                        <i class="fa fa-users"></i>
-                        <span class="hide-menu">Behavior</span>
-                    </a>
-                </li> -->
+                        <li v-if="$root.chkPermission('reportJackpot.view') || $root.chkPermission('reportMachine.view') || $root.chkPermission('reportRevenue.view')" class="nav-label">Reports</li>
+                        <li>
+                            <router-link v-if="$root.chkPermission('reportJackpot.view')" :to="{ path:'/reports/jackpot' }" aria-expanded="false">
+                                <i class="fa fa-rocket"></i>
+                                <span class="hide-menu">Jackpot</span>
+                                </a>
+                        </li>
+                        <li>
+                            <router-link v-if="$root.chkPermission('reportMachine.view')" :to="{ path:'/reports/machine' }" aria-expanded="false">
+                                <i class="far fa-hdd"></i>
+                                <span class="hide-menu">Machine</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link v-if="$root.chkPermission('reportRevenue.view')" :to="{ path:'/reports/revenue' }" aria-expanded="false">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <span class="hide-menu">Revenue</span>
+                                </a>
+                        </li>
+                        <!-- <li>
+                            <router-link :to="{ path:'/reports/behavior' }" aria-expanded="false">
+                                <i class="fa fa-users"></i>
+                                <span class="hide-menu">Behavior</span>
+                                </a>
+                        </li> -->
                         <li v-if="$root.chkPermission('machineList.view') || $root.chkPermission('machineTransfer.view')" class="nav-label">Machines</li>
                         <li>
-                            <a v-if="$root.chkPermission('machineList.view')" href="/machines/list" aria-expanded="false">
+                            <router-link v-if="$root.chkPermission('machineList.view')" :to="{ path:'/machines/list' }" aria-expanded="false">
                                 <i class="fas fa-laptop"></i>
                                 <span class="hide-menu">Machine List </span>
-                            </a>
+                            </router-link>
+                            <!-- <a v-if="$root.chkPermission('machineList.view')" href="/machines/list" aria-expanded="false">
+                                <i class="fas fa-laptop"></i>
+                                <span class="hide-menu">Machine List </span>
+                            </a> -->
                         </li>
                         <li>
-                            <a v-if="$root.chkPermission('machineTransfer.view')" href="/machines/transfer" aria-expanded="false">
+                            <router-link v-if="$root.chkPermission('machineTransfer.view')" :to="{ path:'/machines/transfer' }" aria-expanded="false">
                                 <i class="fas fa-exchange-alt"></i>
                                 <span class="hide-menu">Machine Transfer </span>
-                            </a>
+                            </router-link>
+                            <!-- <a v-if="$root.chkPermission('machineTransfer.view')" href="/machines/transfer" aria-expanded="false">
+                                <i class="fas fa-exchange-alt"></i>
+                                <span class="hide-menu">Machine Transfer </span>
+                            </a> -->
                         </li>
                         <li v-if="$root.chkPermission('coreUser.view') || $root.chkPermission('agency.view')" class="nav-label">User Manager</li>
                         <li v-if="$root.chkPermission('coreUser.view')">
-                            <a class="  " href="/users/core" aria-expanded="false">
+                            <router-link :to="{ path:'/users/core' }" aria-expanded="false">
                                 <i class="fas fa-user-circle"></i>
                                 <span class="hide-menu">Core Users </span>
-                            </a>
+                            </router-link>
+                            <!-- <a class="  " href="/users/core" aria-expanded="false">
+                                <i class="fas fa-user-circle"></i>
+                                <span class="hide-menu">Core Users </span>
+                            </a> -->
                         </li>
                         <li v-if="$root.chkPermission('agency.view')">
-                            <a class="  " href="/users/agency" aria-expanded="false">
+                            <router-link :to="{ path:'/users/agency' }" aria-expanded="false">
                                 <i class="fas fa-user"></i>
                                 <span class="hide-menu">Agency </span>
-                            </a>
+                            </router-link>
+                            <!-- <a class="  " href="/users/agency" aria-expanded="false">
+                                <i class="fas fa-user"></i>
+                                <span class="hide-menu">Agency </span>
+                            </a> -->
                         </li>
                         <li v-if="$root.chkPermission('versionSetting.view') || $root.chkPermission('jpStatus.view')" class="nav-label">Settings</li>
                         <li v-if="$root.chkPermission('versionSetting.view')">
-                            <a class="  " href="/settings/version" aria-expanded="false">
+                            <router-link :to="{ path:'/settings/version' }" aria-expanded="false">
                                 <i class="fab fa-vimeo-square"></i>
                                 <span class="hide-menu">Version Setting </span>
-                            </a>
+                            </router-link>
+                            <!-- <a class="  " href="/settings/version" aria-expanded="false">
+                                <i class="fab fa-vimeo-square"></i>
+                                <span class="hide-menu">Version Setting </span>
+                            </a> -->
                         </li>
                         <li v-if="$root.chkPermission('jpStatus.view')">
-                            <a class="  " href="/settings/jpserver" aria-expanded="false">
+                            <router-link :to="{ path:'/settings/jpserver' }" aria-expanded="false">
                                 <i class="fas fa-wrench"></i>
                                 <span class="hide-menu">JP Status </span>
-                            </a>
+                            </router-link>
+                            <!-- <a class="  " href="/settings/jpserver" aria-expanded="false">
+                                <i class="fas fa-wrench"></i>
+                                <span class="hide-menu">JP Status </span>
+                            </a> -->
                         </li>
                     </ul>
                 </nav>
@@ -341,7 +384,26 @@
             </ul>
         </div>
     </script>
-    
+
+    <script type="text/x-template" id="pagination">
+    <div>
+        <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(viewData.length+currentPage*unit, endRow) /} of {/ data.items.length
+            /} entries</div>
+        <div v-if="totalPage > 1" class="dataTables_paginate paging_simple_numbers" id="myTable_paginate">
+            <span>Goto </span><input class="fotm-control input-sm pagination-input" @blur="fastGoto" @keydown="keydown" v-model="inputPage"/>
+            <a @click="_changePage(currentPage-1)" v-if="currentPage > 1" class="paginate_button btn-sm previous" aria-controls="myTable"
+                data-dt-idx="0" tabindex="0" id="myTable_previous">Previous</a>
+            <span>
+            <template v-for="index in totalPage">
+                <a v-show="(currentPage<5)?index<=9:(currentPage>(totalPage-5)?index>totalPage-9:(index>=currentPage-4&&index<=currentPage+4))" @click="_changePage(index)" :class="chkPageCurrent(index)" class="paginate_button btn-sm" aria-controls="myTable" data-dt-idx="1"
+                tabindex="0">{/ index /}</a>
+            </template>
+            </span>
+            <a @click="_changePage(currentPage+1)" v-if="currentPage < totalPage" class="paginate_button btn-sm next" aria-controls="myTable"
+                data-dt-idx="7" tabindex="0" id="myTable_next">Next</a>
+        </div>
+    </div>
+    </script>
     <script type="text/x-template" id="treemenu">
         <div class="tree-menu">
             <div class="label-wrapper" v-if="machine">
@@ -393,20 +455,20 @@
     <!--stickey kit -->
     <script src="/static/js/lib/sticky-kit-master/dist/sticky-kit.min.js"></script>
 
-    <script src="/static/js/lib/datamap/d3.min.js"></script>
-    <script src="/static/js/lib/datamap/topojson.js"></script>
-    <script src="/static/js/lib/datamap/datamaps.world.min.js"></script>
+    <!-- <script src="/static/js/lib/datamap/d3.min.js"></script> -->
+    <!-- <script src="/static/js/lib/datamap/topojson.js"></script> -->
+    <!-- <script src="/static/js/lib/datamap/datamaps.world.min.js"></script> -->
     <!-- <script src="/static/js/lib/datamap/datamap-init.js"></script> -->
 
-    <script src="/static/js/lib/weather/jquery.simpleWeather.min.js"></script>
-    <script src="/static/js/lib/weather/weather-init.js"></script>
-    <script src="/static/js/lib/owl-carousel/owl.carousel.min.js"></script>
-    <script src="/static/js/lib/owl-carousel/owl.carousel-init.js"></script>
+    <!-- <script src="/static/js/lib/weather/jquery.simpleWeather.min.js"></script> -->
+    <!-- <script src="/static/js/lib/weather/weather-init.js"></script> -->
+    <!-- <script src="/static/js/lib/owl-carousel/owl.carousel.min.js"></script> -->
+    <!-- <script src="/static/js/lib/owl-carousel/owl.carousel-init.js"></script> -->
 
-    <script src="/static/js/lib/nestable/jquery.nestable.js"></script>
+    <!-- <script src="/static/js/lib/nestable/jquery.nestable.js"></script> -->
 
-    <script src="/static/js/lib/chartist/chartist.min.js"></script>
-    <script src="/static/js/lib/chartist/chartist-plugin-tooltip.min.js"></script>
+    <!-- <script src="/static/js/lib/chartist/chartist.min.js"></script> -->
+    <!-- <script src="/static/js/lib/chartist/chartist-plugin-tooltip.min.js"></script> -->
     <!-- <script src="/static/js/lib/chartist/chartist-init.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/sha512.min.js"></script>

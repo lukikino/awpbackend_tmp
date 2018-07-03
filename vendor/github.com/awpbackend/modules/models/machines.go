@@ -125,11 +125,8 @@ func DeleteMachine(loginId int, id string) ReturnData {
 
 func AddMachine(loginId int, data Machine) ReturnData {
 	db := GetConnection()
-	var count int64 = 0
-	res, err := db.Exec("call sp_addMachine(?,?,?,?)", loginId, data.PCBID, data.StoreName, data.UserID)
-	if err == nil {
-		count, _ = res.RowsAffected()
-	}
-	returnData := BoxingToResult(count, err)
+	var id int64 = 0
+	err := db.Get(&id, "call sp_addMachine(?,?,?,?)", loginId, data.PCBID, data.StoreName, data.UserID)
+	returnData := BoxingToResult(id, err)
 	return returnData
 }

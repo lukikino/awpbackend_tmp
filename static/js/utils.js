@@ -59,6 +59,22 @@ Utils.url = function () {
 
 Utils.date = function(){
     return {
+        monthStart: function(){
+            var now = (new Date);
+            if(now.getHours() < 6){
+                return now.clearTime().addHours(-6).addDays(-now.getDate()).addHours(6);
+            }else{
+                return now.clearTime().addHours(6).addDays(-now.getDate()+1);
+            }
+        },
+        weekStart: function(){
+            var now = (new Date);
+            if(now.getHours() < 6){
+                return now.clearTime().addHours(-6).addDays(-now.getDay()).addHours(6);
+            }else{
+                return now.clearTime().addHours(6).addDays(-now.getDay());
+            }
+        },
         todayStart: function(){
             var now = (new Date);
             if(now.getHours() < 6){

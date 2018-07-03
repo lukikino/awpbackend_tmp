@@ -20,6 +20,7 @@ const TimeZone = 8
 const DatetimeFormat = "2006-01-02 15:04:05"
 
 var Ch = cache.New(5*time.Minute, 30*time.Second)
+var db *sqlx.DB
 
 type LoginStatus struct {
 	ID                int                    `db:"id" json:"ID,omitempty"`
@@ -125,8 +126,9 @@ func GetConfig(name string) reflect.Value {
 }
 
 func GetConnection() *sqlx.DB {
-	fmt.Println(GetConfig("DatabaseConn").String())
-	db, _ := sqlx.Open("mysql", GetConfig("DatabaseConn").String())
+	if db == nil {
+		db, _ = sqlx.Open("mysql", GetConfig("DatabaseConn").String())
+	}
 	return db
 }
 

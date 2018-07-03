@@ -16,7 +16,7 @@ type Transactions struct {
 }
 
 //Home renders a todo list
-func (t *Transactions) Transactions() {
+func (t *Transactions) GetTransactions() {
 	CheckPermission(t.Ctx, common.GetStaticPermissions().Transactions.View)
 	req := t.Ctx.Request()
 	decoder := json.NewDecoder(req.Body)
@@ -47,7 +47,7 @@ func (t *Transactions) Transactions() {
 func NewTransactions() controller.Controller {
 	return &Transactions{
 		Routes: []string{
-			"post;/api/transactions;Transactions",
+			"post;/api/transactions;GetTransactions",
 		},
 	}
 }

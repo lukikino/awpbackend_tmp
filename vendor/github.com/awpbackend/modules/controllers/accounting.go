@@ -1,53 +1,38 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 
+	common "github.com/awpbackend/modules/common"
+	m "github.com/awpbackend/modules/models"
 	"github.com/gernest/utron/controller"
 )
 
 //comments
-type Accounting struct {
+type Accountings struct {
 	controller.BaseController
 	Routes []string
 }
 
-//comments
-func (t *Accounting) Accounts() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
+func (t *Accountings) GetAccountings() {
+	CheckPermission(t.Ctx, common.GetStaticPermissions().Operations.View)
+	req := t.Ctx.Request()
+	decoder := json.NewDecoder(req.Body)
+	var data m.AccountingSearch
+	if err := decoder.Decode(&data); err != nil {
+		t.Ctx.Data["Message"] = err.Error()
+		t.RenderJSON(m.ErrorResult(err.Error(), "400"), http.StatusBadRequest)
+		return
+	} else {
+		t.RenderJSON(m.GetAccountings(GetLoginStatus(t.Ctx.Request()).ID, data), http.StatusOK)
 	}
-	t.Ctx.Template = "accounting/accountingHTML"
-	t.HTML(http.StatusOK)
 }
 
 //comments
-func (t *Accounting) Stores() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
-	}
-	t.Ctx.Template = "accounting/accountingHTML"
-	t.HTML(http.StatusOK)
-}
-
-//comments
-func (t *Accounting) Machines() {
-	t.Ctx.Data = map[string]interface{}{
-		"title":  "title",
-		"header": "My Header",
-		"footer": "My Footer",
-	}
-	t.Ctx.Template = "accounting/accountingHTML"
-	t.HTML(http.StatusOK)
-}
-
-//comments
-func NewAccounting() controller.Controller {
-	return &Accounting{
-		Routes: []string{},
+func NewAccountings() controller.Controller {
+	return &Accountings{
+		Routes: []string{
+			"post;/api/accountings;GetAccountings"},
 	}
 }

@@ -184,7 +184,7 @@ File: js
             _this.attr('aria-expanded', false);
             self._hide(_list);
           } else {
-            self._show(_list);
+            self._show(_list);self._show(_list);
             _this.attr('aria-expanded', true);
             if (self._config.toggle) {
               _siblings.attr('aria-expanded', false);

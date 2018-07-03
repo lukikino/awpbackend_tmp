@@ -96,7 +96,7 @@ func main() {
 	app.AddController(c.NewLayout, c.CheckLoginStatus)
 	app.AddController(c.NewOperations, c.CheckLoginStatus)
 	app.AddController(c.NewTransactions, c.CheckLoginStatus)
-	app.AddController(c.NewAccounting, c.CheckLoginStatus)
+	app.AddController(c.NewAccountings, c.CheckLoginStatus)
 	app.AddController(c.NewReports, c.CheckLoginStatus)
 	app.AddController(c.NewSettings, c.CheckLoginStatus)
 	app.AddController(c.NewCoreUsers, c.CheckLoginStatus)

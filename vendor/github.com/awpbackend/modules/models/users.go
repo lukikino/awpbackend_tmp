@@ -120,9 +120,9 @@ func ToggleUserActive(loginID int, id string) ReturnData {
 
 func AddUser(loginID int, ip string, data User, admin bool) ReturnData {
 	db := GetConnection()
-	var count int64
+	var id int64
 	pwd := encryptedPassword(data.Password, data.Account)
-	err := db.Get(&count, "call sp_addUser(?,?,?,?,?)", ip, loginID, data.Account, pwd, admin)
-	returnData := BoxingToResult(count, err)
+	err := db.Get(&id, "call sp_addUser(?,?,?,?,?)", ip, loginID, data.Account, pwd, admin)
+	returnData := BoxingToResult(id, err)
 	return returnData
 }

@@ -6,14 +6,14 @@ const getTemplate = function (path, component, permission) {
                 return;
             }
             app.getUserStatus(function () {
-                if(this.chkPermission(permission)){
+                if (this.chkPermission(permission)) {
                     Vue.http.get('/static/views/' + path + '.html').then(function (r) {
                         component.template = r.body;
                         component.delimiters = ['{/', '/}'];
                         resolve(component);
                     })
                 }
-                else{
+                else {
                     throw new Error();
                 }
             });
@@ -110,9 +110,12 @@ var common = {
     methods: {
         thousandFormat: function (v) {
             v = v || 0;
+            v = Math.floor(v);
             return '$' + v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         },
         percentageFormat: function (v) {
+            if (v === null || isNaN(v) || v === Infinity)
+                return "-";
             v = v || 0;
             return v.toFixed(2) + "%";
         }
@@ -123,7 +126,7 @@ Vue.component('dropdown', {
     delimiters: ['{/', '/}'],
     template: '#dropdown',
     props: ['items', 'defaultCheckAll'],
-    data: function(){
+    data: function () {
         return {
             show: false
         }
@@ -156,25 +159,24 @@ Vue.component('dropdown', {
                 Vue.set(this.items.items[index], "checked", false);
             }
         },
-        toggle: function(){
+        toggle: function () {
             this.show = !this.show;
         },
-        documentClick: function(e){
+        documentClick: function (e) {
             var el = this.$refs.dropdownMenu;
             var target = e.target;
-            if (( el !== target) && !el.contains(target)) {
-              this.show=false;
+            if ((el !== target) && !el.contains(target)) {
+                this.show = false;
             }
         }
     },
     mounted: function () {
         document.addEventListener('click', this.documentClick);
     },
-    destroyed: function() {
+    destroyed: function () {
         document.removeEventListener('click', this.documentClick);
     }
 });
-
 
 Vue.component('treemenu', {
     delimiters: ['{/', '/}'],
@@ -270,6 +272,69 @@ Vue.component('treemenu', {
     }
 });
 
+Vue.component('pagination', {
+    delimiters: ['{/', '/}'],
+    template: '#pagination',
+    props: ['data', 'dataChanged', 'unit', 'currentPage', 'changePage'],
+    data: function () {
+        return {
+            inputPage: ""
+        }
+    },
+    computed: {
+        totalPage: function () {
+            if (!this.data) { return 0; }
+            return Math.ceil(this.data.items.length / this.unit);
+        },
+        startRow: function () {
+            if (!this.data) { return 0; }
+            var s = (this.currentPage - 1) * this.unit;
+            if (this.data.items.length < s)
+                s = this.data.items.length - 1;
+            return s;
+        },
+        endRow: function () {
+            if (!this.data) { return 0; }
+            var e = this.currentPage * this.unit;
+            if (this.data.items.length < e)
+                e = this.data.items.length;
+            return e;
+        },
+        viewData: function () {
+            if (!this.data) { return; }
+            var start = this.startRow;
+            var end = this.endRow;
+            var newDataView = this.data.items.slice(start, end);
+            if (typeof this.dataChanged === "function") { this.dataChanged(newDataView); }
+            return newDataView;
+        }
+    },
+    methods: {
+        chkPageCurrent: function (page) {
+            return this.currentPage != page || 'current';
+        },
+        _changePage: function (page) {
+            if (typeof this.changePage === "function")
+                this.changePage(page);
+        },
+        fastGoto: function () {
+            if (+this.inputPage === this.currentPage) return;
+            this.inputPage = (+this.inputPage) || 1;
+            this.inputPage = Math.min(this.inputPage, this.totalPage);
+            this.inputPage = Math.max(this.inputPage, 1);
+            this._changePage(this.inputPage);
+        },
+        keydown: function (e) {
+            if (e.keyCode === 13) {
+                this.fastGoto();
+            }
+        }
+    },
+    mounted: function () {
+
+    }
+});
+
 const Home = {
     mixins: [common],
     data: function () {
@@ -358,9 +423,23 @@ const Home = {
             }
         }
     },
+    watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        }
+    },
     computed: {
     },
     methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
         search: function () {
             var vm = this;
             this.loading = true;
@@ -401,15 +480,16 @@ const Operations = {
     data: function () {
         return {
             loading: false,
-            searching: false,
-            reportData: fakeData,
-            reportDataTotal: fakeDataTotal,
+            options: { format: 'YYYY/MM/DD' },
+            searchData: { groupInterval: 'day', groupBy: 'machine', startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
+            reportData: { items: [] },
+            summaryReportData: {},
+            searched: false,
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
-            group: 3,
+            totalPage: 0,
             view: 1,
-            accounts: {
+            users: {
                 type: "Account",
                 items: []
             },
@@ -427,9 +507,20 @@ const Operations = {
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
+        },
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.searchData.groupInterval = /([A-Za-z\d]+)(\/*|)$/i.exec(route.fullPath)[0];
+            this.resetParams();
         }
     },
     computed: {
+        showDetail: function () {
+            return this.view === 2;
+        },
         startRow: function () {
             var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
@@ -449,20 +540,38 @@ const Operations = {
         }
     },
     methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.summaryReportData = {};
+            this.searched = false;
+            this.currentPage = 1;
+            this.totalPage = 0;
+            switch (this.searchData.groupInterval) {
+                case 'day':
+                    this.searchData.startTime = Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss');
+                    break;
+                case 'week':
+                    this.searchData.startTime = Utils.date.weekStart().toString('yyyy/M/d HH:mm:ss');
+                    break;
+                case 'month':
+                    this.searchData.startTime = Utils.date.monthStart().toString('yyyy/M/d HH:mm:ss');
+                    break;
+            }
+        },
         changeGroup: function (group) {
-            this.group = group;
+            this.searchData.groupBy = group;
             this.search();
         },
         chkGroup: function (group) {
-            return group != this.group || 'active';
+            return group != this.searchData.groupBy || 'active';
         },
         changeView: function (view) {
             var vm = this;
             vm.loading = true;
-            setTimeout(() => {
+            setTimeout(function () {
                 vm.loading = false;
-                this.view = view;
-            }, 500);
+                vm.view = view;
+            }, 300);
         },
         chkView: function (view) {
             return view != this.view || 'active';
@@ -481,20 +590,32 @@ const Operations = {
         search: function () {
             var vm = this;
             vm.loading = true;
-            vm.searching = true;
-            Vue.http.get('/').then(function () {
-                vm.totalPage = Math.ceil(vm.reportData.items.length / vm.unit);
-                setTimeout(() => {
-                    vm.loading = false;
-                    vm.searching = false;
-                }, 2000);
+            vm.searched = true;
+            var search = {
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                groupBy: vm.searchData.groupBy,
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime,
+                groupInterval: vm.searchData.groupInterval
+            };
+            Vue.http.post('/api/operations', search).then(function (res) {
+                vm.reportData.items = (res.body.data) ? res.body.data.operations : [];
+                vm.summaryReportData = (res.body.data) ? res.body.data.summary : [];
+                vm.total = vm.reportData.items.length;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
             }).catch(app.handlerError);
         }
     },
     created: function () {
-        app.getAccounts((function (v) { this.accounts.items = v; }).bind(this));
-        app.getStores((function (v) { this.stores.items = v; }).bind(this));
-        app.getMachines((function (v) { this.machines.items = v; }).bind(this));
+        var vm = this;
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        }).bind(vm));
     },
     mounted: function () {
         this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
@@ -505,16 +626,17 @@ const Accounting = {
     mixins: [common],
     data: function () {
         return {
+            searched: false,
             loading: false,
-            searching: false,
-            reportData: fakeData,
-            reportDataTotal: fakeDataTotal,
+            options: {},
+            searchData: { timeRange: "10", groupBy: 'machine', startTime: Utils.date.todayStart().toString('yyyy/M/d'), endTime: Utils.date.todayEnd().toString('yyyy/M/d') },
+            reportData: { items: [] },
+            summaryReportData: null,
             unit: 10,
             currentPage: 1,
             totalPage: 1,
-            group: 3,
             view: 1,
-            accounts: {
+            users: {
                 type: "Account",
                 items: []
             },
@@ -529,12 +651,28 @@ const Accounting = {
         }
     },
     watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.searchData.groupBy = /([A-Za-z\d]+)(\/*|)$/i.exec(route.fullPath)[0];
+            this.resetParams();
+        },
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
         }
     },
     computed: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
+        showDetail: function () {
+            return this.view == 2;
+        },
         startRow: function () {
             var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
@@ -555,11 +693,11 @@ const Accounting = {
     },
     methods: {
         changeGroup: function (group) {
-            this.group = group;
+            this.searchData.groupBy = group;
             this.search();
         },
         chkGroup: function (group) {
-            return group != this.group || 'active';
+            return group != this.searchData.groupBy || 'active';
         },
         changeView: function (view) {
             var vm = this;
@@ -586,20 +724,32 @@ const Accounting = {
         search: function () {
             var vm = this;
             vm.loading = true;
-            vm.searching = true;
-            Vue.http.get('/').then(function () {
-                vm.totalPage = Math.ceil(vm.reportData.items.length / vm.unit);
-                setTimeout(() => {
-                    vm.loading = false;
-                    vm.searching = false;
-                }, 2000);
+            vm.searched = true;
+            var search = {
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                groupBy: vm.searchData.groupBy,
+                timeRange: vm.searchData.timeRange,
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime
+            };
+            Vue.http.post('/api/accountings', search).then(function (res) {
+                vm.reportData.items = (res.body.data) ? res.body.data.accountings : [];
+                vm.summaryReportData = (res.body.data) ? res.body.data.summary : [];
+                vm.total = vm.reportData.items.length;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
             }).catch(app.handlerError);
         }
     },
     created: function () {
-        app.getAccounts((function (v) { this.accounts.items = v; }).bind(this));
-        app.getStores((function (v) { this.stores.items = v; }).bind(this));
-        app.getMachines((function (v) { this.machines.items = v; }).bind(this));
+        var vm = this;
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        }).bind(vm));
     },
     mounted: function () {
         this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
@@ -613,12 +763,10 @@ const Transactions = {
             searched: false,
             loading: false,
             searching: false,
-            options: {
-                // https://momentjs.com/docs/#/displaying/
-            },
-            searchData: {startTime: Utils.date.todayStart().toString('yyyy/M/d H:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d H:mm:ss')},
+            options: {},
+            searchData: { startTime: Utils.date.todayStart().toString('yyyy/M/d H:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d H:mm:ss') },
             // searchData: {startTime: new Date(), endTime: new Date()},
-            reportData: {items:[]},
+            reportData: { items: [] },
             unit: 10,
             currentPage: 1,
             totalPage: 1,
@@ -646,12 +794,27 @@ const Transactions = {
         }
     },
     watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        },
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
         }
     },
     computed: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
+        showDetail: function () {
+            return this.view == 2;
+        },
         startRow: function () {
             var s = (this.currentPage - 1) * this.unit;
             if (this.reportData.items.length < s)
@@ -693,54 +856,45 @@ const Transactions = {
                 vm.currentPage = page;
             }, 300);
         },
-        jpTitle: function(item){
-            return ["JP1：", this.thousandFormat(item.jp1Win),"\nJP2：", this.thousandFormat(item.jp2Win),"\nJP3：", this.thousandFormat(item.jp3Win),"\nJP4：", this.thousandFormat(item.jp4Win)].join("");
-        },
-        determineSearchString: function(items, determineKey){
-            if(!items || !items.map){return null;}
-            var len = items.length;
-            var checkedList = items.filter(function(item){ return item[determineKey] == true;})
-                .map(function(item){ return item["id"];});;
-            console.log(checkedList.length)
-            return (checkedList.length === len) ? null : checkedList.join(",");
+        jpTitle: function (item) {
+            return ["JP1：", this.thousandFormat(item.jp1Win), "\nJP2：", this.thousandFormat(item.jp2Win), "\nJP3：", this.thousandFormat(item.jp3Win), "\nJP4：", this.thousandFormat(item.jp4Win)].join("");
         },
         search: function () {
-            console.log("search")
             var vm = this;
             vm.loading = true;
             vm.searching = true;
             vm.searched = true;
             var search = {
-                users: vm.determineSearchString(vm.users.items, "checked"),
-                machines: vm.determineSearchString(vm.machines.items, "checked"),
-                stores: vm.determineSearchString(vm.stores.items, "checked"),
-                transactionTypes: vm.determineSearchString(vm.transactionTypes.items, "checked"),
-                gameTypes: vm.determineSearchString(vm.gameTypes.items, "checked"),
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                transactionTypes: app.determineSearchString(vm.transactionTypes.items, "checked"),
+                gameTypes: app.determineSearchString(vm.gameTypes.items, "checked"),
                 startTime: vm.searchData.startTime,
                 endTime: vm.searchData.endTime
             };
             Vue.http.post('/api/transactions', search).then(function (res) {
                 vm.reportData.items = res.body.data;
-                for(var i in vm.reportData.items){
-                    vm.reportData.items[i].memo = JSON.parse(vm.reportData.items[i].memo );
+                for (var i in vm.reportData.items) {
+                    vm.reportData.items[i].memo = JSON.parse(vm.reportData.items[i].memo);
                 }
                 vm.total = res.body.total;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
             }).catch(app.handlerError);
         },
-        dropClick: function(ev){
+        dropClick: function (ev) {
             ev.stopPropagation;
         }
     },
     created: function () {
         var vm = this;
-        app.getLists((function(data){
-            Vue.set(vm.users, "items", data.users.map(function(item){return {checked: true, id: item.userID, text: item.account}}));
-            Vue.set(vm.machines, "items", data.machines.map(function(item){return {checked: true,id: item.ID, text: item.pcbID + "-" + item.machineName}}));
-            Vue.set(vm.stores, "items",data.stores.map(function(item){return {checked: true,id: item, text: item}}));
-            Vue.set(vm.transactionTypes, "items",  data.transactionTypes.map(function(item){return {checked: true,id: item.ID, text: item.name}}));
-            Vue.set(vm.gameTypes, "items", data.gameTypes.map(function(item){return {checked: true,id: item.ID, text: item.name}}));
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.ID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+            Vue.set(vm.transactionTypes, "items", data.transactionTypes.map(function (item) { return { checked: true, id: item.ID, text: item.name } }));
+            Vue.set(vm.gameTypes, "items", data.gameTypes.map(function (item) { return { checked: true, id: item.ID, text: item.name } }));
         }).bind(vm));
     },
     mounted: function () {
@@ -773,6 +927,13 @@ const MachineList = {
         }
     },
     watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        },
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.filteredData.length / this.unit);
@@ -783,6 +944,11 @@ const MachineList = {
         }
     },
     computed: {
+        resetParams: function () {
+            this.machines.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
         startRow: function () {
             var s = (this.currentPage - 1) * this.unit;
             if (this.total < s)
@@ -926,10 +1092,10 @@ const MachineList = {
         var vm = this;
         Vue.http.get('/api/common/list/users').then(function (res) {
             if (res.body.code == 200) {
-                vm.listUsers = res.body.data.map(function(item){
-                    return {text: item.account, value: item.userID};
+                vm.listUsers = res.body.data.map(function (item) {
+                    return { text: item.account, value: item.userID };
                 });
-                vm.listUsers.unshift({text: "Select an owner", value: null});
+                vm.listUsers.unshift({ text: "Select an owner", value: null });
             }
             else {
                 alert("Get MachineList Error: " + res.body.message);
@@ -948,6 +1114,13 @@ const MachineTransfer = {
         }
     },
     computed: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        },
         checkedMachines: function () {
             var vm = this;
             return Object.keys(vm.checkList.machines).filter(function (key) {
@@ -959,6 +1132,12 @@ const MachineTransfer = {
         }
     },
     methods: {
+        resetParams: function () {
+            this.step = 1;
+            this.machinesWithUsersTree = { nodes: {}, roots: {} };
+            this.usersTree = { nodes: {}, roots: {} };
+            this.checkList = {};
+        },
         toStep: function (step) {
             if (this.step === 1 && step === 2 && !this.checkedMachines.length) {
                 alert('Must select at least one machine.')
@@ -1071,6 +1250,13 @@ const Core = {
         }
     },
     watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        },
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.filteredData.length / this.unit);
@@ -1081,6 +1267,11 @@ const Core = {
         }
     },
     methods: {
+        resetParams: function () {
+            this.users.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
         chkPageCurrent: function (page) {
             return this.currentPage != page || 'current';
         },
@@ -1299,6 +1490,15 @@ const Agency = {
         }
     },
     watch: {
+        watch: {
+            '$route': function (route) {
+                this.loading = true;
+                setTimeout(() => {
+                    this.loading = false;
+                }, 300);
+                this.resetParams();
+            }
+        },
         unit: function () {
             this.currentPage = 1;
             this.totalPage = Math.ceil(this.filteredData.length / this.unit);
@@ -1309,6 +1509,11 @@ const Agency = {
         }
     },
     methods: {
+        resetParams: function () {
+            this.users.items = [];
+            this.searched = false;
+            this.currentPage = 1;
+        },
         chkPageCurrent: function (page) {
             return this.currentPage != page || 'current';
         },
@@ -1590,35 +1795,320 @@ const JPServer = {
     }
 };
 
+const ReportJackpot = {
+    mixins: [common],
+    data: function () {
+        return {
+            loading: false,
+            searchData: { groupBy: 'nogroup', startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
+            reportData: { items: [] },
+            searched: false,
+            unit: 10,
+            currentPage: 1,
+            view: 1,
+            viewData: [],
+            users: {
+                type: "Account",
+                items: []
+            },
+            stores: {
+                type: "Store",
+                items: []
+            },
+            machines: {
+                type: "Machine",
+                items: []
+            }
+        }
+    },
+    watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        }
+    },
+    computed: {
+    },
+    methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.summaryReportData = {};
+            this.searched = false;
+            this.currentPage = 1;
+            this.totalPage = 0;
+            this.searchData.groupInterval = "nogroup";
+        },
+        changeGroup: function (group) {
+            this.searchData.groupBy = group;
+            this.search();
+        },
+        chkGroup: function (group) {
+            return group != this.searchData.groupBy || 'active';
+        },
+        changePage: function (page) {
+            var vm = this;
+            vm.loading = true;
+            setTimeout(() => {
+                vm.loading = false;
+                vm.currentPage = page;
+            }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        },
+        search: function () {
+            var vm = this;
+            vm.loading = true;
+            vm.searched = true;
+            var search = {
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                groupBy: vm.searchData.groupBy,
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime
+            };
+            Vue.http.post('/api/reports/jackpot', search).then(function (res) {
+                vm.reportData.items = res.body.data;
+                vm.total = res.body.total;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
+            }).catch(app.handlerError);
+        }
+    },
+    created: function () {
+        var vm = this;
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        }).bind(vm));
+    },
+    mounted: function () {
+    }
+};
+
+const ReportMachine = {
+    mixins: [common],
+    data: function () {
+        return {
+            loading: false,
+            searchData: { startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
+            reportData: { items: [] },
+            searched: false,
+            unit: 10,
+            currentPage: 1,
+            view: 1,
+            viewData: [],
+            users: {
+                type: "Account",
+                items: []
+            },
+            stores: {
+                type: "Store",
+                items: []
+            },
+            machines: {
+                type: "Machine",
+                items: []
+            }
+        }
+    },
+    watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        }
+    },
+    computed: {
+        showDetail: function () {
+            return this.view === 2;
+        }
+    },
+    methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.summaryReportData = {};
+            this.searched = false;
+            this.currentPage = 1;
+            this.totalPage = 0;
+        },
+        changeView: function (view) {
+            console.log(view)
+            var vm = this;
+            vm.loading = true;
+            setTimeout(function () {
+                vm.loading = false;
+                vm.view = view;
+            }, 300);
+        },
+        chkView: function (view) {
+            return view != this.view || 'active';
+        },
+        changePage: function (page) {
+            var vm = this;
+            vm.loading = true;
+            setTimeout(() => {
+                vm.loading = false;
+                vm.currentPage = page;
+            }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        },
+        search: function () {
+            var vm = this;
+            vm.loading = true;
+            vm.searched = true;
+            var search = {
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime
+            };
+            Vue.http.post('/api/reports/machine', search).then(function (res) {
+                vm.reportData.items = res.body.data;
+                vm.total = res.body.total;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
+            }).catch(app.handlerError);
+        }
+    },
+    created: function () {
+        var vm = this;
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        }).bind(vm));
+    },
+    mounted: function () {
+    }
+};
+
+const ReportRevenue = {
+    mixins: [common],
+    data: function () {
+        return {
+            loading: false,
+            searchData: { startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
+            reportData: { items: [] },
+            searched: false,
+            unit: 10,
+            currentPage: 1,
+            viewData: [],
+            users: {
+                type: "Account",
+                items: []
+            },
+            stores: {
+                type: "Store",
+                items: []
+            },
+            machines: {
+                type: "Machine",
+                items: []
+            }
+        }
+    },
+    watch: {
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(() => {
+                this.loading = false;
+            }, 300);
+            this.resetParams();
+        }
+    },
+    computed: {
+    },
+    methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.summaryReportData = {};
+            this.searched = false;
+            this.currentPage = 1;
+            this.totalPage = 0;
+        },
+        changePage: function (page) {
+            var vm = this;
+            vm.loading = true;
+            setTimeout(() => {
+                vm.loading = false;
+                vm.currentPage = page;
+            }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        },
+        search: function () {
+            var vm = this;
+            vm.loading = true;
+            vm.searched = true;
+            var search = {
+                users: app.determineSearchString(vm.users.items, "checked"),
+                machines: app.determineSearchString(vm.machines.items, "checked"),
+                stores: app.determineSearchString(vm.stores.items, "checked"),
+                startTime: vm.searchData.startTime,
+                endTime: vm.searchData.endTime
+            };
+            Vue.http.post('/api/reports/revenue', search).then(function (res) {
+                vm.reportData.items = res.body.data;
+                vm.total = res.body.total;
+                vm.totalPage = Math.ceil(vm.total / vm.unit);
+                vm.loading = false;
+            }).catch(app.handlerError);
+        }
+    },
+    created: function () {
+        var vm = this;
+        app.getLists((function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        }).bind(vm));
+    },
+    mounted: function () {
+    }
+};
+
 Vue.component('date-picker', VueBootstrapDatetimePicker);
 $.extend(true, $.fn.datetimepicker.defaults, {
     // debug: true,
-    format : 'YYYY/MM/DD H:mm:ss',
+    format: 'YYYY/MM/DD H:mm:ss',
     showClear: true,
     showClose: true,
     icons: {
-      time: 'far fa-clock',
-      date: 'far fa-calendar',
-      up: 'fas fa-arrow-up',
-      down: 'fas fa-arrow-down',
-      previous: 'fas fa-chevron-left',
-      next: 'fas fa-chevron-right',
-      today: 'fas fa-calendar-check',
-      clear: 'far fa-trash-alt',
-      close: 'far fa-times-circle'
+        time: 'far fa-clock',
+        date: 'far fa-calendar',
+        up: 'fas fa-arrow-up',
+        down: 'fas fa-arrow-down',
+        previous: 'fas fa-chevron-left',
+        next: 'fas fa-chevron-right',
+        today: 'fas fa-calendar-check',
+        clear: 'far fa-trash-alt',
+        close: 'far fa-times-circle'
     }
-  });
+});
 
 const router = new VueRouter({
     mode: 'history',
     base: '/',
+    linkActiveClass: 'active',
     routes: [
-        { path: '/', component: getTemplate('dashboard', Home) },
+        { path: '/dashboard', component: getTemplate('dashboard', Home) },
         { path: '/machines/list', component: getTemplate('machines/list', MachineList, "machineList.view") },
         { path: '/machines/transfer', component: getTemplate('machines/transfer', MachineTransfer, "machineTransfer.view") },
-        { path: '/accounting/machines', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
-        { path: '/accounting/accounts', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
-        { path: '/accounting/stores', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/accounting/machine', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/accounting/user', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
+        { path: '/accounting/storename', component: getTemplate('accounting/accounting', Accounting, "accounting.view") },
         { path: '/operations/day', component: getTemplate('operations/operations', Operations, "operations.view") },
         { path: '/operations/week', component: getTemplate('operations/operations', Operations, "operations.view") },
         { path: '/operations/month', component: getTemplate('operations/operations', Operations, "operations.view") },
@@ -1627,7 +2117,9 @@ const router = new VueRouter({
         { path: '/users/agency', component: getTemplate('users/agency', Agency, "agency.view") },
         { path: '/settings/version', component: getTemplate('settings/versionsetting', VersionSetting, "versionSetting.view") },
         { path: '/settings/jpserver', component: getTemplate('settings/jpserver', JPServer, "jpStatus.view") },
-        { path: '/reports/jackpot', component: getTemplate('reports/jackpot', Home, "machineTransfer.view") },
+        { path: '/reports/jackpot', component: getTemplate('reports/jackpot', ReportJackpot, "reportJackpot.view") },
+        { path: '/reports/machine', component: getTemplate('reports/machine', ReportMachine, "reportMachine.view") },
+        { path: '/reports/revenue', component: getTemplate('reports/revenue', ReportRevenue, "reportRevenue.view") }
     ]
 });
 
@@ -1643,11 +2135,11 @@ var app = new Vue({
             $('<form action="/logout" method="POST"></form>').appendTo('body').submit();
         },
         handlerError: function (err) {
-            console.log(err)
+            console.log(err);
             alert('Login session expired or no permission, please login.');
-            location = ["/login", "?r=", location.pathname].join('');
+            location = ["/login", "?r=", location.pathname, location.search].join('');
         },
-        chkPermission: function(permission){
+        chkPermission: function (permission) {
             permission = permission || "";
             var _t = this.loginUser.permissions || {};
             var _ps = permission.split(".");
@@ -1657,9 +2149,16 @@ var app = new Vue({
             if (/true/i.test(_t) || permission === "") {
                 return true;
             }
-            else{
+            else {
                 return false;
             }
+        },
+        determineSearchString: function (items, determineKey) {
+            if (!items || !items.map) { return null; }
+            var len = items.length;
+            var checkedList = items.filter(function (item) { return item[determineKey] == true; })
+                .map(function (item) { return item["id"]; });
+            return (checkedList.length === len) ? null : checkedList.join(",");
         },
         getUserStatus: function (callback) {
             var vm = this;
@@ -1672,7 +2171,7 @@ var app = new Vue({
                 }
             }).catch(this.handlerError);
         },
-        getLists: function(cb){
+        getLists: function (cb) {
             var vm = this;
             Vue.http.get("/api/common/list/all").then(function (res) {
                 if (res.body.code == 200) {
