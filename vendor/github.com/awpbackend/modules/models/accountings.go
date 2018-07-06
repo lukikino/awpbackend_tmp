@@ -24,6 +24,7 @@ type Accountings struct {
 	TotalKeyOut    int      `db:"total_key_out" json:"totalKeyOut"`
 	TotalBet       int      `db:"total_bet" json:"totalBet"`
 	TotalWin       int      `db:"total_win" json:"totalWin"`
+	TotalWinWithJp int      `db:"total_win_with_jp" json:"totalWinWithJp"`
 	TotalJpWin     int      `db:"total_jp_win" json:"totalJpWin"`
 	TotalJp1Win    int      `db:"total_jp1_win" json:"totalJp1Win"`
 	TotalJp2Win    int      `db:"total_jp2_win" json:"totalJp2Win"`
@@ -36,6 +37,7 @@ type Accountings struct {
 	OutRate        *float32 `db:"out_rate" json:"outRate"`
 	WinRate        *float32 `db:"win_rate" json:"winRate"`
 	HitRate        *float32 `db:"hit_rate" json:"hitRate"`
+	WinRateWithJp  *float32 `db:"win_rate_with_jp" json:"winRateWithJp"`
 	Total          int      `db:"total" json:"total"`
 }
 
@@ -67,6 +69,7 @@ func GetAccountings(loginID int, search AccountingSearch) ReturnData {
 			r.Summary.TotalKeyOut += item.TotalKeyOut
 			r.Summary.TotalBet += item.TotalBet
 			r.Summary.TotalWin += item.TotalWin
+			r.Summary.TotalWinWithJp += item.TotalWinWithJp
 			r.Summary.TotalJpWin += item.TotalJpWin
 			r.Summary.TotalJp1Win += item.TotalJp1Win
 			r.Summary.TotalJp2Win += item.TotalJp2Win
@@ -81,6 +84,8 @@ func GetAccountings(loginID int, search AccountingSearch) ReturnData {
 		r.Summary.WinRate = &t2
 		t3 := (float32)(r.Summary.TotalWinTimes) / (float32)(r.Summary.TotalPlayTimes) * 100
 		r.Summary.HitRate = &t3
+		t4 := (float32)(r.Summary.TotalWinWithJp) / (float32)(r.Summary.TotalBet) * 100
+		r.Summary.WinRateWithJp = &t4
 	}
 	return BoxingToResult(r, err)
 }

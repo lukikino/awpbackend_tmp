@@ -215,8 +215,8 @@ Vue.component('treemenu', {
         },
         iconClasses: function () {
             return {
-                'fa-plus-square-o': !this.showChildren,
-                'fa-minus-square-o': this.showChildren
+                'far fa-plus-square': !this.showChildren,
+                'far fa-minus-square': this.showChildren
             }
         },
         indent: function () {
@@ -282,6 +282,25 @@ Vue.component('pagination', {
         }
     },
     computed: {
+        showPages: function () {
+            var start = 1, end = 1, result = [];
+            if (this.currentPage < 5) {
+                start = 1;
+                end = Math.min(9, this.totalPage);
+            }
+            else if (this.currentPage > this.totalPage - 5) {
+                start = Math.max(this.totalPage - 9, this.totalPage);
+                end = this.totalPage;
+            }
+            else {
+                start = this.currentPage - 4;
+                end = this.currentPage + 4;
+            }
+            for (; start <= end; start++) {
+                result.push(start);
+            }
+            return result;
+        },
         totalPage: function () {
             if (!this.data) { return 0; }
             return Math.ceil(this.data.items.length / this.unit);
@@ -487,7 +506,7 @@ const Operations = {
             searched: false,
             unit: 10,
             currentPage: 1,
-            totalPage: 0,
+            viewData: [],
             view: 1,
             users: {
                 type: "Account",
@@ -513,7 +532,6 @@ const Operations = {
             setTimeout(() => {
                 this.loading = false;
             }, 300);
-            this.searchData.groupInterval = /([A-Za-z\d]+)(\/*|)$/i.exec(route.fullPath)[0];
             this.resetParams();
         }
     },
@@ -532,11 +550,6 @@ const Operations = {
             if (this.reportData.items.length < e)
                 e = this.reportData.items.length;
             return e;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.reportData.items.slice(start, end);
         }
     },
     methods: {
@@ -546,6 +559,9 @@ const Operations = {
             this.searched = false;
             this.currentPage = 1;
             this.totalPage = 0;
+            this.searchData.groupInterval = /([A-Za-z\d]+)(\/*|)$/i.exec(this.$route.fullPath)[0];
+            console.log(this.chart);
+            this.chart && this.chart.destroy && this.chart.destroy();
             switch (this.searchData.groupInterval) {
                 case 'day':
                     this.searchData.startTime = Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss');
@@ -576,9 +592,6 @@ const Operations = {
         chkView: function (view) {
             return view != this.view || 'active';
         },
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
-        },
         changePage: function (page) {
             var vm = this;
             vm.loading = true;
@@ -586,6 +599,9 @@ const Operations = {
                 vm.loading = false;
                 vm.currentPage = page;
             }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
         },
         search: function () {
             var vm = this;
@@ -606,7 +622,104 @@ const Operations = {
                 vm.total = vm.reportData.items.length;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
+                vm.drawChart();
             }).catch(app.handlerError);
+        },
+        drawChart: function () {
+            var data = {};
+            var dataSet = {};
+            var series = [];
+
+            var colors = palette('rainbow', 50, 1, 0.5).map(function (hex) {
+                return '#' + hex;
+            });
+            var colorIndex = 0;
+            for (var index in this.reportData.items) {
+                var item = this.reportData.items[index];
+                for (var key in item) {
+                    if(!/totalIn|totalOut|totalBet|totalWinWithJp|totalJpWin|totalPlayTimes|totalWinTimes/.test(key)){
+                        continue;
+                    }
+                    var d = new Date(item.date).getTime();
+                    data[key] = data[key] || {};
+                    if (!data[key][d]) {
+                        data[key][d] = 0;
+                    }
+                    data[key][d] += Number(item[key]);
+                }
+            }
+
+            for(var key in data){
+                dataSet[key] = dataSet[key] || [];
+                for(var key2 in data[key]){
+                    dataSet[key].push([+key2, data[key][key2]]);
+                }
+            }
+
+            for(var key in dataSet){
+                series.push({
+                    type: 'line',
+                    name: key,
+                    tooltip: {
+                        xDateFormat: '%Y/%m/%d'
+                    },
+                    data: dataSet[key]
+                });
+            }
+
+            this.chart = Highcharts.chart(this.$refs.chart, {
+                chart: {
+                    zoomType: 'x'
+                },
+                title: {
+                    text: 'Credits Run chart'
+                },
+                subtitle: {
+                    text: document.ontouchstart === undefined ?
+                            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    labels: {
+                      format: '{value:%Y/%m/%d}'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Credits'
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                plotOptions: {
+                    area: {
+                        // fillColor: {
+                        //     linearGradient: {
+                        //         x1: 0,
+                        //         y1: 0,
+                        //         x2: 0,
+                        //         y2: 1
+                        //     },
+                        //     stops: [
+                        //         [0, Highcharts.getOptions().colors[0]],
+                        //         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        //     ]
+                        // },
+                        marker: {
+                            radius: 2
+                        },
+                        lineWidth: 1,
+                        states: {
+                            hover: {
+                                lineWidth: 1
+                            }
+                        },
+                        threshold: null
+                    }
+                },
+                series: series
+            });
         }
     },
     created: function () {
@@ -634,7 +747,6 @@ const Accounting = {
             summaryReportData: null,
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
             view: 1,
             users: {
                 type: "Account",
@@ -710,9 +822,6 @@ const Accounting = {
         chkView: function (view) {
             return view != this.view || 'active';
         },
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
-        },
         changePage: function (page) {
             var vm = this;
             vm.loading = true;
@@ -720,6 +829,9 @@ const Accounting = {
                 vm.loading = false;
                 vm.currentPage = page;
             }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
         },
         search: function () {
             var vm = this;
@@ -740,7 +852,104 @@ const Accounting = {
                 vm.total = vm.reportData.items.length;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
+                vm.drawChart();
             }).catch(app.handlerError);
+        },
+        drawChart: function () {
+            var data = {};
+            var dataSet = {};
+            var series = [];
+
+            var colors = palette('rainbow', 50, 1, 0.5).map(function (hex) {
+                return '#' + hex;
+            });
+            var colorIndex = 0;
+            for (var index in this.reportData.items) {
+                var item = this.reportData.items[index];
+                for (var key in item) {
+                    if(!/totalIn|totalJpWin|totalOut|totalBet|totalWinWithJp|totalPlayTimes|totalWinTimes/.test(key)){
+                        continue;
+                    }
+                    var d = new Date(item.rangeStartTime).getTime();
+                    data[key] = data[key] || {};
+                    if (!data[key][d]) {
+                        data[key][d] = 0;
+                    }
+                    data[key][d] += Number(item[key]);
+                }
+            }
+
+            for(var key in data){
+                dataSet[key] = dataSet[key] || [];
+                for(var key2 in data[key]){
+                    dataSet[key].push([+key2, data[key][key2]]);
+                }
+            }
+
+            for(var key in dataSet){
+                series.push({
+                    type: 'line',
+                    name: key,
+                    tooltip: {
+                        xDateFormat: '%Y/%m/%d'
+                    },
+                    data: dataSet[key]
+                });
+            }
+
+            Highcharts.chart(this.$refs.chart, {
+                chart: {
+                    zoomType: 'x'
+                },
+                title: {
+                    text: 'Credits Run chart'
+                },
+                subtitle: {
+                    text: document.ontouchstart === undefined ?
+                            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    labels: {
+                      format: '{value:%Y/%m/%d}'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Credits'
+                    }
+                },
+                legend: {
+                    enabled: true
+                },
+                plotOptions: {
+                    area: {
+                        // fillColor: {
+                        //     linearGradient: {
+                        //         x1: 0,
+                        //         y1: 0,
+                        //         x2: 0,
+                        //         y2: 1
+                        //     },
+                        //     stops: [
+                        //         [0, Highcharts.getOptions().colors[0]],
+                        //         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        //     ]
+                        // },
+                        marker: {
+                            radius: 1
+                        },
+                        lineWidth: 1,
+                        states: {
+                            hover: {
+                                lineWidth: 1
+                            }
+                        },
+                        threshold: null
+                    }
+                },
+                series: series
+            });
         }
     },
     created: function () {
@@ -767,9 +976,9 @@ const Transactions = {
             searchData: { startTime: Utils.date.todayStart().toString('yyyy/M/d H:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d H:mm:ss') },
             // searchData: {startTime: new Date(), endTime: new Date()},
             reportData: { items: [] },
+            viewData: [],
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
             view: 1,
             users: {
                 type: "Account",
@@ -826,11 +1035,6 @@ const Transactions = {
             if (this.reportData.items.length < e)
                 e = this.reportData.items.length;
             return e;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.reportData.items.slice(start, end);
         }
     },
     methods: {
@@ -845,9 +1049,6 @@ const Transactions = {
         chkView: function (view) {
             return view != this.view || 'active';
         },
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
-        },
         changePage: function (page) {
             var vm = this;
             vm.loading = true;
@@ -855,6 +1056,10 @@ const Transactions = {
                 vm.loading = false;
                 vm.currentPage = page;
             }, 300);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+            console.log(1)
         },
         jpTitle: function (item) {
             return ["JP1：", this.thousandFormat(item.jp1Win), "\nJP2：", this.thousandFormat(item.jp2Win), "\nJP3：", this.thousandFormat(item.jp3Win), "\nJP4：", this.thousandFormat(item.jp4Win)].join("");
@@ -878,8 +1083,6 @@ const Transactions = {
                 for (var i in vm.reportData.items) {
                     vm.reportData.items[i].memo = JSON.parse(vm.reportData.items[i].memo);
                 }
-                vm.total = res.body.total;
-                vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
             }).catch(app.handlerError);
         },
@@ -912,9 +1115,9 @@ const MachineList = {
             machines: { items: [] },
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
             total: 0,
             submited: false,
+            viewData: [],
             addModel: {
                 pcbID: null, storeName: null, userID: null
             },
@@ -967,17 +1170,9 @@ const MachineList = {
                 return rex.test(item.storeName) || rex.test(item.pcbID);
             });
             return _filtered;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.filteredData.slice(start, end);
         }
     },
     methods: {
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
-        },
         getMachines: function () {
             var vm = this;
             vm.loading = true;
@@ -995,6 +1190,9 @@ const MachineList = {
                 vm.loading = false;
                 vm.currentPage = page;
             }, 200);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
         },
         cancelAdd: function () {
             this.submited = false;
@@ -1243,9 +1441,9 @@ const Core = {
             permissionModel: {
                 ID: null, account: null, items: [], list: {}
             },
+            viewData: [],
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
             submited: false
         }
     },
@@ -1271,9 +1469,6 @@ const Core = {
             this.users.items = [];
             this.searched = false;
             this.currentPage = 1;
-        },
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
         },
         chkPolicy: function (model) {
             return this.chkAccount(model.account) && this.chkPassword(model.password) && model.password == model.confirm;
@@ -1418,6 +1613,9 @@ const Core = {
                 vm.currentPage = page;
             }, 200);
         },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        },
         stateText: function (state) {
             switch (state) {
                 case 1: return "Active";
@@ -1451,11 +1649,6 @@ const Core = {
                 return rex.test(item.account);
             });
             return _filtered;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.filteredData.slice(start, end);
         }
     },
     created: function () {
@@ -1483,9 +1676,9 @@ const Agency = {
             permissionModel: {
                 ID: null, account: null, items: [], list: {}
             },
+            viewData: [],
             unit: 10,
             currentPage: 1,
-            totalPage: 1,
             submited: false
         }
     },
@@ -1513,9 +1706,6 @@ const Agency = {
             this.users.items = [];
             this.searched = false;
             this.currentPage = 1;
-        },
-        chkPageCurrent: function (page) {
-            return this.currentPage != page || 'current';
         },
         chkPolicy: function (model) {
             return this.chkAccount(model.account) && this.chkPassword(model.password) && model.password == model.confirm;
@@ -1661,6 +1851,9 @@ const Agency = {
                 vm.currentPage = page;
             }, 200);
         },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        },
         stateText: function (state) {
             switch (state) {
                 case 1: return "Active";
@@ -1694,11 +1887,6 @@ const Agency = {
                 return rex.test(item.account);
             });
             return _filtered;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.filteredData.slice(start, end);
         }
     },
     created: function () {
@@ -2136,17 +2324,23 @@ var app = new Vue({
         },
         handlerError: function (err) {
             console.log(err);
-            alert('Login session expired or no permission, please login.');
-            location = ["/login", "?r=", location.pathname, location.search].join('');
+            if (err && err.status === 403) {
+                alert('Login session expired or no permission, please login.');
+                location = ["/login", "?r=", location.pathname, location.search].join('');
+            } else {
+                alert('There are some exceptions occured, please try later.');
+            }
         },
         chkPermission: function (permission) {
-            permission = permission || "";
-            var _t = this.loginUser.permissions || {};
-            var _ps = permission.split(".");
+            if(!this.loginUser || !this.loginUser.permissions){return false;}//get loginstatus not yet
+            var _permission = permission || "";
+            var _t = this.loginUser.permissions;
+            var _ps = _permission.split(".");
             for (var i in _ps) {
-                _t = _t[_ps[i]] || {};
+                _t = _t[_ps[i]];
+                if(!_t){console.log(_permission);return false;}
             }
-            if (/true/i.test(_t) || permission === "") {
+            if (_permission === "" || /^true$/i.test(_t)) {
                 return true;
             }
             else {

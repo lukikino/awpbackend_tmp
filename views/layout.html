@@ -394,8 +394,8 @@
             <a @click="_changePage(currentPage-1)" v-if="currentPage > 1" class="paginate_button btn-sm previous" aria-controls="myTable"
                 data-dt-idx="0" tabindex="0" id="myTable_previous">Previous</a>
             <span>
-            <template v-for="index in totalPage">
-                <a v-show="(currentPage<5)?index<=9:(currentPage>(totalPage-5)?index>totalPage-9:(index>=currentPage-4&&index<=currentPage+4))" @click="_changePage(index)" :class="chkPageCurrent(index)" class="paginate_button btn-sm" aria-controls="myTable" data-dt-idx="1"
+            <template v-for="index in showPages">
+                <a @click="_changePage(index)" :class="chkPageCurrent(index)" class="paginate_button btn-sm" aria-controls="myTable" data-dt-idx="1"
                 tabindex="0">{/ index /}</a>
             </template>
             </span>
@@ -413,7 +413,7 @@
             </div>
             <div class="label-wrapper" @click="toggleChildren" v-if="!machine">
                 <div class="label-item" :style="indent" :class="labelClasses">
-                    <i v-if="nodes.children || (nodes.machines && !onlyAccount)" class="fa" :class="iconClasses"></i>
+                    <i v-if="nodes.children || (nodes.machines && !onlyAccount)" class="" :class="iconClasses"></i>
                     <b-form-checkbox v-if="!onlyAccount" v-model="nodes.checked" @change="toggleSelectChildren">{/ nodes.account /}</b-form-checkbox>
                     <b-form-radio v-if="onlyAccount" name="account" :value="nodes" v-model="checkList.account" @change="toggleAccountSelect">{/ nodes.account /}</b-form-radio>
                 </div>
@@ -470,8 +470,11 @@
     <!-- <script src="/static/js/lib/chartist/chartist.min.js"></script> -->
     <!-- <script src="/static/js/lib/chartist/chartist-plugin-tooltip.min.js"></script> -->
     <!-- <script src="/static/js/lib/chartist/chartist-init.js"></script> -->
+    <script src="/static/js/lib/highchart/highcharts.js"></script>
+    <!-- <script src="/static/js/lib/chart-js/chartjs-init.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/sha512.min.js"></script>
+    <script src="/static/js/palette.js"></script>
     <script src="/static/js/vue.js"></script>
     <script src="/static/js/vue-router.js"></script>
     <script src="/static/js/vue-resource.min.js"></script>

@@ -57,18 +57,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <div class="dataTables_info" id="myTable_info" role="status" aria-live="polite" v-if="viewData.length > 0">Showing {/ startRow+1 /} to {/ Math.min(filteredData.length, endRow) /} of {/ filteredData.length
-                                    /} entries</div>
-                                <div class="dataTables_paginate paging_simple_numbers" id="myTable_paginate" v-if="viewData.length > 0">
-                                    <a @click="changePage(currentPage-1)" v-if="currentPage > 1" class="paginate_button btn-sm previous" aria-controls="myTable"
-                                        data-dt-idx="0" tabindex="0" id="myTable_previous">Previous</a>
-                                    <span>
-                                        <a @click="changePage(index)" :class="chkPageCurrent(index)" class="paginate_button btn-sm" aria-controls="myTable" data-dt-idx="1"
-                                            tabindex="0" v-for="index in totalPage">{/ index /}</a>
-                                    </span>
-                                    <a @click="changePage(currentPage+1)" v-if="currentPage < totalPage" class="paginate_button btn-sm next" aria-controls="myTable"
-                                        data-dt-idx="7" tabindex="0" id="myTable_next">Next</a>
-                                </div>
+                                <pagination :data="machines" :dataChanged="dataChanged" :currentPage="currentPage" :changePage="changePage" :unit="unit"></pagination>
                             </div>
                         </div>
                     </div>

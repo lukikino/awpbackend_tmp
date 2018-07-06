@@ -192,7 +192,7 @@ func Play(pcbid string) int {
 					if rand.Intn(1000000) < 1 {
 						jp1 = 20000
 					}
-					resultcredit = BetAndPlay(&t, resultcredit, bet, 0, int(float64(bet)*getWinRate(1)), jp1, jp2, jp3, jp4, (int)(gametype.JPGame))
+					resultcredit = BetAndPlay(&t, resultcredit, bet, 0, int(float64(bet)*getWinRate(1)), jp1, jp2, jp3, jp4, (int)(gametype.FeverGame))
 					if rand.Intn(100) < (100 / (times)) {
 						i = 0
 						times = times * 2

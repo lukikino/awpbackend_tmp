@@ -51,13 +51,12 @@
                         <table v-if="viewData.length" id="myTable" class="table table-hover no-footer" role="grid" aria-describedby="myTable_info">
                             <thead>
                                 <tr role="row">
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">Date</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Machine ID: activate to sort column ascending"
-                                        v-if="searchData.groupBy=='machine'">Machine</th>
+                                       >Machine</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
-                                        v-if="searchData.groupBy!='user'">Store Name</th>
+                                        >Store Name</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Store Name: activate to sort column ascending"
-                                        v-if="searchData.groupBy=='user' || searchData.groupBy=='machine'">Machine ID</th>
+                                        >Account</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending">Total In</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total In: activate to sort column ascending"
                                         v-if="showDetail">Total Coin In</th>
@@ -76,6 +75,7 @@
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Bet: activate to sort column ascending">Total Bet</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total Win With JP</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total JP Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Win Rate: activate to sort column ascending">Win Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Win Rate With JP</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Play Times: activate to sort column ascending">Total Play Times</th>
@@ -86,10 +86,9 @@
                             </thead>
                             <tbody>
                                 <tr role="row" v-for="item in viewData">
-                                    <td>{/ item.date /}</td>
-                                    <td v-if="searchData.groupBy=='machine'">{/ item.pcbID /}({/ item.machineName /})</td>
-                                    <td v-if="searchData.groupBy!='user'">{/ item.storeName /}</td>
-                                    <td v-if="searchData.groupBy=='user' || searchData.groupBy=='machine'">{/ item.account /}</td>
+                                    <td>{/ item.pcbID /}({/ item.machineName /})</td>
+                                    <td>{/ item.storeName /}</td>
+                                    <td>{/ item.account /}</td>
                                     <td>{/ thousandFormat(item.totalIn) /}</td>
                                     <td v-if="showDetail">{/ thousandFormat(item.totalCoinIn) /}</td>
                                     <td v-if="showDetail">{/ thousandFormat(item.totalBillIn) /}</td>
@@ -102,6 +101,7 @@
                                     <td>{/ thousandFormat(item.totalBet) /}</td>
                                     <td>{/ thousandFormat(item.totalWin) /}</td>
                                     <td>{/ thousandFormat(item.totalWinWithJp) /}</td>
+                                    <td>{/ thousandFormat(item.totalJpWin) /}</td>
                                     <td>{/ percentageFormat(item.winRate) /}</td>
                                     <td>{/ percentageFormat(item.winRateWithJp) /}</td>
                                     <td>{/ item.totalPlayTimes /}</td>
