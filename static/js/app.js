@@ -106,7 +106,11 @@ for (var i = 1; i < 60; i++) {
     fakeAccounts.items.push(item);
 }
 
-var common = {
+var ComponentBase = {
+    data: function () {
+        return {
+        }
+    },
     methods: {
         thousandFormat: function (v) {
             v = v || 0;
@@ -118,17 +122,133 @@ var common = {
                 return "-";
             v = v || 0;
             return v.toFixed(2) + "%";
+        },
+        determineSearchString: function (items, determineKey) {
+            if (!items || !items.map) { return null; }
+            var len = items.length;
+            var checkedList = items.filter(function (item) { return item[determineKey] == true; })
+                .map(function (item) { return item["id"]; });
+            return (checkedList.length === len) ? null : checkedList.join(",");
+        },
+        getLists: function (cb) {
+            var vm = this;
+            if (vm._listData) { cb && typeof cb === "function" && cb.call(vm, vm._listData); return; }
+            if (vm._listQueueProcessing) { setTimeout(function () { vm.getLists(cb); }, 50); return; } //ajax is processing, wait 50ms and run again
+            vm._listQueueProcessing = true;
+            Vue.http.get("/api/common/list/all").then(function (res) {
+                if (res.body.code == 200) {
+                    vm._listData = res.body.data;
+                    cb.call(vm, vm._listData);
+                }
+            }).catch(this.handlerError);
         }
+    }
+};
+
+var PageBase = {
+    mixins: [ComponentBase],
+    data: function () {
+        return {
+            unit: 10, //numbers of row per page
+            view: 1, //1:simple, 2:detail
+            currentPage: 1,
+            searched: false, //controll information
+            loading: false, //controll loading/processing/change page etc.
+            reportData: { items: [] },
+            summaryReportData: {},
+            viewData: [], //current view data
+            users: {
+                type: "Account",
+                items: []
+            },
+            stores: {
+                type: "Store",
+                items: []
+            },
+            machines: {
+                type: "Machine",
+                items: []
+            }
+        }
+    },
+    watch: {
+        unit: function () {
+            this.currentPage = 1;
+        },
+        '$route': function (route) {
+            this.loading = true;
+            setTimeout(function () {
+                this.loading = false;
+            }, 200);
+            if (typeof this.resetParams === "function") { this.resetParams(); }
+        }
+    },
+    computed: {
+        showDetail: function () {
+            return this.view === 2;
+        },
+        startRow: function () {
+            var s = (this.currentPage - 1) * this.unit;
+            if (this.reportData.items.length < s)
+                s = this.reportData.items.length - 1;
+            return s;
+        },
+        endRow: function () {
+            var e = this.currentPage * this.unit;
+            if (this.reportData.items.length < e)
+                e = this.reportData.items.length;
+            return e;
+        }
+    },
+    methods: {
+        resetParams: function () {
+            this.reportData.items = [];
+            this.summaryReportData = {};
+            this.searched = false;
+            this.loading = false;
+            this.currentPage = 1;
+        },
+        changeView: function (view) {
+            var vm = this;
+            vm.loading = true;
+            setTimeout(function () {
+                vm.loading = false;
+                vm.view = view;
+            }, 200);
+        },
+        chkView: function (view) {
+            return view != this.view || 'active';
+        },
+        changePage: function (page) {
+            var vm = this;
+            vm.loading = true;
+            setTimeout(() => {
+                vm.loading = false;
+                vm.currentPage = page;
+            }, 200);
+        },
+        dataChanged: function (viewData) {
+            this.viewData = viewData;
+        }
+    },
+    created: function () {
+        var vm = this;
+        vm.getLists(function (data) {
+            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
+            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "(" + item.machineName + ")" } }));
+            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
+        });
     }
 }
 
 Vue.component('dropdown', {
     delimiters: ['{/', '/}'],
     template: '#dropdown',
-    props: ['items', 'defaultCheckAll'],
+    props: ['items', 'defaultCheckAll', 'onChanging', 'onChanged'],
     data: function () {
         return {
-            show: false
+            show: false,
+            uniqeID: Math.floor(Math.random() * 100000000, 0)
         }
     },
     computed: {
@@ -145,9 +265,18 @@ Vue.component('dropdown', {
                 return [(this.selectedLength > 0 ? this.selectedLength : ''), ' ', this.items.type, (this.selectedLength > 1 || this.selectedLength === 0 ? 's' : '')].join('');
         }
     },
+    watch: {
+        show: function (cur, pre) {
+            if (!cur) { //close
+                if (typeof this.onChanged === "function") {
+                    this.onChanged();
+                }
+            }
+        }
+    },
     methods: {
         domId: function (id) {
-            return this.items.type + id;
+            return this.uniqeID + this.items.type + id;
         },
         checkAll: function () {
             for (var index in this.items.items) {
@@ -233,7 +362,6 @@ Vue.component('treemenu', {
         },
         toggleMachineSelect: function (value) {
             if (value) {
-                console.log(1)
                 var machine = value;
                 Vue.set(machine, 'owner', machine.owner.account);
                 Vue.set(this.checkList.machines, machine.machineID, machine);
@@ -355,7 +483,7 @@ Vue.component('pagination', {
 });
 
 const Home = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -495,33 +623,37 @@ const Home = {
 };
 
 const Operations = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
+        var seriesColumns = ["totalIn", "totalOut", "totalBet", "totalWinWithJp", "totalJpWin", "totalPlayTimes", "totalWinTimes"];
         return {
-            loading: false,
-            options: { format: 'YYYY/MM/DD' },
-            searchData: { groupInterval: 'day', groupBy: 'machine', startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
-            reportData: { items: [] },
-            summaryReportData: {},
-            searched: false,
-            unit: 10,
-            currentPage: 1,
-            viewData: [],
-            view: 1,
-            users: {
+            datePickerOptions: { format: 'YYYY/MM/DD' }, //datetime picker options
+            searchData: { groupInterval: 'day', groupBy: 'machine', startTime: Utils.date.yesterdayStart().toString('yyyy/M/d'), endTime: Utils.date.yesterdayStart().toString('yyyy/M/d') },
+            groupSeriesData: {},
+            groupChart: null,
+            summarySeriesData: {},
+            summaryChart: null,
+            seriesColumns: seriesColumns,
+            showGroupChart: false,
+            columnsForReport: {
+                type: "Column",
+                items: seriesColumns.map(function (item) { return { checked: item==="totalIn", id: item, text: item } })
+            },
+            usersForReport: {
                 type: "Account",
                 items: []
             },
-            stores: {
+            storesForReport: {
                 type: "Store",
                 items: []
             },
-            machines: {
+            machinesForReport: {
                 type: "Machine",
                 items: []
             }
         }
     },
+    /*
     watch: {
         unit: function () {
             this.currentPage = 1;
@@ -551,28 +683,26 @@ const Operations = {
                 e = this.reportData.items.length;
             return e;
         }
-    },
+    },*/
     methods: {
         resetParams: function () {
-            this.reportData.items = [];
-            this.summaryReportData = {};
-            this.searched = false;
-            this.currentPage = 1;
-            this.totalPage = 0;
+            this.showGroupChart = false;
             this.searchData.groupInterval = /([A-Za-z\d]+)(\/*|)$/i.exec(this.$route.fullPath)[0];
-            console.log(this.chart);
-            this.chart && this.chart.destroy && this.chart.destroy();
+            this.groupChart && this.groupChart.hasRendered && this.groupChart.destroy && this.groupChart.destroy();//reset chart
+            this.summaryChart && this.summaryChart.hasRendered && this.summaryChart.destroy && this.summaryChart.destroy();//reset chart
+            this.searchData.endTime = Utils.date.yesterdayStart().toString('yyyy/M/d');
             switch (this.searchData.groupInterval) {
                 case 'day':
-                    this.searchData.startTime = Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss');
+                    this.searchData.startTime = Utils.date.yesterdayStart().toString('yyyy/M/d');
                     break;
                 case 'week':
-                    this.searchData.startTime = Utils.date.weekStart().toString('yyyy/M/d HH:mm:ss');
+                    this.searchData.startTime = Utils.date.yesterdayStart().toString('yyyy/M/d');
                     break;
                 case 'month':
-                    this.searchData.startTime = Utils.date.monthStart().toString('yyyy/M/d HH:mm:ss');
+                    this.searchData.startTime = Utils.date.yesterdayStart().toString('yyyy/M/d');
                     break;
             }
+            PageBase.methods.resetParams.call(this);
         },
         changeGroup: function (group) {
             this.searchData.groupBy = group;
@@ -581,39 +711,18 @@ const Operations = {
         chkGroup: function (group) {
             return group != this.searchData.groupBy || 'active';
         },
-        changeView: function (view) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(function () {
-                vm.loading = false;
-                vm.view = view;
-            }, 300);
-        },
-        chkView: function (view) {
-            return view != this.view || 'active';
-        },
-        changePage: function (page) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(() => {
-                vm.loading = false;
-                vm.currentPage = page;
-            }, 300);
-        },
-        dataChanged: function (viewData) {
-            this.viewData = viewData;
-        },
         search: function () {
             var vm = this;
+            var timezoneOffset = new Date().getTimezoneOffset();
             vm.loading = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
+                users: vm.determineSearchString(vm.users.items, "checked"),
+                machines: vm.determineSearchString(vm.machines.items, "checked"),
+                stores: vm.determineSearchString(vm.stores.items, "checked"),
                 groupBy: vm.searchData.groupBy,
-                startTime: vm.searchData.startTime,
-                endTime: vm.searchData.endTime,
+                startTime: Utils.date.getDayStart(vm.searchData.startTime),
+                endTime: Utils.date.getDayEnd(vm.searchData.endTime),
                 groupInterval: vm.searchData.groupInterval
             };
             Vue.http.post('/api/operations', search).then(function (res) {
@@ -622,52 +731,86 @@ const Operations = {
                 vm.total = vm.reportData.items.length;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
-                vm.drawChart();
+                vm.prepareReportData();
+                vm.drawSummaryChart();
+                vm.updateGroupChartFilters();
+                if(vm.showGroupChart){
+                    vm.drawGroupChart();
+                }
             }).catch(app.handlerError);
         },
-        drawChart: function () {
+        prepareReportData: function () {
+            var columnsRegex = new RegExp(this.seriesColumns.join("|"));
             var data = {};
-            var dataSet = {};
-            var series = [];
-
-            var colors = palette('rainbow', 50, 1, 0.5).map(function (hex) {
-                return '#' + hex;
-            });
-            var colorIndex = 0;
+            //used for forLoop
+            var dataSetSummary = {};
+            var dataSetGroup = {};
+            var singleRow = {};
+            var seriesData = {};
+            var dateData = {};
+            var singleData;
+            var machineKey;
+            var item;
             for (var index in this.reportData.items) {
-                var item = this.reportData.items[index];
+                item = this.reportData.items[index];
+                //group data by user selected
+                machineKey = item.pcbID + "(" + item.machineName + ")";
+                switch (this.searchData.groupBy) {
+                    case 'machine':
+                        singleData = data[machineKey] = data[machineKey] || {};
+                        break;
+                    case 'user':
+                        singleData = data[item.account] = data[item.account] || {};
+                        break;
+                    case 'storename':
+                        singleData = data[item.storeName] = data[item.storeName] || {};
+                        break;
+                }
                 for (var key in item) {
-                    if(!/totalIn|totalOut|totalBet|totalWinWithJp|totalJpWin|totalPlayTimes|totalWinTimes/.test(key)){
+                    if (!columnsRegex.test(key)) {
                         continue;
                     }
                     var d = new Date(item.date).getTime();
-                    data[key] = data[key] || {};
-                    if (!data[key][d]) {
-                        data[key][d] = 0;
+                    singleData[key] = singleData[key] || {};
+                    if (!singleData[key][d]) {
+                        singleData[key][d] = 0;
                     }
-                    data[key][d] += Number(item[key]);
+                    singleData[key][d] += Number(item[key]);
                 }
             }
 
-            for(var key in data){
-                dataSet[key] = dataSet[key] || [];
-                for(var key2 in data[key]){
-                    dataSet[key].push([+key2, data[key][key2]]);
+            for (var singleRowKey in data) {
+                //single row (already Group)
+                singleRow = data[singleRowKey];
+                //init data(group)
+                if (!dataSetGroup[singleRowKey]) { dataSetGroup[singleRowKey] = {}; }
+                for (var seriesColumnKey in singleRow) {
+                    //series column
+                    seriesData = singleRow[seriesColumnKey];
+                    //init data(group)
+                    if (!dataSetGroup[singleRowKey][seriesColumnKey]) { dataSetGroup[singleRowKey][seriesColumnKey] = []; }
+                    //init data(summary)
+                    if (!dataSetSummary[seriesColumnKey]) { dataSetSummary[seriesColumnKey] = {}; }
+                    for (var dateKey in seriesData) {
+                        //date key is number(time.getTime())
+                        //result like {"group": {totalIn: [[10524885, 999],[10524885, 777]]} }
+                        dataSetGroup[singleRowKey][seriesColumnKey].push([+dateKey, seriesData[dateKey]]);
+
+                        //result like {totalIn: [[10524885, 999],[10524885, 777]] ...}
+                        if (!dataSetSummary[seriesColumnKey][dateKey]) {
+                            dataSetSummary[seriesColumnKey][dateKey] = 0;
+                        }
+                        dataSetSummary[seriesColumnKey][dateKey] += seriesData[dateKey];
+                    }
                 }
             }
-
-            for(var key in dataSet){
-                series.push({
-                    type: 'line',
-                    name: key,
-                    tooltip: {
-                        xDateFormat: '%Y/%m/%d'
-                    },
-                    data: dataSet[key]
-                });
-            }
-
-            this.chart = Highcharts.chart(this.$refs.chart, {
+            this.groupSeriesData = dataSetGroup;
+            this.summarySeriesData = dataSetSummary;
+        },
+        genratorChart: function (el, series, legend) {
+            var vm = this;
+            vm.loading = true;
+            return Highcharts.chart(el, {
                 chart: {
                     zoomType: 'x'
                 },
@@ -676,12 +819,16 @@ const Operations = {
                 },
                 subtitle: {
                     text: document.ontouchstart === undefined ?
-                            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
                 },
                 xAxis: {
                     type: 'datetime',
                     labels: {
-                      format: '{value:%Y/%m/%d}'
+                        format: '{value:%Y/%m/%d}',
+                        rotation: -50,
+                        y: 33,
+                        align: 'center',
+                        step: 1
                     }
                 },
                 yAxis: {
@@ -693,117 +840,191 @@ const Operations = {
                     enabled: true
                 },
                 plotOptions: {
-                    area: {
-                        // fillColor: {
-                        //     linearGradient: {
-                        //         x1: 0,
-                        //         y1: 0,
-                        //         x2: 0,
-                        //         y2: 1
-                        //     },
-                        //     stops: [
-                        //         [0, Highcharts.getOptions().colors[0]],
-                        //         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        //     ]
-                        // },
+                    spline: {
                         marker: {
-                            radius: 2
+                            radius: 1,
+                            enabled: null
                         },
                         lineWidth: 1,
                         states: {
                             hover: {
-                                lineWidth: 1
+                                lineWidth: 3
                             }
                         },
                         threshold: null
                     }
                 },
                 series: series
+            }, function(){
+                vm.loading = false;
             });
+        },
+        updateGroupChartFilters: function () {
+            switch (this.searchData.groupBy) {
+                case 'machine':
+                    Vue.set(this.machinesForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: item }; }));
+                    break;
+                case 'user':
+                    Vue.set(this.usersForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: item }; }));
+                    break;
+                case 'storename':
+                    Vue.set(this.storesForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: (item === "") ? "-" : item }; }));
+                    break;
+            }
+        },
+        updateGroupChart: function () {
+            if (!this.groupChart || !this.groupChart.hasRendered) { return; }
+            this.drawGroupChart();
+        },
+        drawGroupChart: function () {
+            var vm = this;
+            var series = [];
+            var checkedGroups = [];
+            var _tempGroups = null;
+            var _tempColumns = null;
+            switch (this.searchData.groupBy) {
+                case 'machine':
+                    _tempGroups = vm.determineSearchString(vm.machinesForReport.items, "checked");
+                    break;
+                case 'user':
+                    _tempGroups = vm.determineSearchString(vm.usersForReport.items, "checked");
+                    break;
+                case 'storename':
+                    _tempGroups = vm.determineSearchString(vm.storesForReport.items, "checked");
+                    break;
+            }
+            checkedGroups = _tempGroups && _tempGroups.split(",").toObject();
+            _tempColumns = vm.determineSearchString(vm.columnsForReport.items, "checked");
+            var checkedColumns = _tempColumns && _tempColumns.split(",").toObject();
+            //used for forLoop
+            var singleRow = {};
+            for (var groupKey in this.groupSeriesData) {
+                if (checkedGroups !== null && !checkedGroups[groupKey]) {
+                    continue;
+                }
+                singleRow = this.groupSeriesData[groupKey];
+                for (var columnKey in singleRow) {
+                    if (checkedColumns !== null && !checkedColumns[columnKey]) {
+                        continue;
+                    }
+                    series.push({
+                        type: 'spline',
+                        name: [columnKey, "(", groupKey, ")"].join(""),
+                        tooltip: {
+                            xDateFormat: '%Y/%m/%d'
+                        },
+                        data: singleRow[columnKey]
+                    });
+                }
+            }
+            ch = this.groupChart = this.genratorChart(this.$refs.groupChart, series, false);
+            this.showGroupChart = true;
+            // } else {
+            //     console.log(series)
+            //     // this.groupChart.series = series;
+            // }
+            //use report data init filter dropdown
+        },
+        drawSummaryChart: function () {
+            var vm = this;
+            var series = [];
+            var seriesContent = [];
+            var singleSummaryData;
+            for (var key in this.summarySeriesData) {
+                singleSummaryData = this.summarySeriesData[key];
+                seriesContent = [];
+                for (var date in singleSummaryData) {
+                    seriesContent.push([+date, singleSummaryData[date]]);
+                }
+                series.push({
+                    type: 'spline',
+                    name: key,
+                    tooltip: {
+                        xDateFormat: '%Y/%m/%d'
+                    },
+                    data: seriesContent
+                });
+            }
+            this.summaryCart = this.genratorChart(this.$refs.summaryChart, series);
         }
     },
     created: function () {
-        var vm = this;
-        app.getLists((function (data) {
-            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
-            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
-            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
-        }).bind(vm));
+        this.resetParams();
     },
     mounted: function () {
-        this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
+        
     }
 };
 
 const Accounting = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
+        var seriesColumns = ["totalIn", "totalOut", "totalBet", "totalWinWithJp", "totalJpWin", "totalPlayTimes", "totalWinTimes"];
         return {
-            searched: false,
-            loading: false,
             options: {},
-            searchData: { timeRange: "10", groupBy: 'machine', startTime: Utils.date.todayStart().toString('yyyy/M/d'), endTime: Utils.date.todayEnd().toString('yyyy/M/d') },
-            reportData: { items: [] },
-            summaryReportData: null,
+            searchData: { timeRange: "10", groupBy: 'machine', startTime: Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss'), endTime: Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss') },
             unit: 10,
-            currentPage: 1,
             view: 1,
-            users: {
+            seriesColumns: seriesColumns,
+            showGroupChart: false,
+            columnsForReport: {
+                type: "Column",
+                items: seriesColumns.map(function (item) { return { checked: item==="totalIn", id: item, text: item } })
+            },
+            usersForReport: {
                 type: "Account",
                 items: []
             },
-            stores: {
+            storesForReport: {
                 type: "Store",
                 items: []
             },
-            machines: {
+            machinesForReport: {
                 type: "Machine",
                 items: []
             }
         }
     },
     watch: {
-        '$route': function (route) {
-            this.loading = true;
-            setTimeout(() => {
-                this.loading = false;
-            }, 300);
-            this.searchData.groupBy = /([A-Za-z\d]+)(\/*|)$/i.exec(route.fullPath)[0];
-            this.resetParams();
-        },
-        unit: function () {
-            this.currentPage = 1;
-            this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
-        }
+        // '$route': function (route) {
+        //     this.loading = true;
+        //     setTimeout(() => {
+        //         this.loading = false;
+        //     }, 300);
+        //     this.resetParams();
+        // },
+        // unit: function () {
+        //     this.currentPage = 1;
+        //     this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
+        // }
     },
     computed: {
-        resetParams: function () {
-            this.reportData.items = [];
-            this.searched = false;
-            this.currentPage = 1;
-        },
-        showDetail: function () {
-            return this.view == 2;
-        },
-        startRow: function () {
-            var s = (this.currentPage - 1) * this.unit;
-            if (this.reportData.items.length < s)
-                s = this.reportData.items.length - 1;
-            return s;
-        },
-        endRow: function () {
-            var e = this.currentPage * this.unit;
-            if (this.reportData.items.length < e)
-                e = this.reportData.items.length;
-            return e;
-        },
-        viewData: function () {
-            var start = this.startRow;
-            var end = this.endRow;
-            return this.reportData.items.slice(start, end);
-        }
+        // showDetail: function () {
+        //     return this.view == 2;
+        // },
+        // startRow: function () {
+        //     var s = (this.currentPage - 1) * this.unit;
+        //     if (this.reportData.items.length < s)
+        //         s = this.reportData.items.length - 1;
+        //     return s;
+        // },
+        // endRow: function () {
+        //     var e = this.currentPage * this.unit;
+        //     if (this.reportData.items.length < e)
+        //         e = this.reportData.items.length;
+        //     return e;
+        // }
     },
     methods: {
+        resetParams: function () {
+            this.showGroupChart = false;
+            this.searchData.groupBy = /([A-Za-z\d]+)(\/*|)$/i.exec(this.$route.fullPath)[0];
+            this.groupChart && this.groupChart.hasRendered && this.groupChart.destroy && this.groupChart.destroy();//reset chart
+            this.summaryChart && this.summaryChart.hasRendered && this.summaryChart.destroy && this.summaryChart.destroy();//reset chart
+            this.searchData.startTime = Utils.date.todayStart().toString('yyyy/M/d HH:mm:ss');
+            this.searchData.endTime = Utils.date.todayEnd().toString('yyyy/M/d HH:mm:ss');
+            PageBase.methods.resetParams.call(this);
+        },
         changeGroup: function (group) {
             this.searchData.groupBy = group;
             this.search();
@@ -811,36 +1032,18 @@ const Accounting = {
         chkGroup: function (group) {
             return group != this.searchData.groupBy || 'active';
         },
-        changeView: function (view) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(() => {
-                vm.loading = false;
-                this.view = view;
-            }, 500);
-        },
-        chkView: function (view) {
-            return view != this.view || 'active';
-        },
-        changePage: function (page) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(() => {
-                vm.loading = false;
-                vm.currentPage = page;
-            }, 300);
-        },
         dataChanged: function (viewData) {
             this.viewData = viewData;
         },
         search: function () {
             var vm = this;
+            var timezoneOffset = new Date().getTimezoneOffset();
             vm.loading = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
+                users: vm.determineSearchString(vm.users.items, "checked"),
+                machines: vm.determineSearchString(vm.machines.items, "checked"),
+                stores: vm.determineSearchString(vm.stores.items, "checked"),
                 groupBy: vm.searchData.groupBy,
                 timeRange: vm.searchData.timeRange,
                 startTime: vm.searchData.startTime,
@@ -852,52 +1055,90 @@ const Accounting = {
                 vm.total = vm.reportData.items.length;
                 vm.totalPage = Math.ceil(vm.total / vm.unit);
                 vm.loading = false;
-                vm.drawChart();
+                vm.prepareReportData();
+                vm.drawSummaryChart();
+                vm.updateGroupChartFilters();
+                if(vm.showGroupChart){
+                    vm.drawGroupChart();
+                }
             }).catch(app.handlerError);
         },
-        drawChart: function () {
+        prepareReportData: function () {
+            var columnsRegex = new RegExp(this.seriesColumns.join("|"));
             var data = {};
-            var dataSet = {};
-            var series = [];
-
-            var colors = palette('rainbow', 50, 1, 0.5).map(function (hex) {
-                return '#' + hex;
-            });
-            var colorIndex = 0;
+            //used for forLoop
+            var dataSetSummary = {};
+            var dataSetGroup = {};
+            var singleRow = {};
+            var seriesData = {};
+            var dateData = {};
+            var singleData;
+            var machineKey;
+            var item;
             for (var index in this.reportData.items) {
-                var item = this.reportData.items[index];
+                item = this.reportData.items[index];
+                //group data by user selected
+                machineKey = item.pcbID + "(" + item.machineName + ")";
+                switch (this.searchData.groupBy) {
+                    case 'machine':
+                        singleData = data[machineKey] = data[machineKey] || {};
+                        break;
+                    case 'user':
+                        singleData = data[item.account] = data[item.account] || {};
+                        break;
+                    case 'storename':
+                        singleData = data[item.storeName] = data[item.storeName] || {};
+                        break;
+                }
                 for (var key in item) {
-                    if(!/totalIn|totalJpWin|totalOut|totalBet|totalWinWithJp|totalPlayTimes|totalWinTimes/.test(key)){
+                    if (!columnsRegex.test(key)) {
                         continue;
                     }
-                    var d = new Date(item.rangeStartTime).getTime();
-                    data[key] = data[key] || {};
-                    if (!data[key][d]) {
-                        data[key][d] = 0;
+                    var d = new Date(item.rangeEndTime).getTime();
+                    singleData[key] = singleData[key] || {};
+                    if (!singleData[key][d]) {
+                        singleData[key][d] = 0;
                     }
-                    data[key][d] += Number(item[key]);
+                    singleData[key][d] += Number(item[key]);
                 }
             }
 
-            for(var key in data){
-                dataSet[key] = dataSet[key] || [];
-                for(var key2 in data[key]){
-                    dataSet[key].push([+key2, data[key][key2]]);
+            for (var singleRowKey in data) {
+                //single row (already Group)
+                singleRow = data[singleRowKey];
+                //init data(group)
+                if (!dataSetGroup[singleRowKey]) { dataSetGroup[singleRowKey] = {}; }
+                for (var seriesColumnKey in singleRow) {
+                    //series column
+                    seriesData = singleRow[seriesColumnKey];
+                    //init data(group)
+                    if (!dataSetGroup[singleRowKey][seriesColumnKey]) { dataSetGroup[singleRowKey][seriesColumnKey] = []; }
+                    //init data(summary)
+                    if (!dataSetSummary[seriesColumnKey]) { dataSetSummary[seriesColumnKey] = {}; }
+                    for (var dateKey in seriesData) {
+                        //date key is number(time.getTime())
+                        //result like {"group": {totalIn: [[10524885, 999],[10524885, 777]]} }
+                        dataSetGroup[singleRowKey][seriesColumnKey].push([+dateKey, seriesData[dateKey]]);
+
+                        //result like {totalIn: [[10524885, 999],[10524885, 777]] ...}
+                        if (!dataSetSummary[seriesColumnKey][dateKey]) {
+                            dataSetSummary[seriesColumnKey][dateKey] = 0;
+                        }
+                        dataSetSummary[seriesColumnKey][dateKey] += seriesData[dateKey];
+                    }
                 }
             }
-
-            for(var key in dataSet){
-                series.push({
-                    type: 'line',
-                    name: key,
-                    tooltip: {
-                        xDateFormat: '%Y/%m/%d'
-                    },
-                    data: dataSet[key]
-                });
+            this.groupSeriesData = dataSetGroup;
+            this.summarySeriesData = dataSetSummary;
+        },
+        genratorChart: function (el, series, legend) {
+            var vm = this;
+            vm.loading = true;
+            if(!series){
+                console.warn("Can't draw empty series");
+                return null;
             }
-
-            Highcharts.chart(this.$refs.chart, {
+            return Highcharts.chart(el, {
                 chart: {
                     zoomType: 'x'
                 },
@@ -906,12 +1147,16 @@ const Accounting = {
                 },
                 subtitle: {
                     text: document.ontouchstart === undefined ?
-                            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
                 },
                 xAxis: {
                     type: 'datetime',
                     labels: {
-                      format: '{value:%Y/%m/%d}'
+                        format: '{value:%Y/%m/%d<br>%H:%M:%S}',
+                        rotation: -50,
+                        y: 33,
+                        align: 'center',
+                        step: 1
                     }
                 },
                 yAxis: {
@@ -923,50 +1168,120 @@ const Accounting = {
                     enabled: true
                 },
                 plotOptions: {
-                    area: {
-                        // fillColor: {
-                        //     linearGradient: {
-                        //         x1: 0,
-                        //         y1: 0,
-                        //         x2: 0,
-                        //         y2: 1
-                        //     },
-                        //     stops: [
-                        //         [0, Highcharts.getOptions().colors[0]],
-                        //         [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
-                        //     ]
-                        // },
+                    spline: {
                         marker: {
-                            radius: 1
+                            radius: 1,
+                            enabled: null
                         },
                         lineWidth: 1,
                         states: {
                             hover: {
-                                lineWidth: 1
+                                lineWidth: 3
                             }
                         },
                         threshold: null
                     }
                 },
                 series: series
+            }, function(){
+                vm.loading = false;
             });
+        },
+        updateGroupChartFilters: function () {
+            switch (this.searchData.groupBy) {
+                case 'machine':
+                    Vue.set(this.machinesForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: item }; }));
+                    break;
+                case 'user':
+                    Vue.set(this.usersForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: item }; }));
+                    break;
+                case 'storename':
+                    Vue.set(this.storesForReport, "items", Object.keys(this.groupSeriesData).sort(function(a,c){return (a>c)?1:-1;}).map(function (item, index) { return { checked: index < 10, id: item, text: (item === "") ? "-" : item }; }));
+                    break;
+            }
+        },
+        updateGroupChart: function () {
+            if (!this.groupChart || !this.groupChart.hasRendered) { return; }
+            this.drawGroupChart();
+        },
+        drawGroupChart: function () {
+            var vm = this;
+            var series = [];
+            var checkedGroups = [];
+            var _tempGroups = null;
+            var _tempColumns = null;
+            switch (this.searchData.groupBy) {
+                case 'machine':
+                    _tempGroups = vm.determineSearchString(vm.machinesForReport.items, "checked");
+                    break;
+                case 'user':
+                    _tempGroups = vm.determineSearchString(vm.usersForReport.items, "checked");
+                    break;
+                case 'storename':
+                    _tempGroups = vm.determineSearchString(vm.storesForReport.items, "checked");
+                    break;
+            }
+            checkedGroups = _tempGroups && _tempGroups.split(",").toObject();
+            _tempColumns = vm.determineSearchString(vm.columnsForReport.items, "checked");
+            var checkedColumns = _tempColumns && _tempColumns.split(",").toObject();
+            //used for forLoop
+            var singleRow = {};
+            for (var groupKey in this.groupSeriesData) {
+                if (checkedGroups !== null && !checkedGroups[groupKey]) {
+                    continue;
+                }
+                singleRow = this.groupSeriesData[groupKey];
+                for (var columnKey in singleRow) {
+                    if (checkedColumns !== null && !checkedColumns[columnKey]) {
+                        continue;
+                    }
+                    singleRow[columnKey].sort(function(a,c){return a[0]-c[0];});
+                    series.push({
+                        type: 'spline',
+                        name: [columnKey, "(", groupKey, ")"].join(""),
+                        tooltip: {
+                            xDateFormat: '%Y/%m/%d %H:%M:%S'
+                        },
+                        data: singleRow[columnKey]
+                    });
+                }
+            }
+            ch = this.groupChart = this.genratorChart(this.$refs.groupChart, series, false);
+            this.showGroupChart = true;
+        },
+        drawSummaryChart: function () {
+            var vm = this;
+            var series = [];
+            var seriesContent = [];
+            var singleSummaryData;
+            for (var key in this.summarySeriesData) {
+                singleSummaryData = this.summarySeriesData[key];
+                seriesContent = [];
+                for (var date in singleSummaryData) {
+                    seriesContent.push([+date, singleSummaryData[date]]);
+                }
+                seriesContent.sort(function(a,c){return a[0]-c[0];});
+                series.push({
+                    type: 'spline',
+                    name: key,
+                    tooltip: {
+                        xDateFormat: '%Y/%m/%d %H:%M:%S'
+                    },
+                    data: seriesContent
+                });
+            }
+            this.summaryCart = this.genratorChart(this.$refs.summaryChart, series);
         }
     },
     created: function () {
-        var vm = this;
-        app.getLists((function (data) {
-            Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
-            Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
-            Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
-        }).bind(vm));
+        this.resetParams();
     },
     mounted: function () {
-        this.totalPage = Math.ceil(this.reportData.items.length / this.unit);
     }
 };
 
 const Transactions = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             searched: false,
@@ -1016,11 +1331,6 @@ const Transactions = {
         }
     },
     computed: {
-        resetParams: function () {
-            this.reportData.items = [];
-            this.searched = false;
-            this.currentPage = 1;
-        },
         showDetail: function () {
             return this.view == 2;
         },
@@ -1038,28 +1348,13 @@ const Transactions = {
         }
     },
     methods: {
-        changeView: function (view) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(() => {
-                vm.loading = false;
-                this.view = view;
-            }, 500);
-        },
-        chkView: function (view) {
-            return view != this.view || 'active';
-        },
-        changePage: function (page) {
-            var vm = this;
-            vm.loading = true;
-            setTimeout(() => {
-                vm.loading = false;
-                vm.currentPage = page;
-            }, 300);
+        resetParams: function () {
+            this.reportData.items = [];
+            this.searched = false;
+            this.currentPage = 1;
         },
         dataChanged: function (viewData) {
             this.viewData = viewData;
-            console.log(1)
         },
         jpTitle: function (item) {
             return ["JP1：", this.thousandFormat(item.jp1Win), "\nJP2：", this.thousandFormat(item.jp2Win), "\nJP3：", this.thousandFormat(item.jp3Win), "\nJP4：", this.thousandFormat(item.jp4Win)].join("");
@@ -1070,11 +1365,11 @@ const Transactions = {
             vm.searching = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
-                transactionTypes: app.determineSearchString(vm.transactionTypes.items, "checked"),
-                gameTypes: app.determineSearchString(vm.gameTypes.items, "checked"),
+                users: vm.determineSearchString(vm.users.items, "checked"),
+                machines: vm.determineSearchString(vm.machines.items, "checked"),
+                stores: vm.determineSearchString(vm.stores.items, "checked"),
+                transactionTypes: vm.determineSearchString(vm.transactionTypes.items, "checked"),
+                gameTypes: vm.determineSearchString(vm.gameTypes.items, "checked"),
                 startTime: vm.searchData.startTime,
                 endTime: vm.searchData.endTime
             };
@@ -1092,7 +1387,7 @@ const Transactions = {
     },
     created: function () {
         var vm = this;
-        app.getLists((function (data) {
+        vm.getLists((function (data) {
             Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
             Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.ID, text: item.pcbID + "-" + item.machineName } }));
             Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
@@ -1106,7 +1401,7 @@ const Transactions = {
 };
 
 const MachineList = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -1425,7 +1720,7 @@ const MachineTransfer = {
 };
 
 const Core = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -1660,7 +1955,7 @@ const Core = {
 };
 
 const Agency = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -1758,7 +2053,6 @@ const Agency = {
         getUsers: function () {
             var vm = this;
             vm.loading = true;
-            console.log()
             Vue.http.get('/api/agency').then(function (res) {
                 vm.users.items = res.body.data;
                 vm.total = res.body.total;
@@ -1897,7 +2191,7 @@ const Agency = {
 };
 
 const VersionSetting = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -1984,7 +2278,7 @@ const JPServer = {
 };
 
 const ReportJackpot = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -2052,9 +2346,9 @@ const ReportJackpot = {
             vm.loading = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
+                users: determineSearchString(vm.users.items, "checked"),
+                machines: determineSearchString(vm.machines.items, "checked"),
+                stores: determineSearchString(vm.stores.items, "checked"),
                 groupBy: vm.searchData.groupBy,
                 startTime: vm.searchData.startTime,
                 endTime: vm.searchData.endTime
@@ -2069,7 +2363,7 @@ const ReportJackpot = {
     },
     created: function () {
         var vm = this;
-        app.getLists((function (data) {
+        vm.getLists((function (data) {
             Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
             Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
             Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
@@ -2080,7 +2374,7 @@ const ReportJackpot = {
 };
 
 const ReportMachine = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -2128,7 +2422,6 @@ const ReportMachine = {
             this.totalPage = 0;
         },
         changeView: function (view) {
-            console.log(view)
             var vm = this;
             vm.loading = true;
             setTimeout(function () {
@@ -2155,9 +2448,9 @@ const ReportMachine = {
             vm.loading = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
+                users: determineSearchString(vm.users.items, "checked"),
+                machines: determineSearchString(vm.machines.items, "checked"),
+                stores: determineSearchString(vm.stores.items, "checked"),
                 startTime: vm.searchData.startTime,
                 endTime: vm.searchData.endTime
             };
@@ -2171,7 +2464,7 @@ const ReportMachine = {
     },
     created: function () {
         var vm = this;
-        app.getLists((function (data) {
+        vm.getLists((function (data) {
             Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
             Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
             Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
@@ -2182,7 +2475,7 @@ const ReportMachine = {
 };
 
 const ReportRevenue = {
-    mixins: [common],
+    mixins: [PageBase],
     data: function () {
         return {
             loading: false,
@@ -2241,9 +2534,9 @@ const ReportRevenue = {
             vm.loading = true;
             vm.searched = true;
             var search = {
-                users: app.determineSearchString(vm.users.items, "checked"),
-                machines: app.determineSearchString(vm.machines.items, "checked"),
-                stores: app.determineSearchString(vm.stores.items, "checked"),
+                users: determineSearchString(vm.users.items, "checked"),
+                machines: determineSearchString(vm.machines.items, "checked"),
+                stores: determineSearchString(vm.stores.items, "checked"),
                 startTime: vm.searchData.startTime,
                 endTime: vm.searchData.endTime
             };
@@ -2257,7 +2550,7 @@ const ReportRevenue = {
     },
     created: function () {
         var vm = this;
-        app.getLists((function (data) {
+        vm.getLists((function (data) {
             Vue.set(vm.users, "items", data.users.map(function (item) { return { checked: true, id: item.userID, text: item.account } }));
             Vue.set(vm.machines, "items", data.machines.map(function (item) { return { checked: true, id: item.pcbID, text: item.pcbID + "-" + item.machineName } }));
             Vue.set(vm.stores, "items", data.stores.map(function (item) { return { checked: true, id: item, text: item } }));
@@ -2283,6 +2576,11 @@ $.extend(true, $.fn.datetimepicker.defaults, {
         today: 'fas fa-calendar-check',
         clear: 'far fa-trash-alt',
         close: 'far fa-times-circle'
+    }
+});
+Highcharts.setOptions({
+    time: {
+        timezone: 'Asia/Taipei'
     }
 });
 
@@ -2315,15 +2613,20 @@ var app = new Vue({
     router,
     delimiters: ['{/', '/}'],
     el: '#app',
-    data: {
-        loginUser: {}
+    data: function () {
+        return { loginUser: null };
+    },
+    computed: {
+        loginUserName: function () {
+            return (this.loginUser || {}).account;
+        }
     },
     methods: {
         logout: function () {
             $('<form action="/logout" method="POST"></form>').appendTo('body').submit();
         },
         handlerError: function (err) {
-            console.log(err);
+            console.warn(err);
             if (err && err.status === 403) {
                 alert('Login session expired or no permission, please login.');
                 location = ["/login", "?r=", location.pathname, location.search].join('');
@@ -2332,13 +2635,13 @@ var app = new Vue({
             }
         },
         chkPermission: function (permission) {
-            if(!this.loginUser || !this.loginUser.permissions){return false;}//get loginstatus not yet
+            if (!this.loginUser || !this.loginUser.permissions) { return false; }//get loginstatus not yet
             var _permission = permission || "";
             var _t = this.loginUser.permissions;
             var _ps = _permission.split(".");
             for (var i in _ps) {
                 _t = _t[_ps[i]];
-                if(!_t){console.log(_permission);return false;}
+                if (!_t) { console.warn(_permission); return false; }
             }
             if (_permission === "" || /^true$/i.test(_t)) {
                 return true;
@@ -2347,29 +2650,15 @@ var app = new Vue({
                 return false;
             }
         },
-        determineSearchString: function (items, determineKey) {
-            if (!items || !items.map) { return null; }
-            var len = items.length;
-            var checkedList = items.filter(function (item) { return item[determineKey] == true; })
-                .map(function (item) { return item["id"]; });
-            return (checkedList.length === len) ? null : checkedList.join(",");
-        },
         getUserStatus: function (callback) {
             var vm = this;
+            if (vm.loginUser) { callback && typeof callback === "function" && callback.apply(vm); return; }
             Vue.http.get("/getloginstatus").then(function (res) {
                 if (res.body.code == 200) {
                     Vue.set(vm, "loginUser", res.body.data);
                     if (callback && typeof (callback) === "function") {
                         callback.apply(vm);
                     }
-                }
-            }).catch(this.handlerError);
-        },
-        getLists: function (cb) {
-            var vm = this;
-            Vue.http.get("/api/common/list/all").then(function (res) {
-                if (res.body.code == 200) {
-                    cb.call(vm, res.body.data);
                 }
             }).catch(this.handlerError);
         },
@@ -2404,7 +2693,7 @@ var app = new Vue({
             } cb(r);
         }
     },
-    mounted: function () {
-        //this.getUserStatus();
+    created: function () {
+        this.getUserStatus();
     }
 })

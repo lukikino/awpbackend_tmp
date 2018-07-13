@@ -44,42 +44,12 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='幣別對應表';
 
--- 正在傾印表格  pcb.currencies 的資料：~1 rows (大約)
+-- 正在傾印表格  pcb.currencies 的資料：~0 rows (大約)
 DELETE FROM `currencies`;
 /*!40000 ALTER TABLE `currencies` DISABLE KEYS */;
 INSERT INTO `currencies` (`id`, `name`) VALUES
 	(1, 'twd');
 /*!40000 ALTER TABLE `currencies` ENABLE KEYS */;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_1 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_1`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_1`(
-	IN `p_id` INT
-,
-	IN `p_pwd` VARCHAR(128)
-
-
-)
-CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-		SELECT id, account, created_time FROM users WHERE id = p_id AND encrypted_password = p_pwd
-	);//
-DELIMITER ;
-
--- 傾印  程序 pcb.HeidiSQL_temproutine_2 結構
-DROP PROCEDURE IF EXISTS `HeidiSQL_temproutine_2`;
-DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `HeidiSQL_temproutine_2`(
-	IN `p_id` INT
-,
-	IN `p_pwd` VARCHAR(128)
-
-
-)
-CREATE TEMPORARY TABLE IF NOT EXISTS _tmp AS (
-		SELECT id, account, created_time FROM users WHERE id = p_id AND encrypted_password = p_pwd
-	);//
-DELIMITER ;
 
 -- 傾印  表格 pcb.log_machine_change 結構
 DROP TABLE IF EXISTS `log_machine_change`;
@@ -111,9 +81,9 @@ CREATE TABLE IF NOT EXISTS `log_user_change` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `FK_log_user_change_users` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=630 DEFAULT CHARSET=utf8 COMMENT='使用者變更記錄';
+) ENGINE=InnoDB AUTO_INCREMENT=665 DEFAULT CHARSET=utf8 COMMENT='使用者變更記錄';
 
--- 正在傾印表格  pcb.log_user_change 的資料：~552 rows (大約)
+-- 正在傾印表格  pcb.log_user_change 的資料：~538 rows (大約)
 DELETE FROM `log_user_change`;
 /*!40000 ALTER TABLE `log_user_change` DISABLE KEYS */;
 INSERT INTO `log_user_change` (`id`, `user_id`, `action`, `memo`, `created_time`, `update_time`) VALUES
@@ -668,7 +638,42 @@ INSERT INTO `log_user_change` (`id`, `user_id`, `action`, `memo`, `created_time`
 	(626, 2, 1, 'Login: testtest1.IP:127.0.0.1:59055', '2018-07-03 18:00:28', '2018-07-03 18:00:28'),
 	(627, 2, 1, 'Login: testtest1.IP:127.0.0.1:59047', '2018-07-03 18:03:13', '2018-07-03 18:03:13'),
 	(628, 2, 1, 'Login: testtest1.IP:127.0.0.1:59501', '2018-07-03 18:04:55', '2018-07-03 18:04:55'),
-	(629, 2, 1, 'Login: testtest1.IP:127.0.0.1:59501', '2018-07-03 18:08:24', '2018-07-03 18:08:24');
+	(629, 2, 1, 'Login: testtest1.IP:127.0.0.1:59501', '2018-07-03 18:08:24', '2018-07-03 18:08:24'),
+	(630, 2, 1, 'Login: testtest1.IP:127.0.0.1:62302', '2018-07-03 18:37:55', '2018-07-03 18:37:55'),
+	(631, 2, 1, 'Login: testtest1.IP:127.0.0.1:57500', '2018-07-04 10:18:00', '2018-07-04 10:18:00'),
+	(632, 2, 1, 'Login: testtest1.IP:127.0.0.1:58252', '2018-07-04 10:24:56', '2018-07-04 10:24:56'),
+	(633, 2, 1, 'Login: testtest1.IP:127.0.0.1:61930', '2018-07-04 11:08:43', '2018-07-04 11:08:43'),
+	(634, 2, 1, 'Login: testtest1.IP:127.0.0.1:63048', '2018-07-04 11:21:32', '2018-07-04 11:21:32'),
+	(635, 2, 1, 'Login: testtest1.IP:127.0.0.1:62365', '2018-07-04 14:30:47', '2018-07-04 14:30:47'),
+	(636, 2, 1, 'Login: testtest1.IP:127.0.0.1:63624', '2018-07-04 14:45:40', '2018-07-04 14:45:40'),
+	(637, 2, 1, 'Login: testtest1.IP:127.0.0.1:51563', '2018-07-04 15:34:59', '2018-07-04 15:34:59'),
+	(638, 2, 1, 'Login: testtest1.IP:127.0.0.1:54253', '2018-07-04 16:06:28', '2018-07-04 16:06:28'),
+	(639, 2, 1, 'Login: testtest1.IP:127.0.0.1:54254', '2018-07-04 16:07:02', '2018-07-04 16:07:02'),
+	(640, 2, 1, 'Login: testtest1.IP:127.0.0.1:54250', '2018-07-04 16:07:37', '2018-07-04 16:07:37'),
+	(641, 2, 1, 'Login: testtest1.IP:127.0.0.1:54253', '2018-07-04 16:08:04', '2018-07-04 16:08:04'),
+	(642, 2, 1, 'Login: testtest1.IP:127.0.0.1:54251', '2018-07-04 16:08:27', '2018-07-04 16:08:27'),
+	(643, 2, 1, 'Login: testtest1.IP:127.0.0.1:54253', '2018-07-04 16:08:32', '2018-07-04 16:08:32'),
+	(644, 2, 1, 'Login: testtest1.IP:127.0.0.1:54253', '2018-07-04 16:12:53', '2018-07-04 16:12:53'),
+	(645, 2, 1, 'Login: testtest1.IP:127.0.0.1:55466', '2018-07-04 16:22:25', '2018-07-04 16:22:25'),
+	(646, 2, 1, 'Login: testtest1.IP:127.0.0.1:55468', '2018-07-04 16:24:43', '2018-07-04 16:24:43'),
+	(647, 2, 1, 'Login: testtest1.IP:127.0.0.1:55463', '2018-07-04 16:24:52', '2018-07-04 16:24:52'),
+	(648, 2, 1, 'Login: testtest1.IP:127.0.0.1:55468', '2018-07-04 16:25:06', '2018-07-04 16:25:06'),
+	(649, 2, 1, 'Login: testtest1.IP:127.0.0.1:55464', '2018-07-04 16:27:41', '2018-07-04 16:27:41'),
+	(650, 2, 1, 'Login: testtest1.IP:127.0.0.1:60767', '2018-07-04 17:17:01', '2018-07-04 17:17:01'),
+	(651, 2, 1, 'Login: testtest1.IP:127.0.0.1:61441', '2018-07-05 16:19:20', '2018-07-05 16:19:20'),
+	(652, 2, 1, 'Login: testtest1.IP:127.0.0.1:61591', '2018-07-05 16:21:04', '2018-07-05 16:21:04'),
+	(653, 2, 1, 'Login: testtest1.IP:127.0.0.1:55237', '2018-07-05 18:15:44', '2018-07-05 18:15:44'),
+	(654, 2, 1, 'Login: testtest1.IP:127.0.0.1:60040', '2018-07-06 11:49:30', '2018-07-06 11:49:30'),
+	(655, 2, 1, 'Login: testtest1.IP:127.0.0.1:51167', '2018-07-06 16:21:51', '2018-07-06 16:21:51'),
+	(656, 2, 1, 'Login: testtest1.IP:127.0.0.1:57897', '2018-07-09 09:40:39', '2018-07-09 09:40:39'),
+	(657, 2, 1, 'Login: testtest1.IP:127.0.0.1:60654', '2018-07-09 13:57:06', '2018-07-09 13:57:06'),
+	(658, 2, 1, 'Login: testtest1.IP:127.0.0.1:56435', '2018-07-09 16:12:12', '2018-07-09 16:12:12'),
+	(659, 2, 1, 'Login: testtest1.IP:127.0.0.1:64458', '2018-07-09 17:44:12', '2018-07-09 17:44:12'),
+	(660, 2, 1, 'Login: testtest1.IP:127.0.0.1:58846', '2018-07-10 09:14:53', '2018-07-10 09:14:53'),
+	(661, 2, 1, 'Login: testtest1.IP:127.0.0.1:50590', '2018-07-10 13:50:59', '2018-07-10 13:50:59'),
+	(662, 2, 1, 'Login: testtest1.IP:127.0.0.1:61044', '2018-07-10 15:46:47', '2018-07-10 15:46:47'),
+	(663, 2, 1, 'Login: testtest1.IP:127.0.0.1:61197', '2018-07-10 15:48:17', '2018-07-10 15:48:17'),
+	(664, 2, 1, 'Login: testtest1.IP:127.0.0.1:50116', '2018-07-13 11:11:16', '2018-07-13 11:11:16');
 /*!40000 ALTER TABLE `log_user_change` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.machines 結構
@@ -689,160 +694,9 @@ CREATE TABLE IF NOT EXISTS `machines` (
   CONSTRAINT `FK_machines_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1642 DEFAULT CHARSET=utf8 COMMENT='機器實體';
 
--- 正在傾印表格  pcb.machines 的資料：~150 rows (大約)
+-- 正在傾印表格  pcb.machines 的資料：~0 rows (大約)
 DELETE FROM `machines`;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
-INSERT INTO `machines` (`id`, `store_name`, `machine_name`, `pcb_id`, `user_id`, `delete_flag`, `created_time`, `update_time`) VALUES
-	(1492, 'crest', '', 176316066, 615, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1493, 'crest', '', 105878820, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1494, 'gambler', '', 682512223, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1495, 'stork', '', 721151941, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1496, 'keeper', '', 420289975, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1497, 'snap', '', 347588699, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1498, 'finger', '', 683151270, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1499, 'flier', '', 857123793, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1500, 'hand', '', 153474256, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1501, 'princess', '', 973381554, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1502, 'bone', '', 658070695, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1503, 'snapper', '', 228935238, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1504, 'bolt', '', 360669037, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1505, 'lasher', '', 575146250, 615, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1506, 'lord', '', 313420796, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1507, 'princess', '', 702198553, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1508, 'shrieker', '', 520250931, 611, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1509, 'bug', '', 782167512, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1510, 'palm', '', 988576561, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1511, 'ferret', '', 579042071, 615, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1512, 'ridge', '', 324615033, 611, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1513, 'lion', '', 537182522, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1514, 'pig', '', 277294752, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1515, 'beak', '', 235193615, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1516, 'flasher', '', 134777353, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1517, 'jester', '', 535534079, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1518, 'snout', '', 806752778, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1519, 'dive', '', 576124597, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1520, 'swisher', '', 922507224, 615, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1521, 'cockatoo', '', 356516905, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1522, 'venom', '', 154664576, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1523, 'rover', '', 563850024, 611, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1524, 'song', '', 721194136, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1525, 'mark', '', 636880692, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1526, 'mustang', '', 334364256, 611, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1527, 'legend', '', 437351849, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1528, 'frill', '', 923963795, 614, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1529, 'muse', '', 443838162, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1530, 'duck', '', 817497224, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1531, 'chill', '', 598334099, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1532, 'collar', '', 235189137, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1533, 'knight', '', 378421517, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1534, 'hiss', '', 314862014, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1535, 'thief', '', 123039721, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1536, 'scorpion', '', 470735554, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1537, 'howler', '', 505380312, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1538, 'forger', '', 475727170, 618, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1539, 'vulture', '', 858150439, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1540, 'paladin', '', 375929867, 607, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1541, 'seeker', '', 842819844, 608, b'0', '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(1542, 'weasel', '', 355680945, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1543, 'falcon', '', 729022516, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1544, 'brow', '', 219302755, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1545, 'spider', '', 622534118, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1546, 'elf', '', 288056489, 632, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1547, 'sprite', '', 962914358, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1548, 'koala', '', 901037953, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1549, 'raven', '', 252137644, 622, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1550, 'mistress', '', 648226500, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1551, 'mind', '', 951200149, 632, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1552, 'binder', '', 746713621, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1553, 'ocelot', '', 611486450, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1554, 'seer', '', 316287232, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1555, 'mask', '', 840039022, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1556, 'grasp', '', 249791862, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1557, 'tongue', '', 917227746, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1558, 'thunder', '', 268945972, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1559, 'rabbit', '', 974966725, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1560, 'pixie', '', 548612124, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1561, 'myth', '', 445473024, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1562, 'nape', '', 593899875, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1563, 'cub', '', 520626308, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1564, 'chin', '', 942756331, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1565, 'cloak', '', 429838978, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1566, 'lightning', '', 182279505, 632, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1567, 'voice', '', 219872925, 632, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1568, 'flame', '', 514713842, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1569, 'chest', '', 819532233, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1570, 'cloak', '', 357429056, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1571, 'lady', '', 633035654, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1572, 'ape', '', 757807067, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1573, 'crest', '', 329585560, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1574, 'lightning', '', 183004898, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1575, 'skinner', '', 632482551, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1576, 'hound', '', 654378190, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1577, 'gem', '', 514198322, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1578, 'leg', '', 197480995, 621, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1579, 'zebra', '', 581163654, 622, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1580, 'chatter', '', 281567404, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1581, 'knight', '', 846404352, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1582, 'gem', '', 151928433, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1583, 'rover', '', 769102765, 622, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1584, 'panther', '', 255167586, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1585, 'dive', '', 754998588, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1586, 'touch', '', 510617178, 632, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1587, 'head', '', 999492027, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1588, 'bunny', '', 164611760, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1589, 'crown', '', 150911712, 625, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1590, 'spur', '', 268838894, 629, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1591, 'lantern', '', 283684344, 628, b'0', '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(1592, 'robin', '', 808847668, 639, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1593, 'boot', '', 861432918, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1594, 'keeper', '', 201686635, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1595, 'kicker', '', 537471962, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1596, 'fox', '', 783814390, 643, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1597, 'snarl', '', 475511846, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1598, 'brow', '', 323648739, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1599, 'keeper', '', 140436711, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1600, 'twister', '', 503355579, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1601, 'beetle', '', 448171994, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1602, 'tooth', '', 260321983, 643, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1603, 'ape', '', 714936691, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1604, 'stone', '', 529579816, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1605, 'spider', '', 153960837, 643, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1606, 'razor', '', 819667541, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1607, 'talon', '', 692399220, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1608, 'ferret', '', 972806283, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1609, 'princess', '', 427256970, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1610, 'runner', '', 968092335, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1611, 'gem', '', 359987619, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1612, 'gecko', '', 920959813, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1613, 'hisser', '', 334926019, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1614, 'swisher', '', 284382709, 639, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1615, 'viper', '', 830542412, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1616, 'hornet', '', 678756522, 643, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1617, 'donkey', '', 112861276, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1618, 'mind', '', 472962103, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1619, 'whimsey', '', 323850706, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1620, 'heron', '', 177696172, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1621, 'goat', '', 605569013, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1622, 'crystal', '', 497816232, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1623, 'giver', '', 613556361, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1624, 'guardian', '', 578344895, 639, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1625, 'panther', '', 925248150, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1626, 'ogre', '', 592036285, 646, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1627, 'flier', '', 997415334, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1628, 'raver', '', 214980811, 639, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1629, 'python', '', 989974853, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1630, 'whale', '', 298893262, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1631, 'jaw', '', 730963446, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1632, 'bow', '', 626750753, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1633, 'snagglefoot', '', 321205333, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1634, 'skull', '', 498003336, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1635, 'sentry', '', 313880094, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1636, 'giver', '', 571434098, 639, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1637, 'curtain', '', 561688858, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1638, 'mask', '', 966417485, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1639, 'finger', '', 733814516, 642, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1640, 'condor', '', 354889898, 636, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(1641, 'witch', '', 255664459, 635, b'0', '2018-06-29 17:52:16', '2018-06-29 17:52:16');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.machine_version 結構
@@ -937,7 +791,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='角色表';
 
--- 正在傾印表格  pcb.roles 的資料：~2 rows (大約)
+-- 正在傾印表格  pcb.roles 的資料：~3 rows (大約)
 DELETE FROM `roles`;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
 INSERT INTO `roles` (`id`, `name`, `description`, `update_time`, `created_time`) VALUES
@@ -958,7 +812,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
   CONSTRAINT `FK_role_permission_roles` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色權限對應表';
 
--- 正在傾印表格  pcb.role_permission 的資料：~37 rows (大約)
+-- 正在傾印表格  pcb.role_permission 的資料：~36 rows (大約)
 DELETE FROM `role_permission`;
 /*!40000 ALTER TABLE `role_permission` DISABLE KEYS */;
 INSERT INTO `role_permission` (`role_id`, `permission_id`, `created_time`, `update_time`) VALUES
@@ -1546,6 +1400,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getAccountings`(
 
 
 
+
+
 )
     DETERMINISTIC
 BEGIN
@@ -1630,11 +1486,13 @@ BEGIN
 		SELECT SQL_CALC_FOUND_ROWS *,
 				total_win_times/total_play_times*100 AS hit_rate,
 				total_out/total_in*100 AS out_rate,
+				total_win_with_jp/total_bet*100 AS win_rate_with_jp,
 				total_win/total_bet*100 AS win_rate
 			FROM (SELECT  
 			range_start_time,
 			DATE_ADD(DATE_ADD(range_start_time, INTERVAL ',p_timeRange,' MINUTE), INTERVAL -1 SECOND) AS range_end_time,
 			SUM(total_jp1_win + total_jp2_win + total_jp3_win + total_jp4_win) AS total_jp_win,
+			SUM(total_win + total_jp1_win + total_jp2_win + total_jp3_win + total_jp4_win) AS total_win_with_jp,
 			SUM(total_in) AS total_in,
 			SUM(total_out) AS total_out,
 			SUM(total_bet) AS total_bet,
@@ -1963,6 +1821,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getOperations`(
 
 
 
+
+
+
+
+
+
+
 )
 BEGIN
 	DECLARE d_isAdmin BOOL;
@@ -1978,7 +1843,7 @@ BEGIN
 	SET d_now = DATE(DATE_ADD(NOW(), INTERVAL -6 HOUR));
 	SET d_no_search = (ISNULL(p_users) AND ISNULL(p_stores) AND ISNULL(p_machines));
 	
-	DROP TEMPORARY TABLE IF EXISTS `_tmp`;
+	DROP TEMPORARY TABLE IF EXISTS `_tmp1`;
 	DROP TEMPORARY TABLE IF EXISTS `_tmp2`;
 	SELECT admin INTO d_isAdmin FROM users WHERE id = p_exeid;
 	SELECT lft, rgt INTO d_lft, d_rgt FROM user_node WHERE user_id = p_exeid;
@@ -1995,7 +1860,7 @@ BEGIN
 	ELSEIF p_groupInterval = 'week' THEN
 	BEGIN
 	--	SET d_group_interval_sql_string = 'YEAR(calculated_created_date), MONTH(calculated_created_date), DATE_ADD(calculated_created_date, interval (8 - dayofweek(calculated_created_date)) % 7 DAY)';
-	SET d_group_interval_sql_string = 'YEAR(calculated_created_date), WEEKOFYEAR(calculated_created_date)';
+	SET d_group_interval_sql_string = 'YEAR(calculated_created_date), WEEK(calculated_created_date)';
 	END;
 	ELSEIF p_groupInterval = 'month' THEN
 	BEGIN
@@ -2012,29 +1877,43 @@ BEGIN
 	IF p_groupBy = 'machine' THEN
 	BEGIN
 		SET d_columns_sql_string = '
+			m.pcb_id,
 			store_name,
 			machine_name,
-			t.pcb_id,
 			account';
-		SET d_group_by_sql_string = 'GROUP BY t.pcb_id';
+		SET d_group_by_sql_string = CONCAT('GROUP BY ' , d_group_interval_sql_string , ',t.pcb_id');
 	END;
 	ELSEIF p_groupBy = 'user' THEN
 	BEGIN
 		SET d_columns_sql_string = '
 			account';
-		SET d_group_by_sql_string = 'GROUP BY u.id';
+		SET d_group_by_sql_string = CONCAT('GROUP BY ' , d_group_interval_sql_string , ',u.id');
 	END;
 	ELSEIF p_groupBy = 'storename' THEN
 	BEGIN
 		SET d_columns_sql_string = '
 			store_name';
-		SET d_group_by_sql_string = 'GROUP BY store_name';
+		SET d_group_by_sql_string = CONCAT('GROUP BY ' , d_group_interval_sql_string , ',store_name');
 	END;
 	ELSE
 	BEGIN
 		DROP TEMPORARY TABLE IF EXISTS `_tmp`;
 		SIGNAL SQLSTATE '45000'
 	 	SET MESSAGE_TEXT = 'Paramater "group" invaild.';
+	END;
+	END IF;
+	
+	IF p_groupInterval = 'day' THEN
+	BEGIN
+		SET d_columns_sql_string = CONCAT(d_columns_sql_string, ', DATE(calculated_created_date) AS date');
+	END;
+	ELSEIF p_groupInterval = 'week' THEN
+	BEGIN
+		SET d_columns_sql_string = CONCAT(d_columns_sql_string, ', DATE(DATE_ADD(calculated_created_date, INTERVAL -DAYOFWEEK(calculated_created_date)+1 DAY)) AS date');
+	END;
+	ELSEIF p_groupInterval = 'month' THEN
+	BEGIN
+		SET d_columns_sql_string = CONCAT(d_columns_sql_string, ', DATE(DATE_ADD(calculated_created_date, INTERVAL -DAY(calculated_created_date)+1 DAY)) AS date');
 	END;
 	END IF;
 	
@@ -2069,13 +1948,13 @@ BEGIN
 	
 	SET @d_sqlString2 = CONCAT('
 	CREATE TEMPORARY TABLE IF NOT EXISTS _tmp2 AS(
-		SELECT SQL_CALC_FOUND_ROWS *,
-				total_win_times/total_play_times*100 AS hit_rate,
-				total_out/total_in*100 AS out_rate,
-				total_win/total_bet*100 AS win_rate
-			FROM (SELECT  
-				DATE(calculated_created_date) AS date,
+		SELECT SQL_CALC_FOUND_ROWS 
+				SUM(total_win_times)/SUM(total_play_times)*100 AS hit_rate,
+				SUM(total_out)/SUM(total_in)*100 AS out_rate,
+				SUM(total_win + total_jp1_win + total_jp2_win + total_jp3_win + total_jp4_win)/SUM(total_bet)*100 AS win_rate_with_jp,
+				SUM(total_win)/SUM(total_bet)*100 AS win_rate,
 				SUM(total_jp1_win + total_jp2_win + total_jp3_win + total_jp4_win) AS total_jp_win,
+				SUM(total_win + total_jp1_win + total_jp2_win + total_jp3_win + total_jp4_win) AS total_win_with_jp,
 				SUM(total_in) AS total_in,
 				SUM(total_out) AS total_out,
 				SUM(total_bet) AS total_bet,
@@ -2093,13 +1972,14 @@ BEGIN
 				SUM(total_play_times) AS total_play_times,
 				SUM(total_win_times) AS total_win_times,
 				', d_columns_sql_string ,
-			' FROM _tmp1 t
-			INNER JOIN machines m ON t.pcb_id = m.pcb_id
-			INNER JOIN user_node un ON (m.user_id = un.user_id) AND (',d_isAdmin,' OR un.lft BETWEEN ',d_lft,' AND ',d_rgt,')
-			INNER JOIN users u ON (un.user_id = u.id) -- AND (u.id = m.user_id)
-			WHERE m.delete_flag <> 1 -- AND t.calculated_created_date < ''',d_now,'''
-			' , d_group_by_sql_string , '
-			ORDER BY t.calculated_created_date) v);
+				' FROM _tmp1 t
+				INNER JOIN machines m ON t.pcb_id = m.pcb_id
+				INNER JOIN user_node un ON (m.user_id = un.user_id) AND (',d_isAdmin,' OR un.lft BETWEEN ',d_lft,' AND ',d_rgt,')
+				INNER JOIN users u ON (un.user_id = u.id) -- AND (u.id = m.user_id)
+				WHERE m.delete_flag <> 1 -- AND t.calculated_created_date < ''',d_now,'''
+				' , d_group_by_sql_string , '
+				ORDER BY t.calculated_created_date
+			);
 		');
 	
 	PREPARE stmt FROM 'SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;';
@@ -2130,7 +2010,8 @@ BEGIN
 	EXECUTE stmt;
 	DEALLOCATE PREPARE stmt; 
 	
-	-- SELECT @d_sqlString;
+	SELECT @d_sqlString1;
+   SELECT @d_sqlString2;
 	
 END//
 DELIMITER ;
@@ -3192,21 +3073,6 @@ BEGIN
 END//
 DELIMITER ;
 
--- 傾印  表格 pcb.todos 結構
-DROP TABLE IF EXISTS `todos`;
-CREATE TABLE IF NOT EXISTS `todos` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `body` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 正在傾印表格  pcb.todos 的資料：~0 rows (大約)
-DELETE FROM `todos`;
-/*!40000 ALTER TABLE `todos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `todos` ENABLE KEYS */;
-
 -- 傾印  表格 pcb.transactions 結構
 DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE IF NOT EXISTS `transactions` (
@@ -3256,7 +3122,7 @@ CREATE TABLE IF NOT EXISTS `transactions` (
   KEY `calculated_created_date` (`calculated_created_date`),
   CONSTRAINT `FK_transactions_currencies` FOREIGN KEY (`currency_id`) REFERENCES `currencies` (`id`),
   CONSTRAINT `FK_transactions_machines` FOREIGN KEY (`pcb_id`) REFERENCES `machines` (`pcb_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2358263 DEFAULT CHARSET=utf8 COMMENT='交易資料表，包含SPIN、儲值、兌回、JP等';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='交易資料表，包含SPIN、儲值、兌回、JP等';
 
 -- 正在傾印表格  pcb.transactions 的資料：~0 rows (大約)
 DELETE FROM `transactions`;
@@ -3280,53 +3146,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `account` (`account`)
 ) ENGINE=InnoDB AUTO_INCREMENT=649 DEFAULT CHARSET=utf8 COMMENT='使用者主表';
 
--- 正在傾印表格  pcb.users 的資料：~43 rows (大約)
+-- 正在傾印表格  pcb.users 的資料：~1 rows (大約)
 DELETE FROM `users`;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `account`, `encrypted_password`, `current_sign_in_ip`, `last_sign_in_ip`, `admin`, `state`, `login_fail_count`, `created_time`, `update_time`) VALUES
-	(2, 'testtest1', '8d60e43446ad6f2a0f2fd1608817843ec086cff247016123c4398c11412bc91e68a84e3113ef25352c57b8a48ae20480274bd66632523d6f6ca2328e694c0cbd', '', '', b'1', 1, 0, '2018-05-11 14:15:26', '2018-06-21 18:22:26'),
-	(607, 'Foil6214', 'd1332761bfbc58eb6a12d2022528fbf7ee645f951b581814d5e841f866fbcf53ac7ce657e69adb970c63144a12c4378706a1c6183c525bcc84de8ea914d9d220', '', '', b'1', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(608, 'Keen8084', '205e92324f545b969cf338db2d24316f2643ce716f99ea192a460e48bc58e58dcee1704f0737e5e1cb68241972ae4408ee8d5606c6188a5e4adcd8e3207ae9cc', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(609, 'Linen7154', '57765b72f11778476bac7377720b3c891986d63bf847c0912c4e6536e0dcc78568ecca39b8265db4fb2600cc6f2c6403512465202ed1ce964308b8562434941e', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(610, 'White8111', 'd43921354c8f0e08fb7f7bbfc27abfa57e9a95604c85893bb995e864d0a9c04a0af4f47fe40cdbb851286ae503d0dac3ae0aaec4e7b376e4b955c343993e85a3', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(611, 'Stump823', '14a92b588b43dc129b891669c65700a4fcd89a2ef89b1daaa9c055f07f33ccc10151d61bf950b873bd1f0ead147454cf20347364c993f6c83a5fd7396f9afe8b', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(612, 'Carnelian4212', '7280297c86ba5bba31a2443eb516f4a54bda225bb6514094c044f7b1f615798d90a8eee3368593ac655f75546488ad3d46d93a6346532cba2ab9713fa884f889', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(613, 'River3611', '3a0b1dbdbbe7794691a402c0839bae7b243ce353ea8536ac671bc0008c3fe4445122a6eb0c7730295655e54b1beab4f89cfa09d21294a914d9dc1403718f4ebe', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(614, 'Calico6759', '31eb042a5cc705b07ebe7967f467d552e4be9be62d0d97efed86d599f605b7407cb434c00e9d916cea6552c0dc4a7ff0ec07b30a288c25089fd65e2df654c75e', '', '', b'1', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(615, 'Alabaster8794', '130dc5f7c51941948ae53034963e7aa757eff9b53f4bab334b518f1f3edba8dc2149c13fdb884b6ef321a8fec1605bd8b712b88135631ff87f8903805e17d545', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(616, 'Quark9592', 'c728f5bbe403472d1c4a28c7ff634ad84255c95b3a0650f83ff9bddec83d9ec156bd9cad91f6869a13f90937aaf5c78daad1387485aa62127861f5749387126b', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(617, 'Dandelion7708', 'c0b73980f4da69061bddce7b4e1a902e2048e0b73e64ce07ef9a3713331221eae37b5084e4f3abc6846264fc4d5db303be4e107199712cd420c49b9600344562', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(618, 'Helix9788', 'd374b76f1b9b9fc766edd2c882127234fb702e5f415355cd53ff098253bb7086b30717a59711784b701474c06dbe9c2670eb0f747deddc7df25e0c3007d5243f', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(619, 'Carnelian8695', '518db6b0d5837f51c280d8027cd20898417f8780268716ae7e5d9f6dec5d639501dad30da43b5605d49af3924ab24057c12f59cbcd37ca753d69b50a0ae36356', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(620, 'Iridescent3646', '40c8f1af55f8a8ef311c6fdef626d97adc760a03f8f595989449c5fbfb14c3835269b09d1a0b6c9dc4ccaf7109e841ca99599ed7577f88c3708f79d4caa3452b', '', '', b'0', 1, 0, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(621, 'Motley4689', '2793f7cba884f7d6f666fcbc52b38bf6b74f19df4b17b56bd2f59a23befb2fea0600eb54591eca455ec1a58955bc2d6635187b47c7c321f23ba2df2fb566ae1d', '', '', b'1', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(622, 'Typhoon5670', '554fdab60c06adae6be5bea72976be2fd14c92e7f04dba56081abdbd561032c13e82751743841592ca7542db8f948eebe26b2f64ea5963868f7045541e3865e6', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(623, 'Leather8738', '9b83eb1165f60a64cc5f259ed75deef2e9e22c785da6a42e093228448c6a67496534dec5a09aa7e084ebb89e551e798f8817e042ad0097189a4c51fc8e95a9bf', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(624, 'Foul9344', 'bffc0411915384201278ad3812f2ec5f439e3180d5be25cdef5f683445beb144393a03bb69d36b243dac9165dc73f46bfab07320e12e06d39bf3fb61098a2cbb', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(625, 'Plain3002', '57919efbc88aa3c4f898e129c8f9deac527fb1ed931fb3becf1daa92d89a7db501e834522649dcabd63a4cad2fe0fab7e7990afc9d00b06b45ff9b2f08b2bc2b', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(626, 'Spring392', '2dbb64c9616aa38dbedaf91599e274e86e2c72508698f27b4feaca22ec5b2d2f5624b83d43ce9a98bf96afbe76381bfd6a4037e50afc158a49579934b9e1432f', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(627, 'Ribbon1215', 'b30379542551d2e249d051a7ac1112c7fa9e5a78567641cc99fbf91207b644efe772d89a6617e7ddff541d3b2da1d140c443a780da6179034ed1177bb6c82e42', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(628, 'Brown2642', 'c113fb4d7dc26c87ca14b54aaabe7be5dbc41d3740480f6a176c4c4de6d94aab488c2d9a08f0c463edcf7c57de766b1c8d791dcc12c1d1052c0e3bf4311652b2', '', '', b'1', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(629, 'Notch5724', '9930ef0688665b59a8c99521f3bfaa22a4f9a5ef3aace1a612341576354e89454cdb5b287ec4dbcb624bdcfdf9d3132149c3516c1941c442525e9852517a5e6f', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(630, 'Gossamer1206', '23be9beb40b0e89ba76da657f02d451fefe278af4dad2fff035932ceda325d745b3bd1a3df40f06255c03bb8c6aafca00f52677e2b1200eabdeca46abcdf3047', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(631, 'Bog7779', '482cd4707b6c77d5e7744854a9022162c0c9ca61400012c50ce9f90959e96adb8a1bdabd97241a474cfb943f88520bdcce8022746bf59279da041f58419df192', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(632, 'Prairie7025', '1264f7e4b8dcbc283362dba41226212ca8b21efb71bce0b409a389af34645b381372bfc9aa9772382084aa5cf155c84a9b6fe817cf363f98b6ecd85ff79694e4', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(633, 'Pale8276', '23142792bd451e7cc2bb7832b59af672108330dea2d73a7d5be0b61778e74607e7aa40818c282c4348b1ef62bdb030b97b92668b8956f76a264d27a1c595c420', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(634, 'Crack2835', '7dd561c2039923ac444d3e7608bf25a490d88e1ecc1642eccbecbb23f5648677da44cd63e930b4f80c44dbadff7ce49de097c1e527a4d59103e7f155938013ec', '', '', b'0', 1, 0, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(635, 'Sunrise344', 'd141e8b5b9038f2a9980df3d51b70ebebd5ef26dbf6e59dbb2cb9e8f5b670dff1cda57feb1d308e2a6050dcfab6e5b2de5200b289dd2ad7b5d228e573dfad715', '', '', b'1', 1, 0, '2018-06-29 17:52:16', '2018-07-03 17:30:40'),
-	(636, 'Paper6466', '530d9064f67cd89a15c4bc016aa9ce22c4cf21888969c140ac1211db3b62d7dc0d5e1a48c25dcf8f8e71a906c3e564920a08a1d1cbb3034af6c5fea3be27e508', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(637, 'Shag3964', '0a072a8e20c4275cf5b04cb6a2b7cab315a7a3b09b2c29b9baf4c2896c5291d2d278f66d76f9cd74175b0365c0a1d52db834018d3f1e8c35fd6b78f9a281475d', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(638, 'Night8374', 'bbe7ac59be376a6eaa6b1e8948e07a1aead36ee13f1a99d861e9f24daa03561aa16bab3f30b447d7f48e4ed3d0888190cc8b2dd2a38cecbf3c60ce0a88cce6a2', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(639, 'Crystal880', '72e9538aab17065b294cea3d7c6d7df15a2385481322511f89475ddf04c955526a0930e1bd6f00592ae942f69a4967acf2dfb323a0b45e08b9b83e51bb550d1a', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(640, 'Fluff531', '9301b08fd56a0832e169967ed6bf17c1740b989fe55545311e7844becb4c4b93ddf5cc57cd37417260a41c7d5a44571262e9e7997ef89084fcaf2352f0609163', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(641, 'Plump8900', 'b1709697d048eedf93c1ba96475d25bfbf525412a3580521d93bbaebd4698a2ab67cf7fe3fe5aaf78791e23e0b7c9c6c1e909952425584c8f003ef39e205ded6', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(642, 'Destiny799', '39ba0e0ce36d0284ac5b576b8562b64252dc8fcfff47b35429434770618b72bf3c477fd79196852d6fb3d0181f349e39b50a6362d43bd1d3b56476adfed508c0', '', '', b'1', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(643, 'Plume8602', '4ede4fba0943ca7bd18214e1612385633498ebe8729acb2769f0d34b03aa378cb5d1684708c28beb9ef8a3a73512e8d16cd09d17efcb72251f22182825350471', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(644, 'Flax9201', '2d81d3870717b17016353b3e26e5423c84bfce393ccab3a96af92993750fa572aa117fa9e3acc8fb21abbaea60a123dcd76dd6341b0418bb091445303959eb38', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(645, 'Sand9710', '550b6fb2dba0dd36a645a048b086c908e1c7d8fbc9eea3028d486cb4d772225c926078c12bb81e4e64f25f0cc528e43465ac2639c80d06d4e64ad105ff2247ed', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(646, 'Pewter7880', '53b1256cfdb7bf7d2306dd2c95ea36530582e080ad489ad9f66fa1a890502e5387c5f444d482dded3adcad4cbb8f9b3aea9d368e6044dffa21faf051021790f4', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(647, 'Lava7967', '02d1bbc6bbc2c58a62b12868b751df291681339c0f39573251d46e5b39c2afa41d7f9383cefc29c1503ac2e9b20202fca5357a329c4a061e7ed8bf2b3e046ed6', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(648, 'Dour8070', '9303bd26f792119b04846a7b40e5a2c0efb3bb31de8d4f3a6e704ed34e87afc9c01d4e124013fca0f63c815e459c1a3f66177a4c1fc4330fe7eabe32c3246cac', '', '', b'0', 1, 0, '2018-06-29 17:52:16', '2018-06-29 17:52:16');
+	(2, 'admin', '8d60e43446ad6f2a0f2fd1608817843ec086cff247016123c4398c11412bc91e68a84e3113ef25352c57b8a48ae20480274bd66632523d6f6ca2328e694c0cbd', '', '', b'1', 1, 0, '2018-05-11 14:15:26', '2018-07-13 11:24:12');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.user_node 結構
@@ -3343,53 +3167,11 @@ CREATE TABLE IF NOT EXISTS `user_node` (
   CONSTRAINT `FK_user_node_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='使用者節點描述表';
 
--- 正在傾印表格  pcb.user_node 的資料：~43 rows (大約)
+-- 正在傾印表格  pcb.user_node 的資料：~1 rows (大約)
 DELETE FROM `user_node`;
 /*!40000 ALTER TABLE `user_node` DISABLE KEYS */;
 INSERT INTO `user_node` (`user_id`, `parent_id`, `lft`, `rgt`, `created_time`, `update_time`) VALUES
-	(2, 0, 1, 86, '2018-05-17 17:38:46', '2018-06-29 17:52:16'),
-	(607, 2, 64, 85, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(608, 607, 75, 84, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(609, 608, 82, 83, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(610, 608, 80, 81, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(611, 607, 65, 74, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(612, 611, 72, 73, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(613, 611, 70, 71, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(614, 2, 58, 63, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(615, 614, 61, 62, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(616, 608, 78, 79, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(617, 608, 76, 77, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(618, 614, 59, 60, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(619, 611, 68, 69, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(620, 611, 66, 67, '2018-06-22 11:52:04', '2018-06-29 17:52:16'),
-	(621, 2, 36, 57, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(622, 621, 47, 56, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(623, 622, 54, 55, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(624, 622, 52, 53, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(625, 621, 37, 46, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(626, 625, 44, 45, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(627, 625, 42, 43, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(628, 2, 30, 35, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(629, 628, 33, 34, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(630, 622, 50, 51, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(631, 622, 48, 49, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(632, 628, 31, 32, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(633, 625, 40, 41, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(634, 625, 38, 39, '2018-06-29 17:52:09', '2018-06-29 17:52:16'),
-	(635, 2, 8, 29, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(636, 635, 19, 28, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(637, 636, 26, 27, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(638, 636, 24, 25, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(639, 635, 9, 18, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(640, 639, 16, 17, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(641, 639, 14, 15, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(642, 2, 2, 7, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(643, 642, 5, 6, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(644, 636, 22, 23, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(645, 636, 20, 21, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(646, 642, 3, 4, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(647, 639, 12, 13, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(648, 639, 10, 11, '2018-06-29 17:52:16', '2018-06-29 17:52:16');
+	(2, 0, 1, 2, '2018-05-17 17:38:46', '2018-07-13 11:23:03');
 /*!40000 ALTER TABLE `user_node` ENABLE KEYS */;
 
 -- 傾印  表格 pcb.user_role 結構
@@ -3405,89 +3187,12 @@ CREATE TABLE IF NOT EXISTS `user_role` (
   CONSTRAINT `FK_user_role_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='使用者角色對應表';
 
--- 正在傾印表格  pcb.user_role 的資料：~43 rows (大約)
+-- 正在傾印表格  pcb.user_role 的資料：~1 rows (大約)
 DELETE FROM `user_role`;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
 INSERT INTO `user_role` (`user_id`, `role_id`, `created_time`, `update_time`) VALUES
-	(2, 1, '2018-05-15 16:50:10', '2018-06-22 09:30:33'),
-	(607, 1, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(608, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(609, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(610, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(611, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(612, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(613, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(614, 1, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(615, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(616, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(617, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(618, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(619, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(620, 2, '2018-06-22 11:52:04', '2018-06-22 11:52:04'),
-	(621, 1, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(622, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(623, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(624, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(625, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(626, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(627, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(628, 1, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(629, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(630, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(631, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(632, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(633, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(634, 2, '2018-06-29 17:52:09', '2018-06-29 17:52:09'),
-	(635, 1, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(636, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(637, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(638, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(639, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(640, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(641, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(642, 1, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(643, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(644, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(645, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(646, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(647, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16'),
-	(648, 2, '2018-06-29 17:52:16', '2018-06-29 17:52:16');
+	(2, 1, '2018-05-15 16:50:10', '2018-06-22 09:30:33');
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
-
--- 傾印  檢視 pcb.v_operations 結構
-DROP VIEW IF EXISTS `v_operations`;
--- 創建臨時表格，以解決檢視依存性錯誤
-CREATE TABLE `v_operations` (
-	`id` BIGINT(20) UNSIGNED NOT NULL,
-	`pcb_id` INT(10) UNSIGNED NOT NULL,
-	`round_id` BIGINT(20) UNSIGNED NOT NULL,
-	`currency_id` INT(10) UNSIGNED NOT NULL,
-	`money_to_credit_radio` INT(10) UNSIGNED NOT NULL COMMENT '這邊是1元換幾分',
-	`transaction_type` INT(10) UNSIGNED NOT NULL,
-	`start_credit` INT(10) UNSIGNED NOT NULL,
-	`result_credit` INT(10) UNSIGNED NOT NULL,
-	`credit_in` INT(10) UNSIGNED NOT NULL,
-	`credit_out` INT(10) UNSIGNED NOT NULL,
-	`credit_type` INT(10) UNSIGNED NOT NULL,
-	`original_bet` INT(10) UNSIGNED NOT NULL,
-	`bet` INT(10) UNSIGNED NOT NULL,
-	`win` INT(10) UNSIGNED NOT NULL,
-	`jp1_win` INT(11) UNSIGNED NOT NULL,
-	`jp2_win` INT(11) UNSIGNED NOT NULL,
-	`jp3_win` INT(11) UNSIGNED NOT NULL,
-	`jp4_win` INT(11) UNSIGNED NOT NULL,
-	`game_type` INT(10) UNSIGNED NOT NULL,
-	`memo` JSON NULL,
-	`created_time` DATETIME NOT NULL,
-	`update_time` DATETIME NOT NULL,
-	`calculated_created_date` DATETIME NULL
-) ENGINE=MyISAM;
-
--- 傾印  檢視 pcb.v_operations 結構
-DROP VIEW IF EXISTS `v_operations`;
--- 移除臨時表格，並創建最終檢視結構
-DROP TABLE IF EXISTS `v_operations`;
-CREATE ALGORITHM=MERGE DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_operations` AS select `transactions`.`id` AS `id`,`transactions`.`pcb_id` AS `pcb_id`,`transactions`.`round_id` AS `round_id`,`transactions`.`currency_id` AS `currency_id`,`transactions`.`money_to_credit_radio` AS `money_to_credit_radio`,`transactions`.`transaction_type` AS `transaction_type`,`transactions`.`start_credit` AS `start_credit`,`transactions`.`result_credit` AS `result_credit`,`transactions`.`credit_in` AS `credit_in`,`transactions`.`credit_out` AS `credit_out`,`transactions`.`credit_type` AS `credit_type`,`transactions`.`original_bet` AS `original_bet`,`transactions`.`bet` AS `bet`,`transactions`.`win` AS `win`,`transactions`.`jp1_win` AS `jp1_win`,`transactions`.`jp2_win` AS `jp2_win`,`transactions`.`jp3_win` AS `jp3_win`,`transactions`.`jp4_win` AS `jp4_win`,`transactions`.`game_type` AS `game_type`,`transactions`.`memo` AS `memo`,`transactions`.`created_time` AS `created_time`,`transactions`.`update_time` AS `update_time`,(`transactions`.`created_time` + interval -(6) hour) AS `calculated_created_date` from `transactions`;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

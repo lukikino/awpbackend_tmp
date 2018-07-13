@@ -154,7 +154,7 @@
                         <div class="nav-item dropdown">
                             <b-dropdown id="ddown-aria" right variant="link" class="m-2">
                                 <template slot="button-content">
-                                    <span>{/ $root.loginUser.account /}</span>
+                                    <span>{/ loginUserName /}</span>
                                 </template>
                                 <b-dropdown-item-button>
                                     <a href="#">
@@ -405,7 +405,7 @@
     </div>
     </script>
     <script type="text/x-template" id="treemenu">
-        <div class="tree-menu">
+        <div class="tree-menu" v-if="">
             <div class="label-wrapper" v-if="machine">
                 <div class="label-item" :style="indent">
                     <b-form-checkbox :value="machine" v-model="checkList.machines[machine.machineID]" @change="toggleMachineSelect"><i class="fas fa-microchip"></i> {/ machine.pcbID /}({/ machine.storeName /}-{/ machine.machineName /})</b-form-checkbox>
@@ -481,6 +481,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-vue@2.0.0-rc.8/dist/bootstrap-vue.js"></script>
     <!--Custom JavaScript -->
     <script src="/static/js/moment.js"></script>
+    <script src="/static/js/moment-timezone-with-data.js"></script>
     <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
     <script src="/static/js/vue-bootstrap-datetimepicker.min.js"></script>
     <script src="/static/js/custom.min.js"></script>

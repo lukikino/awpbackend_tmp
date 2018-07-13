@@ -6,7 +6,7 @@
     </div>
     <div class="container-fluid">
         <div class="card">
-            <div class="col-lg-12">
+            <div class="col-lg-12" :class='{"loading-opacity": loading}'>
                 <form>
                     <div class="form-group">
                         <dropdown :items="users"></dropdown>
@@ -146,13 +146,38 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12" v-if="viewData.length > 0">
+            <div class="col-lg-12 my-3" v-show="!showGroupChart && viewData.length > 0" :class='{"loading-opacity": loading}'>
+                <button class="btn-block btn btn-outline-primary" type="button" @click="drawGroupChart()">
+                    Show Detail Run Chart
+                </button>
+            </div>
+            <div class="col-lg-12 my-3" v-show="showGroupChart && viewData.length > 0">
+                <svg class="circular" viewBox="25 25 50 50" v-if="loading">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                </svg>
+                <div class="clearfix" :class='{"loading-opacity": loading}'>
+                    <div class="form-group float-left">
+                        <dropdown :onChanged="updateGroupChart" :items="columnsForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='user'" :items="usersForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='storename'" :items="storesForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='machine'" :items="machinesForReport"></dropdown>
+                    </div>
+                    <button class="float-right btn btn-sm btn-outline-primary" type="button" @click="showGroupChart=false">
+                        Hide Chart
+                    </button>
+                </div>
+                <div ref="groupChart" :class='{"loading-opacity": loading}'></div>
+            </div>
+        </div>
+
+        <div class=card v-show="viewData.length > 0">
+            <div class="col-lg-12">
+                <svg class="circular" viewBox="25 25 50 50" v-if="loading">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                </svg>
                 <h4>Total</h4>
-                <div class="table-responsive">
-                    <svg class="circular" viewBox="25 25 50 50" v-if="loading">
-                        <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
-                    </svg>
-                    <div id="myTable_wrapper" class="dataTables_wrapper no-footer" :class='{"loading-opacity": loading}'>
+                <div class="table-responsive" :class='{"loading-opacity": loading}'>
+                    <div id="myTable_wrapper" class="dataTables_wrapper no-footer">
                         <table id="myTable" class="table  no-footer" role="grid" aria-describedby="myTable_info">
                             <thead>
                                 <tr role="row">
@@ -211,14 +236,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class=card>
-            <div class=col-lg-12>
+            <div class="col-lg-12 my-3">
                 <svg class="circular" viewBox="25 25 50 50" v-if="loading">
                     <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
                 </svg>
-                <div ref="chart" :class='{"loading-opacity": loading}'></div>
+                <div ref="summaryChart" :class='{"loading-opacity": loading}'></div>
             </div>
         </div>
     </div>

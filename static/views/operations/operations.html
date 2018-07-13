@@ -6,7 +6,7 @@
     </div>
     <div class="container-fluid">
         <div class="card">
-            <div class="col-lg-12">
+            <div class="col-lg-12" :class='{"loading-opacity": loading}'>
                 <form>
                     <div class="form-group">
                         <dropdown :items="users"></dropdown>
@@ -14,9 +14,9 @@
                         <dropdown :items="machines"></dropdown>
                         <label class="col-form-label m-r-10">Duration :</label>
                         <div class="btn-group">
-                            <date-picker name="date" v-model="searchData.startTime"></date-picker>
+                            <date-picker name="date" v-model="searchData.startTime" :config="datePickerOptions"></date-picker>
                             <span class="col-form-label"> ～ </span>
-                            <date-picker name="date" v-model="searchData.endTime"></date-picker>
+                            <date-picker name="date" v-model="searchData.endTime" :config="datePickerOptions"></date-picker>
                         </div>
                         <div class="btn-group">
                             <button class="btn btn-primary btn-sm" type="button" @click="search">
@@ -91,11 +91,12 @@
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Out Rate: activate to sort column ascending"
                                         v-if="showDetail">Out Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Bet: activate to sort column ascending">Total Bet</th>
-                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending"  v-if="showDetail">Total Win</th>
+                                    <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending"
+                                        v-if="showDetail">Total Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total Win With JP</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Win: activate to sort column ascending">Total JP Win</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Win Rate: activate to sort column ascending"
-                                        v-if="showDetail">Win Rate</th>                                    
+                                        v-if="showDetail">Win Rate</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Win Rate: activate to sort column ascending"
                                         v-if="showDetail">Win Rate With JP</th>
                                     <th class="sorting" tabindex="0" aria-controls="myTable" rowspan="1" colspan="1" aria-label="Total Play Times: activate to sort column ascending">Total Play Times</th>
@@ -135,6 +136,30 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-12 my-3" v-show="!showGroupChart && viewData.length > 0" :class='{"loading-opacity": loading}'>
+                <button class="btn-block btn btn-outline-primary" type="button" @click="drawGroupChart()">
+                    Show Detail Run Chart
+                </button>
+            </div>
+            <div class="col-lg-12 my-3" v-show="showGroupChart && viewData.length > 0">
+                <svg class="circular" viewBox="25 25 50 50" v-if="loading">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                </svg>
+                <div class="clearfix" :class='{"loading-opacity": loading}'>
+                    <div class="form-group float-left">
+                        <dropdown :onChanged="updateGroupChart" :items="columnsForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='user'" :items="usersForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='storename'" :items="storesForReport"></dropdown>
+                        <dropdown :onChanged="updateGroupChart" v-if="searchData.groupBy=='machine'" :items="machinesForReport"></dropdown>
+                    </div>
+                    <button class="float-right btn btn-sm btn-outline-primary" type="button" @click="showGroupChart=false">
+                        Hide Chart
+                    </button>
+                </div>
+                <div ref="groupChart" :class='{"loading-opacity": loading}'></div>
+            </div>
+        </div>
+        <div class="card" v-show="viewData.length > 0">
             <div class="col-lg-12" v-if="viewData.length > 0">
                 <h4>Total</h4>
                 <div class="table-responsive">
@@ -191,8 +216,7 @@
                                         <td>{/ percentageFormat(summaryReportData.winRateWithJp) /}</td>
                                         <td>{/ summaryReportData.totalPlayTimes /}</td>
                                         <td>{/ summaryReportData.totalWinTimes /}</td>
-                                        <td>{/ percentageFormat(summaryReportData.hitRate)
-                                            /}
+                                        <td>{/ percentageFormat(summaryReportData.hitRate) /}
                                         </td>
                                     </tr>
                                 </tr>
@@ -201,13 +225,11 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class=card>
-            <div class=col-lg-12>
+            <div class="col-lg-12 my-3" :class='{"loading-opacity": loading}'>
                 <svg class="circular" viewBox="25 25 50 50" v-if="loading">
                     <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
                 </svg>
-                <div ref="chart" :class='{"loading-opacity": loading}'></div>
+                <div ref="summaryChart"></div>
             </div>
         </div>
     </div>
